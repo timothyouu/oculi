@@ -56,10 +56,10 @@ export function AppShell({
   const handleOpenSaved = onOpenSaved ?? (() => router.push("/saved"));
   const handleOpenProfile = onOpenProfile ?? ((userId: string) => router.push(`/profile/${userId}`));
   const mobileItems = [
-    { id: "discover", label: "Discover", icon: Grid2X2 },
-    { id: "map", label: "Map", icon: Map },
+    { id: "discover", label: "Discover", icon: Grid2X2, href: "/" },
+    { id: "map", label: "Map", icon: Map, href: "/map" },
     { id: "add", label: "Add", icon: PlusCircle },
-    { id: "saved", label: "Saved", icon: Bookmark },
+    { id: "saved", label: "Saved", icon: Bookmark, href: "/saved" },
     { id: "profile", label: "Profile", icon: UserRound },
   ];
 
@@ -77,7 +77,12 @@ export function AppShell({
         onOpenProfile={handleOpenProfile}
       />
 
-      <main className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-4 py-5 pb-24 sm:px-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:pb-8">
+      <main
+        className={cx(
+          "mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-4 py-5 pb-24 sm:px-6 lg:pb-8",
+          Boolean(rightRail) && "lg:grid-cols-[minmax(0,1fr)_360px]",
+        )}
+      >
         <section aria-label="Discover content" className="min-w-0">
           {children}
         </section>
@@ -109,7 +114,7 @@ export function AppShell({
                   if (item.id === "add") handleOpenUpload();
                   else if (item.id === "saved") handleOpenSaved();
                   else if (item.id === "profile" && shellCurrentUser) handleOpenProfile(shellCurrentUser.id);
-                  else handleNavigate({ id: item.id, label: item.label });
+                  else handleNavigate({ id: item.id, label: item.label, href: item.href });
                 }}
               >
                 <Icon className="size-5" aria-hidden="true" />

@@ -24,7 +24,7 @@ type TopNavProps = {
 
 const defaultNavItems: NavItem[] = [
   { id: "discover", label: "Discover", href: "/" },
-  { id: "map", label: "Map" },
+  { id: "map", label: "Map", href: "/map" },
   { id: "saved", label: "Saved", href: "/saved" },
 ];
 
