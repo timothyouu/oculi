@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, Heart, MapPin, MessageCircle, MoreHorizontal, Plus, UserPlus } from "lucide-react";
+import { Bookmark, Heart, MapPin, MoreHorizontal, UserPlus } from "lucide-react";
 import type { Comment, Photo, Place, User } from "../lib/types";
 import { CommentThread } from "./comment-thread";
 
@@ -43,7 +43,7 @@ export function PhotoCard({
   isLiked = false,
   likedCommentIds = [],
   likedReplyIds = [],
-  showComments = true,
+  showComments = false,
   onToggleSaved,
   onToggleFollow,
   onTogglePhotoLike,
@@ -132,10 +132,11 @@ export function PhotoCard({
               <Heart className={cx("size-4", isLiked && "fill-current")} aria-hidden="true" />
               {photo.likeCount + (isLiked ? 1 : 0)}
             </button>
-            <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2.5 py-2 text-sm font-semibold text-zinc-700">
-              <MessageCircle className="size-4" aria-hidden="true" />
-              {comments.length}
-            </span>
+            {showComments ? (
+              <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2.5 py-2 text-sm font-semibold text-zinc-700">
+                {comments.length} notes
+              </span>
+            ) : null}
           </div>
           <button
             type="button"
@@ -146,8 +147,8 @@ export function PhotoCard({
             aria-label={isSaved ? `Remove ${place.name} from saved places` : `Save ${place.name}`}
             onClick={() => onToggleSaved?.(place.id)}
           >
-            {isSaved ? <Bookmark className="size-4 fill-current" aria-hidden="true" /> : <Plus className="size-4" aria-hidden="true" />}
-            {isSaved ? "Saved" : "Save spot"}
+            <Bookmark className={cx("size-4", isSaved && "fill-current")} aria-hidden="true" />
+            {isSaved ? "Bookmarked" : "Bookmark"}
           </button>
         </div>
 

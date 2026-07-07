@@ -30,25 +30,14 @@ export function PlaceDetail({
 }: PlaceDetailProps) {
   const router = useRouter();
   const {
-    comments,
     followedUserIds,
     likedPhotoIds,
-    likedCommentIds,
-    likedReplyIds,
     toggleFollowUser,
     togglePhotoLike,
-    addComment,
-    toggleCommentLike,
-    addReply,
-    toggleReplyLike
   } = useDemoState();
   const isSaved = savedPlaceIds.includes(place.id);
   const heroPhotos = photos.slice(0, 4);
   const usersById = Object.fromEntries(users.map((user) => [user.id, user]));
-  const commentsByPhotoId = comments.reduce<Record<string, typeof comments>>((acc, comment) => {
-    acc[comment.photoId] = [...(acc[comment.photoId] ?? []), comment];
-    return acc;
-  }, {});
 
   return (
     <article className="space-y-5">
@@ -159,20 +148,13 @@ export function PlaceDetail({
                 photo={photo}
                 place={place}
                 photographer={photographer}
-                comments={commentsByPhotoId[photo.id] ?? []}
                 usersById={usersById}
                 isSaved={isSaved}
                 isFollowed={followedUserIds.includes(photographer.id)}
                 isLiked={likedPhotoIds.includes(photo.id)}
-                likedCommentIds={likedCommentIds}
-                likedReplyIds={likedReplyIds}
                 onToggleSaved={onToggleSaved}
                 onToggleFollow={toggleFollowUser}
                 onTogglePhotoLike={togglePhotoLike}
-                onAddComment={addComment}
-                onToggleCommentLike={toggleCommentLike}
-                onAddReply={addReply}
-                onToggleReplyLike={toggleReplyLike}
                 onOpenPlace={(placeId) => router.push(`/places/${placeId}`)}
                 onOpenProfile={(userId) => router.push(`/profile/${userId}`)}
               />

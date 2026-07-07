@@ -56,7 +56,7 @@ export function AppShell({
   const handleOpenSaved = onOpenSaved ?? (() => router.push("/saved"));
   const handleOpenProfile = onOpenProfile ?? ((userId: string) => router.push(`/profile/${userId}`));
   const mobileItems = [
-    { id: "discover", label: "Feed", icon: Grid2X2 },
+    { id: "discover", label: "Discover", icon: Grid2X2 },
     { id: "map", label: "Map", icon: Map },
     { id: "add", label: "Add", icon: PlusCircle },
     { id: "saved", label: "Saved", icon: Bookmark },
@@ -78,7 +78,7 @@ export function AppShell({
       />
 
       <main className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-4 py-5 pb-24 sm:px-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:pb-8">
-        <section aria-label="Photo feed" className="min-w-0">
+        <section aria-label="Discover content" className="min-w-0">
           {children}
         </section>
         {rightRail ? (
