@@ -2,6 +2,7 @@
 
 import { Bookmark, Heart, MapPin } from "lucide-react";
 import type { Photo, Place, User } from "../lib/types";
+import { ResilientImage } from "./resilient-image";
 
 type PhotoCardProps = {
   photo: Photo;
@@ -47,9 +48,10 @@ export function PhotoCard({
           onClick={() => onOpenPlace?.(place.id)}
           aria-label={`Open ${place.name} detail`}
         >
-          <img
+          <ResilientImage
             src={photo.imageUrl}
             alt={photo.caption || `Photo from ${place.name}`}
+            fallbackSrc={place.coverPhotoUrl}
             className="aspect-[3/2] w-full object-cover transition duration-500 group-hover:scale-[1.01]"
           />
         </button>
@@ -61,7 +63,7 @@ export function PhotoCard({
               className="flex min-w-0 max-w-full items-center gap-2 rounded-full border border-white/28 bg-white/18 px-2.5 py-1.5 text-left text-xs text-white shadow-[0_10px_28px_rgba(0,0,0,0.22)] outline-none backdrop-blur-md transition hover:bg-white/24 focus-visible:ring-2 focus-visible:ring-white/80"
               onClick={() => onOpenProfile?.(photographer.id)}
             >
-              <img
+              <ResilientImage
                 src={photographer.avatarUrl}
                 alt=""
                 className="size-6 rounded-full border border-white/70 object-cover"

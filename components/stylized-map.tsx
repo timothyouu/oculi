@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Navigation, Plus, ZoomOut } from "lucide-react";
-import { buildPlacePhotoNodes, clusterPlacePhotoNodes } from "@/lib/map-clusters";
+import { buildPlacePhotoNodes, clusterProjectedPlacePhotoNodes } from "@/lib/map-clusters";
 import type { Photo, Place } from "../lib/types";
 import { SelectedPlaceCard } from "./selected-place-card";
 
@@ -38,7 +38,7 @@ function pinPosition(point: { lat: number; lng: number }, places: Place[]) {
   };
 }
 
-const stylizedClusterSizes = [0.09, 0.04, 0.018, 0];
+const stylizedClusterRadii = [18, 12, 8, 0];
 
 export function StylizedMap({
   places,
@@ -56,7 +56,12 @@ export function StylizedMap({
   const placeNodes = useMemo(() => buildPlacePhotoNodes(places, photos), [photos, places]);
   const placeClusters = useMemo(
     () =>
-      clusterPlacePhotoNodes(placeNodes, stylizedClusterSizes[detailLevel]).map((cluster) => ({
+      clusterProjectedPlacePhotoNodes(placeNodes, stylizedClusterRadii[detailLevel], (place) =>
+        {
+          const position = pinPosition(place, places);
+          return { x: position.left, y: position.top };
+        },
+      ).map((cluster) => ({
         ...cluster,
         position: pinPosition(cluster, places),
       })),
@@ -73,8 +78,8 @@ export function StylizedMap({
           type="button"
           className="grid size-14 place-items-center border-b border-[var(--line)] text-[var(--ink)] disabled:text-[var(--muted)]"
           aria-label="Show more specific photo groups"
-          disabled={detailLevel === stylizedClusterSizes.length - 1}
-          onClick={() => setDetailLevel((level) => Math.min(level + 1, stylizedClusterSizes.length - 1))}
+          disabled={detailLevel === stylizedClusterRadii.length - 1}
+          onClick={() => setDetailLevel((level) => Math.min(level + 1, stylizedClusterRadii.length - 1))}
         >
           <Plus className="size-5" />
         </button>
@@ -119,7 +124,12 @@ export function StylizedMap({
               style={{ left: `${cluster.position.left}%`, top: `${cluster.position.top}%` }}
               aria-label={`Select ${clusterName}, ${cluster.photoCount} photo${cluster.photoCount === 1 ? "" : "s"}`}
               title={`${clusterName} · ${cluster.photoCount} photo${cluster.photoCount === 1 ? "" : "s"}`}
-              onClick={() => onSelectPlace?.(cluster.primaryPlace.id)}
+              onClick={() => {
+                if (cluster.places.length > 1) {
+                  setDetailLevel((level) => Math.min(level + 1, stylizedClusterRadii.length - 1));
+                }
+                onSelectPlace?.(cluster.primaryPlace.id);
+              }}
             >
               <span
                 className={cx(

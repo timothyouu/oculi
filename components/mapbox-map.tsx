@@ -5,7 +5,7 @@ import mapboxgl from "mapbox-gl";
 import { SelectedPlaceCard } from "@/components/selected-place-card";
 import type { Map as MapboxMapInstance, Marker } from "mapbox-gl";
 import type { Photo, Place } from "@/lib/types";
-import { buildPlacePhotoNodes, clusterPlacePhotoNodes, clusterSizeForZoom } from "@/lib/map-clusters";
+import { buildPlacePhotoNodes, clusterProjectedPlacePhotoNodes, clusterSizeForZoom } from "@/lib/map-clusters";
 import { StylizedMap } from "./stylized-map";
 
 type MapboxMapProps = {
@@ -44,6 +44,14 @@ function fitPlaces(map: MapboxMapInstance, places: Place[], showSelectedCard: bo
   });
 }
 
+function proxiedMapboxUrl(url: string) {
+  if (!url.startsWith("https://api.mapbox.com/")) return url;
+
+  const proxyUrl = new URL("/api/mapbox", window.location.origin);
+  proxyUrl.searchParams.set("url", url);
+  return proxyUrl.toString();
+}
+
 export function MapboxMap({
   places,
   photos = [],
@@ -63,13 +71,21 @@ export function MapboxMap({
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState("");
   const [mapZoom, setMapZoom] = useState(11.1);
+  const [mapViewTick, setMapViewTick] = useState(0);
   const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const selected = places.find((place) => place.id === selectedPlaceId) || places[0];
   const placeNodes = useMemo(() => buildPlacePhotoNodes(places, photos), [photos, places]);
-  const visiblePlaceClusters = useMemo(
-    () => clusterPlacePhotoNodes(placeNodes, clusterSizeForZoom(mapZoom)),
-    [mapZoom, placeNodes],
-  );
+  const visiblePlaceClusters = useMemo(() => {
+    void mapViewTick;
+    const map = mapRef.current;
+    const clusterRadius = clusterSizeForZoom(mapZoom);
+    if (!map || !mapReady) return [];
+
+    return clusterProjectedPlacePhotoNodes(placeNodes, clusterRadius, (place) => {
+      const point = map.project([place.lng, place.lat]);
+      return { x: point.x, y: point.y };
+    });
+  }, [mapReady, mapViewTick, mapZoom, placeNodes]);
 
   useEffect(() => {
     if (!accessToken || !containerRef.current || mapRef.current) return;
@@ -83,6 +99,10 @@ export function MapboxMap({
       zoom: 11.1,
       pitch: 0,
       attributionControl: false,
+      transformRequest: (url) => ({
+        url: proxiedMapboxUrl(url),
+        referrerPolicy: "origin",
+      }),
     });
 
     map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right");
@@ -107,12 +127,18 @@ export function MapboxMap({
     if (!map || !mapReady) return;
 
     const updateZoom = () => setMapZoom(map.getZoom());
+    const updateView = () => setMapViewTick((tick) => tick + 1);
 
     updateZoom();
+    updateView();
     map.on("zoom", updateZoom);
+    map.on("moveend", updateView);
+    map.on("resize", updateView);
 
     return () => {
       map.off("zoom", updateZoom);
+      map.off("moveend", updateView);
+      map.off("resize", updateView);
     };
   }, [mapReady]);
 
@@ -121,9 +147,9 @@ export function MapboxMap({
 
     const controller = new AbortController();
     const allowedOrigin = window.location.origin;
-    const tileHealthCheckUrl = `https://api.mapbox.com/v4/mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2/11/327/791.vector.pbf?access_token=${accessToken}`;
+    const tileHealthCheckUrl = proxiedMapboxUrl(`https://api.mapbox.com/v4/mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2/11/327/791.vector.pbf?access_token=${accessToken}`);
 
-    fetch(tileHealthCheckUrl, { signal: controller.signal })
+    fetch(tileHealthCheckUrl, { referrerPolicy: "origin", signal: controller.signal })
       .then((response) => {
         if (response.status === 401 || response.status === 403) {
           setMapError(`Mapbox is connected, but Mapbox is returning 403 for vector tiles. Check that the token has styles:read and fonts:read, allows ${allowedOrigin}, and is not using a noreferrer or same-origin referrer policy.`);
@@ -153,6 +179,7 @@ export function MapboxMap({
       const photoLabel = `${cluster.photoCount} photo${cluster.photoCount === 1 ? "" : "s"}`;
 
       markerButton.type = "button";
+      markerButton.style.zIndex = isSelected ? "25" : "20";
       markerButton.setAttribute("aria-label", `Select ${clusterName}, ${photoLabel}`);
       markerButton.title = `${clusterName} · ${photoLabel}`;
       markerButton.className = cx(
@@ -162,7 +189,19 @@ export function MapboxMap({
       countLabel.textContent = String(cluster.photoCount);
       countLabel.className = "leading-none";
       markerButton.append(countLabel);
-      markerButton.addEventListener("click", () => onSelectPlace?.(cluster.primaryPlace.id));
+      markerButton.addEventListener("click", () => {
+        if (cluster.places.length > 1) {
+          const targetZoom = Math.min(Math.max(mapZoom + 2.4, 12.8), 15);
+          setMapZoom(targetZoom);
+          setMapViewTick((tick) => tick + 1);
+          map.easeTo({
+            center: [cluster.lng, cluster.lat],
+            zoom: targetZoom,
+            duration: 650,
+          });
+        }
+        onSelectPlace?.(cluster.primaryPlace.id);
+      });
 
       return new mapboxgl.Marker({ element: markerButton, anchor: "center" }).setLngLat([cluster.lng, cluster.lat]).addTo(map);
     });
@@ -171,7 +210,7 @@ export function MapboxMap({
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
     };
-  }, [mapReady, onSelectPlace, savedPlaceIds, selected?.id, visiblePlaceClusters]);
+  }, [mapReady, mapZoom, onSelectPlace, savedPlaceIds, selected?.id, showSelectedCard, visiblePlaceClusters]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -221,7 +260,7 @@ export function MapboxMap({
       <div ref={containerRef} className="absolute inset-0" />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-24 bg-gradient-to-b from-[rgba(255,253,248,0.62)] to-transparent" />
       {mapError ? (
-        <div className="absolute left-5 top-5 z-30 max-w-md rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] px-4 py-3 text-sm text-[var(--ink)] shadow-[0_12px_30px_rgba(39,34,27,0.12)]">
+        <div className="pointer-events-none absolute left-5 top-5 z-30 max-w-md rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] px-4 py-3 text-sm text-[var(--ink)] shadow-[0_12px_30px_rgba(39,34,27,0.12)]">
           {mapError}
         </div>
       ) : null}

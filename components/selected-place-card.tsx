@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Bookmark, Images, Send } from "lucide-react";
 import type { Photo, Place } from "@/lib/types";
+import { ResilientImage } from "./resilient-image";
 
 type SelectedPlaceCardProps = {
   place: Place;
@@ -82,9 +83,10 @@ export function SelectedPlaceCard({
                 type="button"
                 className="flex w-full items-center gap-3 rounded-xl border border-transparent p-2 text-left transition hover:border-[var(--line)] hover:bg-white"
               >
-                <img
+                <ResilientImage
                   src={photo.imageUrl}
                   alt={photo.caption}
+                  fallbackSrc={place.coverPhotoUrl}
                   className="size-16 shrink-0 rounded-lg bg-[var(--chip)] object-cover"
                 />
                 <span className="min-w-0 flex-1">
@@ -113,7 +115,7 @@ export function SelectedPlaceCard({
   return (
     <>
       <div className="relative">
-        <img src={place.coverPhotoUrl} alt="" className="aspect-[16/9] w-full object-cover" />
+        <ResilientImage src={place.coverPhotoUrl} alt="" className="aspect-[16/9] w-full object-cover" />
         <button
           type="button"
           className="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full border border-white/55 bg-[rgba(29,29,27,0.72)] px-3 py-2 text-sm text-white shadow-[0_8px_20px_rgba(29,29,27,0.24)] backdrop-blur"
