@@ -2,7 +2,6 @@
 
 import type { Photo, Place, User } from "../lib/types";
 import { useRouter } from "next/navigation";
-import { places, users } from "@/lib/data";
 import { useDemoState } from "@/lib/demo-state";
 import { PhotoCard } from "./photo-card";
 
@@ -28,7 +27,7 @@ export function PhotoFeed({
   savedPlaceIds,
   followedUserIds,
   likedPhotoIds,
-  emptyLabel = "No photos yet. Add the first Oculi spot.",
+  emptyLabel = "No photos yet. Add the first Oculi post.",
   onToggleSaved,
   onToggleFollow,
   onTogglePhotoLike,
@@ -37,8 +36,8 @@ export function PhotoFeed({
 }: PhotoFeedProps) {
   const demo = useDemoState();
   const router = useRouter();
-  const resolvedPlacesById = placesById ?? Object.fromEntries(places.map((place) => [place.id, place]));
-  const resolvedUsersById = usersById ?? Object.fromEntries(users.map((user) => [user.id, user]));
+  const resolvedPlacesById = placesById ?? Object.fromEntries(demo.places.map((place) => [place.id, place]));
+  const resolvedUsersById = usersById ?? Object.fromEntries(demo.users.map((user) => [user.id, user]));
   const resolvedSavedPlaceIds = savedPlaceIds ?? demo.savedPlaceIds;
   const resolvedFollowedUserIds = followedUserIds ?? demo.followedUserIds;
   const resolvedLikedPhotoIds = likedPhotoIds ?? demo.likedPhotoIds;
@@ -51,7 +50,7 @@ export function PhotoFeed({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+    <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-5 lg:grid-cols-2">
       {photos.map((photo) => {
         const place = resolvedPlacesById[photo.placeId];
         const photographer = resolvedUsersById[photo.userId];

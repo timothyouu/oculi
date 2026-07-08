@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, Heart, MapPin, MoreHorizontal, UserPlus } from "lucide-react";
+import { Bookmark, Heart, MapPin } from "lucide-react";
 import type { Photo, Place, User } from "../lib/types";
 
 type PhotoCardProps = {
@@ -39,73 +39,57 @@ export function PhotoCard({
   className,
 }: PhotoCardProps) {
   return (
-    <article className={cx("overflow-hidden rounded-md border border-zinc-200 bg-white shadow-sm", className)}>
-      <div className="flex items-center gap-3 px-4 py-3">
+    <article className={cx("overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_18px_48px_rgba(39,34,27,0.08)]", className)}>
+      <div className="group relative bg-zinc-100">
         <button
           type="button"
-          className="shrink-0 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-          onClick={() => onOpenProfile?.(photographer.id)}
-          aria-label={`Open ${photographer.name}'s profile`}
+          className="block w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-950"
+          onClick={() => onOpenPlace?.(place.id)}
+          aria-label={`Open ${place.name} detail`}
         >
-          <img src={photographer.avatarUrl} alt="" className="size-10 rounded-full bg-zinc-200 object-cover" />
+          <img
+            src={photo.imageUrl}
+            alt={photo.caption || `Photo from ${place.name}`}
+            className="aspect-[3/2] w-full object-cover transition duration-500 group-hover:scale-[1.01]"
+          />
         </button>
-        <div className="min-w-0 flex-1">
-          <button
-            type="button"
-            className="block truncate text-left text-sm font-semibold text-zinc-950 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-            onClick={() => onOpenProfile?.(photographer.id)}
-          >
-            {photographer.name}
-          </button>
-          <button
-            type="button"
-            className="flex max-w-full items-center gap-1 truncate text-left text-sm text-zinc-500 outline-none hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-            onClick={() => onOpenPlace?.(place.id)}
-          >
-            <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
-            <span className="truncate">
-              {place.name} / {place.fuzzyLocationLabel}
-            </span>
-          </button>
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/72 via-black/18 to-transparent px-4 pb-4 pt-20">
+          <div className="pointer-events-auto flex flex-wrap items-end justify-between gap-2">
+            <button
+              type="button"
+              className="flex min-w-0 max-w-full items-center gap-2 rounded-full border border-white/28 bg-white/18 px-2.5 py-1.5 text-left text-xs text-white shadow-[0_10px_28px_rgba(0,0,0,0.22)] outline-none backdrop-blur-md transition hover:bg-white/24 focus-visible:ring-2 focus-visible:ring-white/80"
+              onClick={() => onOpenProfile?.(photographer.id)}
+            >
+              <img
+                src={photographer.avatarUrl}
+                alt=""
+                className="size-6 rounded-full border border-white/70 object-cover"
+              />
+              <span className="truncate">
+                <span className="text-white/72">by</span>{" "}
+                <span className="font-semibold">{photographer.name}</span>{" "}
+                <span className="text-white/78">{photographer.username}</span>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="flex max-w-full items-center gap-1.5 rounded-full border border-white/24 bg-black/24 px-3 py-1.5 text-left text-xs text-white outline-none backdrop-blur-md transition hover:bg-black/34 focus-visible:ring-2 focus-visible:ring-white/80"
+              onClick={() => onOpenPlace?.(place.id)}
+            >
+              <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
+              <span className="truncate">{place.name}</span>
+            </button>
+          </div>
         </div>
-        {!isFollowed && !isCurrentUser ? (
-          <button
-            type="button"
-            className="hidden items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 outline-none transition hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 sm:inline-flex"
-            onClick={() => onToggleFollow?.(photographer.id)}
-          >
-            <UserPlus className="size-3.5" aria-hidden="true" />
-            Follow
-          </button>
-        ) : null}
-        <button
-          type="button"
-          className="rounded-md p-2 text-zinc-500 outline-none transition hover:bg-zinc-100 hover:text-zinc-950 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-          aria-label="More photo options"
-        >
-          <MoreHorizontal className="size-4" aria-hidden="true" />
-        </button>
       </div>
 
-      <button
-        type="button"
-        className="group block w-full bg-zinc-100 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-950"
-        onClick={() => onOpenPlace?.(place.id)}
-        aria-label={`Open ${place.name} detail`}
-      >
-        <img
-          src={photo.imageUrl}
-          alt={photo.caption || `Photo from ${place.name}`}
-          className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-[1.01] sm:aspect-[5/4]"
-        />
-      </button>
-
-      <div className="space-y-4 px-4 py-4">
-        <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3 px-3 py-3">
           <button
             type="button"
             className={cx(
-              "inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2",
+              "inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2",
               isLiked ? "bg-rose-50 text-rose-600" : "bg-zinc-50 text-zinc-700 hover:bg-zinc-100",
             )}
             aria-label={isLiked ? "Unlike photo" : "Like photo"}
@@ -117,35 +101,15 @@ export function PhotoCard({
           <button
             type="button"
             className={cx(
-              "inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2",
+              "inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2",
               isSaved ? "bg-zinc-950 text-white" : "border border-zinc-200 text-zinc-700 hover:bg-zinc-50",
             )}
             aria-label={isSaved ? `Remove ${place.name} from saved places` : `Save ${place.name}`}
             onClick={() => onToggleSaved?.(place.id)}
           >
             <Bookmark className={cx("size-4", isSaved && "fill-current")} aria-hidden="true" />
-            {isSaved ? "Bookmarked" : "Bookmark"}
+            {isSaved ? "Saved" : "Save"}
           </button>
-        </div>
-
-        <div className="space-y-2">
-          <p className="text-sm leading-6 text-zinc-800">
-            <span className="font-semibold text-zinc-950">{photographer.username}</span> {photo.caption}
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {photo.tags.map((tag) => (
-              <span key={tag} className="rounded-full bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600">
-                #{tag}
-              </span>
-            ))}
-          </div>
-          <div className="rounded-md bg-zinc-50 p-3 text-sm text-zinc-600">
-            <p className="font-medium text-zinc-900">{photo.locationLabel || place.fuzzyLocationLabel}</p>
-            {photo.metadataText || photo.shotAtTimeOfDay ? (
-              <p className="mt-1">{[photo.shotAtTimeOfDay, photo.metadataText].filter(Boolean).join(" / ")}</p>
-            ) : null}
-          </div>
-        </div>
       </div>
     </article>
   );

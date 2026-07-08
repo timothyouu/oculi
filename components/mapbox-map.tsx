@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
-import { Bookmark, Send } from "lucide-react";
+import { SelectedPlaceCard } from "@/components/selected-place-card";
 import type { Map as MapboxMapInstance, Marker } from "mapbox-gl";
 import type { Photo, Place } from "@/lib/types";
+import { buildPlacePhotoNodes, clusterPlacePhotoNodes, clusterSizeForZoom } from "@/lib/map-clusters";
 import { StylizedMap } from "./stylized-map";
 
 type MapboxMapProps = {
@@ -21,23 +22,11 @@ type MapboxMapProps = {
   className?: string;
 };
 
-type SelectionTether = {
-  markerX: number;
-  markerY: number;
-  cardX: number;
-  cardY: number;
-  visible: boolean;
-};
-
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
-}
-
-function fitPlaces(map: MapboxMapInstance, places: Place[]) {
+function fitPlaces(map: MapboxMapInstance, places: Place[], showSelectedCard: boolean) {
   if (!places.length) return;
 
   const bounds = new mapboxgl.LngLatBounds();
@@ -49,21 +38,10 @@ function fitPlaces(map: MapboxMapInstance, places: Place[]) {
   }
 
   map.fitBounds(bounds, {
-    padding: { top: 90, right: 420, bottom: 90, left: 90 },
+    padding: showSelectedCard ? { top: 90, right: 420, bottom: 90, left: 90 } : 48,
     maxZoom: 13.2,
     duration: 800,
   });
-}
-
-function visiblePlaceLimitForZoom(zoom: number) {
-  if (zoom < 10.8) return 5;
-  if (zoom < 12) return 8;
-  if (zoom < 13.2) return 12;
-  return Number.POSITIVE_INFINITY;
-}
-
-function nodeScore(place: Place, photoCount: number) {
-  return photoCount * 100_000 + place.saveCount * 100 + place.recentActivityScore + (place.timCurated ? 10_000 : 0);
 }
 
 export function MapboxMap({
@@ -80,31 +58,16 @@ export function MapboxMap({
   className,
 }: MapboxMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const selectedCardRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapboxMapInstance | null>(null);
   const markersRef = useRef<Marker[]>([]);
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState("");
   const [mapZoom, setMapZoom] = useState(11.1);
-  const [selectionTether, setSelectionTether] = useState<SelectionTether | null>(null);
   const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const selected = places.find((place) => place.id === selectedPlaceId) || places[0];
-  const placeNodes = useMemo(() => {
-    const photoCounts = photos.reduce<Record<string, number>>((counts, photo) => {
-      counts[photo.placeId] = (counts[photo.placeId] ?? 0) + 1;
-      return counts;
-    }, {});
-
-    return places
-      .map((place) => ({
-        place,
-        photoCount: photoCounts[place.id] ?? 0,
-        score: nodeScore(place, photoCounts[place.id] ?? 0),
-      }))
-      .sort((a, b) => b.score - a.score || a.place.name.localeCompare(b.place.name));
-  }, [photos, places]);
-  const visiblePlaceNodes = useMemo(
-    () => placeNodes.slice(0, visiblePlaceLimitForZoom(mapZoom)),
+  const placeNodes = useMemo(() => buildPlacePhotoNodes(places, photos), [photos, places]);
+  const visiblePlaceClusters = useMemo(
+    () => clusterPlacePhotoNodes(placeNodes, clusterSizeForZoom(mapZoom)),
     [mapZoom, placeNodes],
   );
 
@@ -181,117 +144,46 @@ export function MapboxMap({
     if (!map || !mapReady) return;
 
     markersRef.current.forEach((marker) => marker.remove());
-    markersRef.current = visiblePlaceNodes.map(({ place, photoCount }, index) => {
+    markersRef.current = visiblePlaceClusters.map((cluster) => {
       const markerButton = document.createElement("button");
-      const isSelected = place.id === selected?.id;
-      const isSaved = savedPlaceIds.includes(place.id);
+      const isSelected = cluster.places.some((place) => place.id === selected?.id);
+      const isSaved = cluster.places.some((place) => savedPlaceIds.includes(place.id));
       const countLabel = document.createElement("span");
-      const rankLabel = document.createElement("span");
+      const clusterName = cluster.places.length === 1 ? cluster.primaryPlace.name : `${cluster.label}, ${cluster.places.length} places`;
+      const photoLabel = `${cluster.photoCount} photo${cluster.photoCount === 1 ? "" : "s"}`;
 
       markerButton.type = "button";
-      markerButton.setAttribute("aria-label", `Select ${place.name}, ${photoCount} photo${photoCount === 1 ? "" : "s"}`);
-      markerButton.title = `${place.name} · ${photoCount} photo${photoCount === 1 ? "" : "s"}`;
+      markerButton.setAttribute("aria-label", `Select ${clusterName}, ${photoLabel}`);
+      markerButton.title = `${clusterName} · ${photoLabel}`;
       markerButton.className = cx(
-        "flex h-11 min-w-12 items-center justify-center gap-1.5 rounded-full border-2 border-white px-3 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(29,29,27,0.28)] transition hover:scale-105",
+        "grid h-11 min-w-11 place-items-center rounded-full border-2 border-white px-3 text-base font-semibold text-white shadow-[0_8px_18px_rgba(29,29,27,0.28)] transition hover:scale-105",
         isSelected ? "scale-110 bg-[var(--gold)]" : isSaved ? "bg-[var(--moss)]" : "bg-[var(--moss-dark)]",
       );
-      countLabel.textContent = String(photoCount);
-      countLabel.className = "text-base leading-none";
-      rankLabel.textContent = `#${index + 1}`;
-      rankLabel.className = "text-[10px] leading-none opacity-80";
-      markerButton.append(countLabel, rankLabel);
-      markerButton.addEventListener("click", () => onSelectPlace?.(place.id));
+      countLabel.textContent = String(cluster.photoCount);
+      countLabel.className = "leading-none";
+      markerButton.append(countLabel);
+      markerButton.addEventListener("click", () => onSelectPlace?.(cluster.primaryPlace.id));
 
-      return new mapboxgl.Marker({ element: markerButton, anchor: "center" }).setLngLat([place.lng, place.lat]).addTo(map);
+      return new mapboxgl.Marker({ element: markerButton, anchor: "center" }).setLngLat([cluster.lng, cluster.lat]).addTo(map);
     });
 
     return () => {
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
     };
-  }, [mapReady, onSelectPlace, savedPlaceIds, selected?.id, visiblePlaceNodes]);
+  }, [mapReady, onSelectPlace, savedPlaceIds, selected?.id, visiblePlaceClusters]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    fitPlaces(map, places);
-  }, [mapReady, places]);
+    fitPlaces(map, places, showSelectedCard);
+  }, [mapReady, places, showSelectedCard]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!autoFocusSelected || !map || !mapReady || !selected) return;
     map.easeTo({ center: [selected.lng, selected.lat], zoom: Math.max(map.getZoom(), 12.8), duration: 650 });
   }, [autoFocusSelected, mapReady, selected]);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapReady || !selected) {
-      setSelectionTether(null);
-      return;
-    }
-
-    let animationFrame = 0;
-
-    const updateTether = () => {
-      animationFrame = 0;
-
-      if (!containerRef.current || !selectedCardRef.current) {
-        setSelectionTether(null);
-        return;
-      }
-
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const cardRect = selectedCardRef.current.getBoundingClientRect();
-      const markerPoint = map.project([selected.lng, selected.lat]);
-      const cardLeft = cardRect.left - containerRect.left;
-      const cardRight = cardRect.right - containerRect.left;
-      const cardTop = cardRect.top - containerRect.top;
-      const cardBottom = cardRect.bottom - containerRect.top;
-      const nextTether = {
-        markerX: Math.round(markerPoint.x),
-        markerY: Math.round(markerPoint.y),
-        cardX: Math.round(clamp(markerPoint.x, cardLeft, cardRight)),
-        cardY: Math.round(clamp(markerPoint.y, cardTop, cardBottom)),
-        visible:
-          markerPoint.x >= -40 &&
-          markerPoint.x <= containerRect.width + 40 &&
-          markerPoint.y >= -40 &&
-          markerPoint.y <= containerRect.height + 40,
-      };
-
-      setSelectionTether((current) => {
-        if (
-          current &&
-          current.markerX === nextTether.markerX &&
-          current.markerY === nextTether.markerY &&
-          current.cardX === nextTether.cardX &&
-          current.cardY === nextTether.cardY &&
-          current.visible === nextTether.visible
-        ) {
-          return current;
-        }
-
-        return nextTether;
-      });
-    };
-
-    const scheduleTetherUpdate = () => {
-      if (animationFrame) return;
-      animationFrame = window.requestAnimationFrame(updateTether);
-    };
-
-    scheduleTetherUpdate();
-    map.on("render", scheduleTetherUpdate);
-    map.on("resize", scheduleTetherUpdate);
-    window.addEventListener("resize", scheduleTetherUpdate);
-
-    return () => {
-      if (animationFrame) window.cancelAnimationFrame(animationFrame);
-      map.off("render", scheduleTetherUpdate);
-      map.off("resize", scheduleTetherUpdate);
-      window.removeEventListener("resize", scheduleTetherUpdate);
-    };
-  }, [mapReady, selected]);
 
   if (!accessToken && !requireMapbox) {
     return (
@@ -334,62 +226,15 @@ export function MapboxMap({
         </div>
       ) : null}
 
-      {showSelectedCard && selectionTether?.visible ? (
-        <svg className="pointer-events-none absolute inset-0 z-10 size-full" aria-hidden="true">
-          <line
-            x1={selectionTether.markerX}
-            y1={selectionTether.markerY}
-            x2={selectionTether.cardX}
-            y2={selectionTether.cardY}
-            stroke="rgba(29,29,27,0.34)"
-            strokeWidth="2"
-            strokeDasharray="7 7"
-          />
-        </svg>
-      ) : null}
-
       {showSelectedCard && selected ? (
-        <div ref={selectedCardRef} className="absolute bottom-8 right-8 z-20 w-[340px] overflow-hidden rounded-[22px] border border-white/60 bg-[var(--paper-strong)] shadow-[0_18px_50px_rgba(39,34,27,0.18)] max-md:inset-x-4 max-md:bottom-4 max-md:w-auto">
-          <img src={selected.coverPhotoUrl} alt="" className="aspect-[16/9] w-full object-cover" />
-          <div className="space-y-3 p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h3 className="truncate text-2xl font-semibold text-[var(--ink)]">{selected.name}</h3>
-                <p className="truncate text-base text-[var(--muted)]">{selected.fuzzyLocationLabel}</p>
-              </div>
-              <button
-                type="button"
-                className="grid size-11 shrink-0 place-items-center rounded-b-lg bg-[var(--gold)] text-white"
-                aria-label={savedPlaceIds.includes(selected.id) ? `Unsave ${selected.name}` : `Save ${selected.name}`}
-                onClick={() => onToggleSaved?.(selected.id)}
-              >
-                <Bookmark className={cx("size-5", savedPlaceIds.includes(selected.id) && "fill-current")} />
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {selected.tags.slice(0, 4).map((tag) => (
-                <span key={tag} className="rounded-lg border border-[var(--line)] bg-white px-3 py-1.5 text-xs text-[var(--ink)]">
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <p className="flex items-center gap-1.5 text-sm text-[var(--muted)]">
-              <Bookmark className="size-4" aria-hidden="true" />
-              {selected.saveCount} saves
-            </p>
-            <div className="grid grid-cols-[minmax(0,1fr)_56px] gap-3">
-              <button
-                type="button"
-                className="inline-flex h-12 items-center justify-center rounded-lg bg-[var(--moss)] text-base text-white"
-                onClick={() => onOpenPlace?.(selected.id)}
-              >
-                Open place
-              </button>
-              <button type="button" className="grid size-12 place-items-center rounded-lg border border-[var(--line)] bg-white text-[var(--ink)]">
-                <Send className="size-5" />
-              </button>
-            </div>
-          </div>
+        <div className="absolute bottom-8 right-8 z-20 w-[340px] overflow-hidden rounded-[22px] border border-white/60 bg-[var(--paper-strong)] shadow-[0_18px_50px_rgba(39,34,27,0.18)] max-md:inset-x-4 max-md:bottom-4 max-md:w-auto">
+          <SelectedPlaceCard
+            place={selected}
+            photos={photos}
+            isSaved={savedPlaceIds.includes(selected.id)}
+            onToggleSaved={onToggleSaved}
+            onOpenPlace={onOpenPlace}
+          />
         </div>
       ) : null}
     </section>

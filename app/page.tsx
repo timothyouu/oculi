@@ -3,14 +3,13 @@
 import { AppShell } from "@/components/app-shell";
 import { DiscoverDeck } from "@/components/discover-deck";
 import { DiscoverSearch } from "@/components/discover-search";
-import { places, users } from "@/lib/data";
 import { useDemoState } from "@/lib/demo-state";
 import { useRouter } from "next/navigation";
 
 export default function HomePage() {
   const router = useRouter();
   const demo = useDemoState();
-  const { photos, state, toggleSavedPlace } = demo;
+  const { currentUserId, photos, places, state, toggleSavedPlace, users } = demo;
   const placesById = Object.fromEntries(places.map((place) => [place.id, place]));
   const usersById = Object.fromEntries(users.map((user) => [user.id, user]));
 
@@ -19,7 +18,7 @@ export default function HomePage() {
       <div className="space-y-5">
         <DiscoverSearch
           places={places}
-          users={users.filter((user) => user.id !== "user-tim")}
+          users={users.filter((user) => user.id !== currentUserId)}
           onOpenPlace={(placeId) => {
             demo.recordPlaceView(placeId);
             router.push(`/places/${placeId}`);

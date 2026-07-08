@@ -2,15 +2,16 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Bookmark,
-  ChevronRight,
   Compass,
   Heart,
+  Info,
   MapPin,
   RotateCcw,
   X
 } from "lucide-react";
 import type { Photo, Place, User } from "../lib/types";
+
+const TUTORIAL_STORAGE_KEY = "oculi:has-seen-discover-tutorial";
 
 type DiscoverDeckProps = {
   photos: Photo[];
@@ -59,16 +60,22 @@ export function DiscoverDeck({
           const photographer = usersById[photo.userId];
           return place && photographer ? { photo, place, photographer } : null;
         })
+        .filter((card) => card && !savedPlaceIds.includes(card.place.id))
         .filter(Boolean) as Array<{ photo: Photo; place: Place; photographer: User }>,
-    [photos, placesById, usersById],
+    [photos, placesById, savedPlaceIds, usersById],
   );
   const [activeIndex, setActiveIndex] = useState(() => Math.max(0, resumeIndex));
   const [drag, setDrag] = useState<DragState>({ startX: 0, currentX: 0, dragging: false });
+  const [showTutorial, setShowTutorial] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return window.localStorage.getItem(TUTORIAL_STORAGE_KEY) !== "true";
+  });
   const appliedResumeRef = useRef(false);
   const lastRecordedViewRef = useRef("");
 
   const active = cards[activeIndex % Math.max(cards.length, 1)];
   const nextCards = cards.slice(activeIndex + 1, activeIndex + 3);
+  const remainingCount = cards.length ? Math.max(cards.length - (activeIndex % cards.length) - 1, 0) : 0;
   const offset = drag.dragging ? drag.currentX - drag.startX : 0;
   const rotation = Math.max(-10, Math.min(10, offset / 28));
   const intent = offset > 48 ? "save" : offset < -48 ? "skip" : null;
@@ -96,6 +103,11 @@ export function DiscoverDeck({
     onViewPlace?.(active.place.id, activeIndex);
   }, [active, activeIndex, onViewPlace]);
 
+  useEffect(() => {
+    if (!cards.length || activeIndex < cards.length) return;
+    setActiveIndex(activeIndex % cards.length);
+  }, [activeIndex, cards.length]);
+
   const advance = () => {
     if (!cards.length) return;
     setActiveIndex((index) => (index + 1) % cards.length);
@@ -112,6 +124,15 @@ export function DiscoverDeck({
     if (!active) return;
     if (!savedPlaceIds.includes(active.place.id)) onToggleSaved(active.place.id);
     advance();
+  };
+
+  const dismissTutorial = () => {
+    setShowTutorial(false);
+    try {
+      window.localStorage.setItem(TUTORIAL_STORAGE_KEY, "true");
+    } catch {
+      // The tutorial can still dismiss for this session if storage is unavailable.
+    }
   };
 
   const handlePointerUp = () => {
@@ -131,8 +152,8 @@ export function DiscoverDeck({
     return (
       <section className="rounded-md border border-dashed border-line bg-white p-8 text-center shadow-soft">
         <Compass className="mx-auto mb-3 size-9 text-moss" aria-hidden="true" />
-        <h1 className="text-xl font-semibold tracking-tight text-ink">No places to discover yet</h1>
-        <p className="mt-2 text-sm text-ink/60">Upload the first spot to start the Oculi deck.</p>
+        <h1 className="text-xl font-semibold tracking-tight text-ink">No photos to discover yet</h1>
+        <p className="mt-2 text-sm text-ink/60">Upload the first post to start the Oculi deck.</p>
       </section>
     );
   }
@@ -142,6 +163,26 @@ export function DiscoverDeck({
 
   return (
     <section className="mx-auto w-full max-w-[980px]" aria-label="Swipe discovery">
+      {showTutorial ? (
+        <div className="mb-4 rounded-md border border-[var(--line)] bg-[var(--paper-strong)] p-4 shadow-soft">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-[var(--ink)]">Quick start</h2>
+              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                Swipe right or tap the heart to save a spot. Swipe left or tap X to pass. Tap the photo or info
+                button for place details, then use Saved, Map, and Profile from the nav when you want to plan or review.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="w-fit rounded-full border border-[var(--line)] px-3 py-1.5 text-sm font-semibold text-[var(--ink)] transition hover:bg-[var(--chip)]"
+              onClick={dismissTutorial}
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      ) : null}
       <div className="relative mx-auto max-w-[830px] pb-3">
         {nextCards.reverse().map((item, index) => (
           <div
@@ -152,12 +193,12 @@ export function DiscoverDeck({
             )}
             aria-hidden="true"
           >
-            <img src={item.photo.imageUrl} alt="" className="h-full w-full object-cover" />
+            <img src={item.photo.imageUrl} alt="" draggable={false} className="h-full w-full object-cover" />
           </div>
         ))}
 
         <article
-          className="relative z-10 overflow-hidden rounded-[28px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_28px_70px_rgba(39,34,27,0.14)] touch-none"
+          className="relative z-10 select-none overflow-hidden rounded-[28px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_28px_70px_rgba(39,34,27,0.14)] touch-none"
           style={{
             transform: `translateX(${offset}px) rotate(${rotation}deg)`,
             transition: drag.dragging ? "none" : "transform 180ms ease",
@@ -172,6 +213,7 @@ export function DiscoverDeck({
           }}
           onPointerUp={handlePointerUp}
           onPointerCancel={() => setDrag({ startX: 0, currentX: 0, dragging: false })}
+          onDragStart={(event) => event.preventDefault()}
         >
           <div className="relative">
             <button
@@ -183,22 +225,17 @@ export function DiscoverDeck({
               <img
                 src={active.photo.imageUrl}
                 alt={active.photo.caption || `${active.place.name} preview`}
-                className="aspect-[5/4] w-full object-cover transition duration-500 group-hover:scale-[1.01] max-sm:aspect-square"
+                draggable={false}
+                className="aspect-[3/2] w-full object-cover transition duration-500 group-hover:scale-[1.01] max-sm:aspect-[4/5]"
               />
             </button>
 
-              <div className="absolute left-5 top-5 flex items-center gap-2 rounded-md bg-black/42 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white shadow-soft backdrop-blur sm:left-7 sm:top-7">
-                {isSuggested ? "Suggested" : "Following"}
+              <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/24 bg-black/32 px-3 py-2 text-xs font-semibold text-white shadow-soft backdrop-blur sm:left-7 sm:top-7">
+                {isSuggested ? "New post" : "Following"}
               </div>
 
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/86 via-black/46 to-transparent px-5 pb-5 pt-24 text-white sm:px-7 sm:pb-8 sm:pt-32">
-                <h2 className="max-w-xl text-3xl font-semibold leading-tight tracking-tight sm:text-5xl">{active.place.name}</h2>
-                <p className="mt-2 flex items-center gap-1.5 text-sm text-white/90 sm:mt-3 sm:text-base">
-                  <MapPin className="size-4 shrink-0" aria-hidden="true" />
-                  San Francisco, CA
-                </p>
-                <p className="mt-1 text-base italic text-white/86 sm:mt-2 sm:text-lg">{active.place.fuzzyLocationLabel}</p>
-                <div className="mt-3 flex flex-wrap gap-2 sm:mt-4">
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/82 via-black/26 to-transparent px-5 pb-5 pt-28 text-white sm:px-7 sm:pb-7 sm:pt-36">
+                <div className="flex flex-wrap items-end justify-between gap-3">
                   <button
                     type="button"
                     className="flex max-w-full items-center gap-2 rounded-full border border-white/28 bg-white/18 px-2.5 py-1.5 text-left text-xs text-white shadow-[0_10px_28px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition hover:bg-white/24 focus-visible:ring-2 focus-visible:ring-white/80 sm:max-w-fit sm:px-3 sm:py-2"
@@ -218,6 +255,17 @@ export function DiscoverDeck({
                       <span className="text-white/78">{active.photographer.username}</span>
                     </span>
                   </button>
+                  <button
+                    type="button"
+                    className="flex max-w-full items-center gap-1.5 rounded-full border border-white/24 bg-black/22 px-3 py-2 text-left text-xs text-white outline-none backdrop-blur-md transition hover:bg-black/32 focus-visible:ring-2 focus-visible:ring-white/80"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onOpenPlace(active.place.id);
+                    }}
+                  >
+                    <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
+                    <span className="truncate">{active.place.name}</span>
+                  </button>
                 </div>
                 <div className="mx-auto mt-3 flex w-fit gap-2 sm:mt-5">
                   {[0, 1, 2, 3].map((dot) => (
@@ -225,21 +273,6 @@ export function DiscoverDeck({
                   ))}
                 </div>
               </div>
-
-              <button
-                type="button"
-                className={cx(
-                  "absolute right-10 top-0 flex h-20 w-14 items-center justify-center rounded-b-[8px] shadow-soft outline-none transition",
-                  isSaved ? "bg-[var(--gold)] text-white" : "bg-[var(--gold)] text-white",
-                )}
-                aria-label={isSaved ? `Remove ${active.place.name} from bookmarks` : `Bookmark ${active.place.name}`}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onToggleSaved(active.place.id);
-                }}
-              >
-                <Bookmark className={cx("size-6", isSaved && "fill-current")} aria-hidden="true" />
-              </button>
 
               {intent ? (
                 <div
@@ -250,7 +283,7 @@ export function DiscoverDeck({
                       : "left-8 -rotate-6 border-white/70 bg-white/10 text-white",
                   )}
                 >
-                  {intent === "save" ? "Bookmark" : "Pass"}
+                  {intent === "save" ? "Save" : "Pass"}
                 </div>
               ) : null}
             </div>
@@ -282,7 +315,7 @@ export function DiscoverDeck({
               isSaved ? "bg-[var(--gold)] text-white" : "bg-[var(--moss)] text-white hover:bg-[var(--moss-dark)]",
             )}
             onClick={saveAndAdvance}
-            aria-label={`Bookmark ${active.place.name} and show next`}
+            aria-label={`Save ${active.place.name} and show next`}
           >
             <Heart className={cx("size-6 sm:size-8", isSaved && "fill-current")} aria-hidden="true" />
           </button>
@@ -292,11 +325,11 @@ export function DiscoverDeck({
             onClick={() => onOpenPlace(active.place.id)}
             aria-label={`View details for ${active.place.name}`}
           >
-            <ChevronRight className="size-6" aria-hidden="true" />
+            <Info className="size-6" aria-hidden="true" />
           </button>
       </div>
       <p className="mx-auto mt-2 max-w-md text-center text-base text-[var(--muted)]">
-        <span className="font-semibold text-[var(--ink)]">{Math.max(cards.length - activeIndex - 1, 0)}</span> places left in your queue
+        <span className="font-semibold text-[var(--ink)]">{remainingCount}</span> photos left in your queue
       </p>
     </section>
   );

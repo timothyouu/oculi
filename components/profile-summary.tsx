@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Bookmark, FileText, Grid2X2, MapPin } from "lucide-react";
+import { Bookmark, Grid2X2, MapPin } from "lucide-react";
+import { useDemoState } from "@/lib/demo-state";
+import { formatPlaceLocation } from "@/lib/location-labels";
 import type { Photo, Place, User } from "../lib/types";
 
 type ProfileSummaryProps = {
@@ -27,7 +29,8 @@ export function ProfileSummary({
   onToggleFollow,
   onOpenPlace,
 }: ProfileSummaryProps) {
-  const [activeTab, setActiveTab] = useState<"Photos" | "Saved" | "Field notes">("Photos");
+  const { areas } = useDemoState();
+  const [activeTab, setActiveTab] = useState<"Photos" | "Saved">("Photos");
   const [status, setStatus] = useState("");
 
   return (
@@ -82,7 +85,7 @@ export function ProfileSummary({
       </div>
 
       <div className="flex gap-16 border-b border-[var(--line)] px-1">
-        {[[Grid2X2, "Photos"], [Bookmark, "Saved"], [FileText, "Field notes"]].map(([Icon, label]) => {
+        {[[Grid2X2, "Photos"], [Bookmark, "Saved"]].map(([Icon, label]) => {
           const TypedIcon = Icon as typeof Grid2X2;
           return (
             <button
@@ -117,7 +120,7 @@ export function ProfileSummary({
                 <img src={place.coverPhotoUrl} alt="" className="aspect-[4/3] rounded object-cover" />
                 <span className="min-w-0">
                   <span className="block truncate text-base text-[var(--ink)]">{place.name}</span>
-                  <span className="block truncate text-sm text-[var(--muted)]">San Francisco, CA</span>
+                  <span className="block truncate text-sm text-[var(--muted)]">{formatPlaceLocation(place, areas)}</span>
                 </span>
                 <Bookmark className="size-5 fill-[var(--gold)] text-[var(--gold)]" />
               </button>
@@ -127,17 +130,6 @@ export function ProfileSummary({
       ) : null}
       {activeTab === "Saved" && !savedPlaces.length ? (
         <p className="rounded-lg border border-dashed border-[var(--line)] p-6 text-[var(--muted)]">No public saved places to show yet.</p>
-      ) : null}
-      {activeTab === "Field notes" ? (
-        <div className="space-y-3">
-          {photos.slice(0, 4).map((photo) => (
-            <button key={photo.id} type="button" className="block w-full rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] p-4 text-left" onClick={() => onOpenPlace?.(photo.placeId)}>
-              <p className="font-semibold text-[var(--ink)]">{photo.locationLabel}</p>
-              <p className="mt-1 text-[var(--muted)]">{photo.caption}</p>
-            </button>
-          ))}
-          {!photos.length ? <p className="rounded-lg border border-dashed border-[var(--line)] p-6 text-[var(--muted)]">No field notes yet.</p> : null}
-        </div>
       ) : null}
     </section>
   );

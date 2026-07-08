@@ -94,7 +94,7 @@ export function PlaceCard({ place, rank, isSaved = false, compact = false, reaso
         {reason || place.timCurated ? (
           <p className="flex items-center gap-1.5 text-xs font-medium text-zinc-600">
             <Sparkles className="size-3.5 text-zinc-900" aria-hidden="true" />
-            {reason || "Tim-curated top spot"}
+            {reason || "Curated top spot"}
           </p>
         ) : null}
       </div>

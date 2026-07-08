@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { BackButton } from "@/components/back-button";
 import { MapboxMap } from "@/components/mapbox-map";
-import { places } from "@/lib/data";
+import { PlaceDetailPopup } from "@/components/place-detail-popup";
 import { useDemoState } from "@/lib/demo-state";
+import { buildSearchCorpus, getSearchCorrection, matchesCorrectedQuery } from "@/lib/search-corrections";
 import { sortTopPlaces } from "@/lib/scoring";
 import { BookOpen, Building2, CloudSun, Landmark, MapPin, Mountain, Navigation, Palette, Users, Waves } from "lucide-react";
 import type { ReactNode } from "react";
@@ -49,22 +49,37 @@ function matchesLightFilter(lightFilter: string, place: Place, photo: Photo) {
 }
 
 export default function MapPage() {
-  const { photos, state, toggleSavedPlace, recordPlaceView } = useDemoState();
-  const router = useRouter();
-  const topPlaces = sortTopPlaces(places);
+  const { photos, places, state, toggleSavedPlace, recordPlaceView } = useDemoState();
+  const topPlaces = useMemo(() => sortTopPlaces(places), [places]);
   const [selectedPlaceId, setSelectedPlaceId] = useState(topPlaces[0]?.id);
+  const [detailPlaceId, setDetailPlaceId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [lightFilter, setLightFilter] = useState("Any");
   const [sceneFilters, setSceneFilters] = useState(["landscape", "portraits"]);
   const [accessibilityFilters, setAccessibilityFilters] = useState<string[]>([]);
   const [nearStatus, setNearStatus] = useState("");
-  const placesById = Object.fromEntries(topPlaces.map((place) => [place.id, place]));
+  const popupHistoryRef = useRef(false);
+  const placesById = useMemo(() => Object.fromEntries(topPlaces.map((place) => [place.id, place])), [topPlaces]);
+  const searchCorpus = useMemo(
+    () =>
+      buildSearchCorpus([
+        ...topPlaces.map((place) => [place.name, place.fuzzyLocationLabel, place.description, place.tags, place.bestTimes]),
+        ...photos.map((photo) => [
+          photo.caption,
+          photo.locationLabel,
+          photo.metadataText,
+          photo.shotAtTimeOfDay,
+          photo.tags,
+        ]),
+      ]),
+    [photos, topPlaces],
+  );
+  const searchCorrection = useMemo(() => getSearchCorrection(query, searchCorpus), [query, searchCorpus]);
   const filteredPhotos = photos.filter((photo) => {
     const place = placesById[photo.placeId];
     if (!place) return false;
 
-    const normalized = query.trim().toLowerCase();
-    const searchText = normalizedText([
+    const matchesQuery = matchesCorrectedQuery([
       place.name,
       place.fuzzyLocationLabel,
       place.description,
@@ -74,10 +89,7 @@ export default function MapPage() {
       photo.metadataText,
       photo.shotAtTimeOfDay,
       photo.tags,
-    ]);
-    const matchesQuery =
-      !normalized ||
-      searchText.includes(normalized);
+    ], searchCorrection);
     const matchesLight = matchesLightFilter(lightFilter, place, photo);
     const matchesScene =
       !sceneFilters.length || sceneFilters.some((filter) => normalizedText([place.tags, photo.tags]).includes(filter));
@@ -108,17 +120,46 @@ export default function MapPage() {
     recordPlaceView(placeId);
   }
 
-  function openPlace(placeId: string) {
+  const openPlace = useCallback((placeId: string) => {
     recordPlaceView(placeId);
-    router.push(`/places/${placeId}`);
-  }
+    setSelectedPlaceId(placeId);
+    setDetailPlaceId(placeId);
+
+    if (!popupHistoryRef.current) {
+      window.history.pushState({ ...window.history.state, oculiPlacePopup: true }, "", window.location.href);
+      popupHistoryRef.current = true;
+    }
+  }, [recordPlaceView]);
+
+  const closePlace = useCallback(() => {
+    if (popupHistoryRef.current) {
+      window.history.back();
+      return;
+    }
+
+    setDetailPlaceId(null);
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (!popupHistoryRef.current) return;
+      popupHistoryRef.current = false;
+      setDetailPlaceId(null);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   return (
     <AppShell activeItem="map">
       <div className="space-y-5">
         <BackButton label="Back" fallbackHref="/" />
-        <div className="grid min-h-[calc(100vh-128px)] overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_24px_70px_rgba(39,34,27,0.10)] lg:grid-cols-[320px_minmax(0,1fr)]">
-          <aside className="hidden border-r border-[var(--line)] bg-[rgba(255,253,248,0.82)] p-7 lg:block">
+        <div className="grid min-h-[560px] overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_24px_70px_rgba(39,34,27,0.10)] lg:h-[calc(100vh-184px)] lg:min-h-[520px] lg:grid-cols-[320px_minmax(0,1fr)]">
+          <aside className="hidden min-h-0 overflow-y-auto border-r border-[var(--line)] bg-[rgba(255,253,248,0.82)] p-7 lg:block">
             <div className="relative mb-7">
               <MapPin className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--ink)]/70" />
               <input
@@ -129,6 +170,11 @@ export default function MapPage() {
                 aria-label="Search map places"
               />
             </div>
+            {query.trim() && searchCorrection.wasCorrected ? (
+              <p className="-mt-5 mb-5 px-1 text-sm text-[var(--muted)]" aria-live="polite">
+                Auto-corrected to <span className="font-medium text-[var(--ink)]">{searchCorrection.correctedQuery}</span>
+              </p>
+            ) : null}
             <FilterSection title="Best light" icon={<CloudSun className="size-5" />}>
               {["Any", "Golden hour", "Sunrise", "Sunset", "Blue hour", "Daylight", "Night"].map((item) => (
                 <button
@@ -184,14 +230,14 @@ export default function MapPage() {
             <button
               className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white text-base"
               onClick={() => {
-                setNearStatus("Showing the closest seeded SF spots for this local demo.");
+                setNearStatus("Showing the closest seeded photo spots for this demo.");
                 setSelectedPlaceId(mapPlaces[0]?.id ?? topPlaces[0]?.id);
               }}
             >
               <Navigation className="size-5" /> Near me
             </button>
           </aside>
-          <div className="min-w-0">
+          <div className="min-h-0 min-w-0 overflow-hidden">
             <MapboxMap
               places={mapPlaces}
               photos={filteredPhotos}
@@ -200,12 +246,13 @@ export default function MapPage() {
               onSelectPlace={selectPlace}
               onToggleSaved={toggleSavedPlace}
               onOpenPlace={openPlace}
-              showSelectedCard={false}
+              showSelectedCard
               autoFocusSelected={false}
-              className="h-full min-h-[calc(100vh-128px)] border-0 shadow-none"
+              className="h-full min-h-[560px] border-0 shadow-none lg:min-h-0"
             />
           </div>
         </div>
+        <PlaceDetailPopup placeId={detailPlaceId} onClose={closePlace} onOpenPlace={openPlace} />
       </div>
     </AppShell>
   );

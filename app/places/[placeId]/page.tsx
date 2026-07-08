@@ -5,12 +5,11 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { PlaceDetail } from "@/components/place-detail";
 import { UploadModal } from "@/components/upload-modal";
-import { places } from "@/lib/data";
 import { useDemoState } from "@/lib/demo-state";
 import { topTierReason } from "@/lib/scoring";
 
 export default function PlacePage({ params }: { params: { placeId: string } }) {
-  const { photos, state, toggleSavedPlace, addPhoto, recordPlaceView } = useDemoState();
+  const { photos, places, state, toggleSavedPlace, addPhoto, recordPlaceView } = useDemoState();
   const [uploadOpen, setUploadOpen] = useState(false);
   const recordedPlaceRef = useRef<string | null>(null);
   const place = places.find((item) => item.id === params.placeId);
