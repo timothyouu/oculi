@@ -3,14 +3,14 @@ insert into public.oculi_demo_catalog_items (kind, item_id, payload, updated_at)
 select 'user', value->>'id', value, now()
 from jsonb_array_elements($oculi_user$[
   {
-    "id": "user-tim",
-    "name": "Tim",
-    "username": "@tim",
-    "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&q=80",
-    "bio": "Building a ranked map of places worth shooting.",
+    "id": "user-guest",
+    "name": "John Doe",
+    "username": "@john.doe",
+    "avatarUrl": "/generated/default-avatar.svg",
+    "bio": "Guest photographer collecting public photo spots around the city.",
     "homeArea": "San Francisco",
-    "followerCount": 128,
-    "followingCount": 46
+    "followerCount": 0,
+    "followingCount": 2
   },
   {
     "id": "user-maya",
@@ -287,7 +287,7 @@ from jsonb_array_elements($oculi_place$[
       "skyline",
       "social"
     ],
-    "coverPhotoUrl": "/generated/twin-peaks.png"
+    "coverPhotoUrl": "/generated/dolores-park-late-afternoon.png"
   },
   {
     "id": "painted-ladies",
@@ -331,7 +331,7 @@ from jsonb_array_elements($oculi_place$[
       "overlook",
       "telephoto"
     ],
-    "coverPhotoUrl": "/generated/golden-gate-overlook.png"
+    "coverPhotoUrl": "/generated/battery-spencer-golden-hour.png"
   },
   {
     "id": "marshall-beach",
@@ -355,7 +355,7 @@ from jsonb_array_elements($oculi_place$[
       "coast",
       "landscape"
     ],
-    "coverPhotoUrl": "/generated/baker-beach.png"
+    "coverPhotoUrl": "/generated/marshall-beach-rocks.png"
   },
   {
     "id": "fort-point",
@@ -379,7 +379,7 @@ from jsonb_array_elements($oculi_place$[
       "street",
       "waterfront"
     ],
-    "coverPhotoUrl": "/generated/golden-gate-overlook.png"
+    "coverPhotoUrl": "/generated/fort-point-arches.png"
   },
   {
     "id": "chrissy-field",
@@ -403,7 +403,7 @@ from jsonb_array_elements($oculi_place$[
       "portraits",
       "landscape"
     ],
-    "coverPhotoUrl": "/generated/golden-gate-overlook.png"
+    "coverPhotoUrl": "/generated/chrissy-field-waterfront.png"
   },
   {
     "id": "coit-tower",
@@ -427,7 +427,7 @@ from jsonb_array_elements($oculi_place$[
       "street",
       "bay"
     ],
-    "coverPhotoUrl": "/generated/embarcadero.png"
+    "coverPhotoUrl": "/generated/coit-tower-morning.png"
   },
   {
     "id": "salesforce-park",
@@ -451,7 +451,7 @@ from jsonb_array_elements($oculi_place$[
       "reflections",
       "skyline"
     ],
-    "coverPhotoUrl": "/generated/embarcadero.png"
+    "coverPhotoUrl": "/generated/salesforce-park-reflections.png"
   },
   {
     "id": "chinatown-grant",
@@ -475,7 +475,7 @@ from jsonb_array_elements($oculi_place$[
       "architecture",
       "night"
     ],
-    "coverPhotoUrl": "/generated/painted-ladies.png"
+    "coverPhotoUrl": "/generated/chinatown-grant-night.png"
   },
   {
     "id": "ocean-beach",
@@ -499,7 +499,7 @@ from jsonb_array_elements($oculi_place$[
       "landscape",
       "surfers"
     ],
-    "coverPhotoUrl": "/generated/lands-end.png"
+    "coverPhotoUrl": "/generated/ocean-beach-surf.png"
   },
   {
     "id": "bernal-heights",
@@ -523,7 +523,7 @@ from jsonb_array_elements($oculi_place$[
       "portraits",
       "trail"
     ],
-    "coverPhotoUrl": "/generated/twin-peaks.png"
+    "coverPhotoUrl": "/generated/bernal-heights-golden-hour.png"
   },
   {
     "id": "grace-cathedral",
@@ -547,7 +547,7 @@ from jsonb_array_elements($oculi_place$[
       "stairs",
       "stone"
     ],
-    "coverPhotoUrl": "/generated/palace-fine-arts.png"
+    "coverPhotoUrl": "/generated/grace-cathedral-stairs.png"
   },
   {
     "id": "mission-murals",
@@ -571,7 +571,7 @@ from jsonb_array_elements($oculi_place$[
       "portraits",
       "murals"
     ],
-    "coverPhotoUrl": "/generated/painted-ladies.png"
+    "coverPhotoUrl": "/generated/mission-murals-color.png"
   }
 ]$oculi_place$::jsonb) as value
 on conflict (kind, item_id) do update
@@ -686,7 +686,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-7",
     "placeId": "golden-gate-overlook",
     "userId": "user-sam",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/golden-gate-overlook-fog-break.png",
     "caption": "Bridge tower vanished, then came back with a clean orange edge.",
     "locationLabel": "Golden Gate Bridge Overlook",
     "metadataText": "135mm, fog break",
@@ -703,7 +703,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-8",
     "placeId": "golden-gate-overlook",
     "userId": "user-nora",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/golden-gate-overlook-headlands.png",
     "caption": "Layered headlands behind the south tower.",
     "locationLabel": "Golden Gate Bridge Overlook",
     "metadataText": "85mm, haze",
@@ -720,7 +720,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-9",
     "placeId": "battery-spencer",
     "userId": "user-maya",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/battery-spencer-golden-hour.png",
     "caption": "Classic high bridge angle, but the fog line kept it from feeling flat.",
     "locationLabel": "Battery Spencer",
     "metadataText": "70mm, handheld",
@@ -737,7 +737,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-10",
     "placeId": "battery-spencer",
     "userId": "user-sam",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/battery-spencer-night.png",
     "caption": "Traffic trails under the tower from the overlook rail.",
     "locationLabel": "Battery Spencer",
     "metadataText": "Tripod, 4s exposure",
@@ -754,7 +754,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-11",
     "placeId": "marshall-beach",
     "userId": "user-jules",
-    "imageUrl": "/generated/baker-beach.png",
+    "imageUrl": "/generated/marshall-beach-rocks.png",
     "caption": "The rocks make the foreground do half the work.",
     "locationLabel": "Marshall's Beach",
     "metadataText": "24mm, low tide",
@@ -771,7 +771,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-12",
     "placeId": "marshall-beach",
     "userId": "user-lena",
-    "imageUrl": "/generated/baker-beach.png",
+    "imageUrl": "/generated/marshall-beach-silhouettes.png",
     "caption": "Small silhouettes below the bridge made the scale click.",
     "locationLabel": "Marshall's Beach",
     "metadataText": "50mm, sunset haze",
@@ -788,7 +788,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-13",
     "placeId": "fort-point",
     "userId": "user-isha",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/fort-point-arches.png",
     "caption": "Brick arch shadows under the bridge are great for portraits.",
     "locationLabel": "Fort Point",
     "metadataText": "35mm, shade",
@@ -805,7 +805,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-14",
     "placeId": "chrissy-field",
     "userId": "user-nora",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/chrissy-field-waterfront.png",
     "caption": "Easy waterfront frames with enough room to wait out the crowds.",
     "locationLabel": "Chrissy Field",
     "metadataText": "35mm, soft wind",
@@ -822,7 +822,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-15",
     "placeId": "palace-fine-arts",
     "userId": "user-isha",
-    "imageUrl": "/generated/palace-fine-arts.png",
+    "imageUrl": "/generated/palace-fine-arts-morning.png",
     "caption": "Soft shade by the columns, clean enough for headshots.",
     "locationLabel": "Palace of Fine Arts",
     "metadataText": "85mm, open shade",
@@ -839,7 +839,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-16",
     "placeId": "twin-peaks",
     "userId": "user-sam",
-    "imageUrl": "/generated/twin-peaks.png",
+    "imageUrl": "/generated/twin-peaks-daylight.png",
     "caption": "Windy, but the skyline depth is unmatched when the haze is light.",
     "locationLabel": "Twin Peaks",
     "metadataText": "105mm, clear afternoon",
@@ -856,7 +856,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-17",
     "placeId": "dolores-park",
     "userId": "user-lena",
-    "imageUrl": "/generated/twin-peaks.png",
+    "imageUrl": "/generated/dolores-park-late-afternoon.png",
     "caption": "Portrait backdrop without needing to climb all the way up Twin Peaks.",
     "locationLabel": "Dolores Park",
     "metadataText": "50mm, late sun",
@@ -873,7 +873,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-18",
     "placeId": "painted-ladies",
     "userId": "user-isha",
-    "imageUrl": "/generated/painted-ladies.png",
+    "imageUrl": "/generated/painted-ladies-cloud-cover.png",
     "caption": "Cloud cover kept the pastel facades from clipping.",
     "locationLabel": "Painted Ladies / Alamo Square",
     "metadataText": "35mm, overcast",
@@ -890,7 +890,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-19",
     "placeId": "coit-tower",
     "userId": "user-sam",
-    "imageUrl": "/generated/embarcadero.png",
+    "imageUrl": "/generated/coit-tower-morning.png",
     "caption": "Bay layers from Telegraph Hill before the afternoon glare.",
     "locationLabel": "Coit Tower / Telegraph Hill",
     "metadataText": "70mm, clear morning",
@@ -907,7 +907,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-20",
     "placeId": "salesforce-park",
     "userId": "user-maya",
-    "imageUrl": "/generated/embarcadero.png",
+    "imageUrl": "/generated/salesforce-park-reflections.png",
     "caption": "Glass reflections and garden shade in one quick loop.",
     "locationLabel": "Salesforce Park",
     "metadataText": "35mm, reflective glass",
@@ -924,7 +924,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-21",
     "placeId": "chinatown-grant",
     "userId": "user-lena",
-    "imageUrl": "/generated/painted-ladies.png",
+    "imageUrl": "/generated/chinatown-grant-night.png",
     "caption": "Lanterns and storefront reds after the light went cool.",
     "locationLabel": "Chinatown Grant Avenue",
     "metadataText": "35mm, neon spill",
@@ -941,7 +941,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-22",
     "placeId": "ocean-beach",
     "userId": "user-nora",
-    "imageUrl": "/generated/lands-end.png",
+    "imageUrl": "/generated/ocean-beach-surf.png",
     "caption": "Muted surf lines and tiny figures along the dunes.",
     "locationLabel": "Ocean Beach",
     "metadataText": "70mm, overcast",
@@ -958,7 +958,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-23",
     "placeId": "bernal-heights",
     "userId": "user-eli",
-    "imageUrl": "/generated/twin-peaks.png",
+    "imageUrl": "/generated/bernal-heights-golden-hour.png",
     "caption": "A smaller hill with a softer neighborhood skyline angle.",
     "locationLabel": "Bernal Heights Park",
     "metadataText": "50mm, golden grass",
@@ -975,7 +975,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-24",
     "placeId": "grace-cathedral",
     "userId": "user-isha",
-    "imageUrl": "/generated/palace-fine-arts.png",
+    "imageUrl": "/generated/grace-cathedral-stairs.png",
     "caption": "Stairs and stone texture made a simple portrait set.",
     "locationLabel": "Grace Cathedral",
     "metadataText": "50mm, open shade",
@@ -992,7 +992,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-25",
     "placeId": "mission-murals",
     "userId": "user-jules",
-    "imageUrl": "/generated/painted-ladies.png",
+    "imageUrl": "/generated/mission-murals-color.png",
     "caption": "Color blocks are perfect when the sky is too flat.",
     "locationLabel": "Mission Murals",
     "metadataText": "35mm, overcast",
@@ -1026,7 +1026,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-27",
     "placeId": "baker-beach",
     "userId": "user-maya",
-    "imageUrl": "/generated/baker-beach.png",
+    "imageUrl": "/generated/baker-beach-sunset-fog.png",
     "caption": "The bridge tucked into the fog right as the sand warmed up.",
     "locationLabel": "Baker Beach",
     "metadataText": "50mm, sunset fog",
@@ -1043,7 +1043,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-28",
     "placeId": "embarcadero",
     "userId": "user-lena",
-    "imageUrl": "/generated/embarcadero.png",
+    "imageUrl": "/generated/embarcadero-blue-hour.png",
     "caption": "Blue-hour glass and ferry lights lined up for one block.",
     "locationLabel": "Embarcadero Waterfront",
     "metadataText": "35mm, handheld",

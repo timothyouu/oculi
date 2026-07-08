@@ -30,7 +30,7 @@ export function topPlaceScore(place: Place) {
 }
 
 export function topTierReason(place: Place) {
-  if (place.timCurated) return "Tim-curated pick";
+  if (place.timCurated) return "Curated pick";
   if (place.saveCount > 650) return "Highly saved";
   return "Recently active";
 }
