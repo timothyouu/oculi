@@ -36,7 +36,7 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
   const [metadataText, setMetadataText] = useState("");
   const [bestLight, setBestLight] = useState("Golden hour");
   const [tagsText, setTagsText] = useState("");
-  const [locationStatus, setLocationStatus] = useState("Select a place or use an approximate SF location.");
+  const [locationStatus, setLocationStatus] = useState("Select a place or use an approximate current location.");
   const [usedCurrentLocation, setUsedCurrentLocation] = useState(false);
 
   const selectedPlace = useMemo(() => places.find((place) => place.id === placeId), [places, placeId]);
@@ -60,7 +60,7 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
 
   function handleSimulatedLocation() {
     setUsedCurrentLocation(false);
-    setLocationStatus("Using simulated San Francisco location for the demo.");
+    setLocationStatus("Using a simulated nearby location for the demo.");
     if (!placeId && places[0]) setPlaceId(places[0].id);
   }
 
@@ -113,7 +113,7 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
         <div className="flex items-center justify-between gap-4 px-7 pb-2 pt-7">
           <div>
             <h2 id="upload-title" className="text-3xl font-semibold text-[var(--ink)]">Add Photo</h2>
-            <p className="mt-1 text-lg text-[var(--muted)]">Upload field note</p>
+            <p className="mt-1 text-lg text-[var(--muted)]">Share a photo post</p>
           </div>
           <button
             type="button"
@@ -195,7 +195,7 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
                 </span>
               </label>
               <label className="block">
-                <span className="mb-2 block text-base text-[var(--ink)]">Lens / notes</span>
+                <span className="mb-2 block text-base text-[var(--ink)]">Camera detail</span>
                 <input
                   value={metadataText}
                   onChange={(event) => setMetadataText(event.target.value)}
@@ -231,7 +231,7 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
               disabled={!file || !caption.trim() || !placeId}
             >
               <Camera className="size-4" aria-hidden="true" />
-              Publish field note
+              Publish photo
             </button>
             </div>
         </div>

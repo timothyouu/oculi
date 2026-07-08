@@ -111,19 +111,149 @@ on conflict (kind, item_id) do update
 set payload = excluded.payload,
     updated_at = excluded.updated_at;
 
+-- Saved page shoot planner backend support.
+-- Oculi generates Google/Apple Maps URLs in app code; the backend stores only
+-- public navigation addresses, route plans, and route stops.
+
+create extension if not exists pgcrypto;
+
+create table if not exists public.route_plans (
+  id uuid primary key default gen_random_uuid(),
+  user_id text not null,
+  kind text not null check (kind in ('morning', 'sunset', 'custom')),
+  name text not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+comment on table public.route_plans is
+  'User-saved shoot plans generated from saved public photo spots. Map-provider URLs are generated client/server-side and are not persisted.';
+
+create index if not exists route_plans_user_created_idx
+  on public.route_plans (user_id, created_at desc);
+
+create table if not exists public.route_plan_stops (
+  id uuid primary key default gen_random_uuid(),
+  route_plan_id uuid not null references public.route_plans(id) on delete cascade,
+  place_id text not null,
+  position integer not null check (position >= 0),
+  arrival_label text,
+  custom_note text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (route_plan_id, position),
+  unique (route_plan_id, place_id)
+);
+
+comment on table public.route_plan_stops is
+  'Ordered stops for a saved shoot plan. place_id points at oculi_demo_catalog_items(kind=place,item_id) in the demo catalog.';
+
+create index if not exists route_plan_stops_route_position_idx
+  on public.route_plan_stops (route_plan_id, position);
+
+create index if not exists route_plan_stops_place_idx
+  on public.route_plan_stops (place_id);
+
+alter table public.route_plans enable row level security;
+alter table public.route_plan_stops enable row level security;
+
+drop policy if exists "Allow demo route plan reads" on public.route_plans;
+create policy "Allow demo route plan reads"
+  on public.route_plans
+  for select
+  using (true);
+
+drop policy if exists "Allow demo route plan inserts" on public.route_plans;
+create policy "Allow demo route plan inserts"
+  on public.route_plans
+  for insert
+  with check (true);
+
+drop policy if exists "Allow demo route plan updates" on public.route_plans;
+create policy "Allow demo route plan updates"
+  on public.route_plans
+  for update
+  using (true)
+  with check (true);
+
+drop policy if exists "Allow demo route plan deletes" on public.route_plans;
+create policy "Allow demo route plan deletes"
+  on public.route_plans
+  for delete
+  using (true);
+
+drop policy if exists "Allow demo route stop reads" on public.route_plan_stops;
+create policy "Allow demo route stop reads"
+  on public.route_plan_stops
+  for select
+  using (true);
+
+drop policy if exists "Allow demo route stop inserts" on public.route_plan_stops;
+create policy "Allow demo route stop inserts"
+  on public.route_plan_stops
+  for insert
+  with check (true);
+
+drop policy if exists "Allow demo route stop updates" on public.route_plan_stops;
+create policy "Allow demo route stop updates"
+  on public.route_plan_stops
+  for update
+  using (true)
+  with check (true);
+
+drop policy if exists "Allow demo route stop deletes" on public.route_plan_stops;
+create policy "Allow demo route stop deletes"
+  on public.route_plan_stops
+  for delete
+  using (true);
+
+with place_addresses(item_id, navigation_address) as (
+  values
+    ('golden-gate-overlook', 'Golden Gate Bridge Overlook, Lincoln Blvd, San Francisco, CA'),
+    ('baker-beach', 'Baker Beach, Battery Chamberlin Rd, San Francisco, CA'),
+    ('palace-fine-arts', 'Palace of Fine Arts, 3601 Lyon St, San Francisco, CA'),
+    ('twin-peaks', 'Twin Peaks, 501 Twin Peaks Blvd, San Francisco, CA'),
+    ('lands-end', 'Lands End Trail, 680 Point Lobos Ave, San Francisco, CA'),
+    ('sutro-baths', 'Sutro Baths, 1004 Point Lobos Ave, San Francisco, CA'),
+    ('embarcadero', 'Ferry Building, 1 Ferry Building, San Francisco, CA'),
+    ('dolores-park', 'Mission Dolores Park, Dolores St & 19th St, San Francisco, CA'),
+    ('painted-ladies', 'Painted Ladies, Steiner St & Hayes St, San Francisco, CA'),
+    ('battery-spencer', 'Battery Spencer, Conzelman Rd, Sausalito, CA'),
+    ('marshall-beach', 'Marshall''s Beach, Batteries to Bluffs Trail, San Francisco, CA'),
+    ('fort-point', 'Fort Point National Historic Site, Long Ave & Marine Dr, San Francisco, CA'),
+    ('chrissy-field', 'Chrissy Field East Beach, 1199 E Beach, San Francisco, CA'),
+    ('coit-tower', 'Coit Tower, 1 Telegraph Hill Blvd, San Francisco, CA'),
+    ('salesforce-park', 'Salesforce Park, 425 Mission St, San Francisco, CA'),
+    ('chinatown-grant', 'Grant Avenue, Chinatown, San Francisco, CA'),
+    ('ocean-beach', 'Ocean Beach, Great Hwy, San Francisco, CA'),
+    ('bernal-heights', 'Bernal Heights Park, 3400-3416 Folsom St, San Francisco, CA'),
+    ('grace-cathedral', 'Grace Cathedral, 1100 California St, San Francisco, CA'),
+    ('mission-murals', 'Clarion Alley Murals, Clarion Alley, San Francisco, CA')
+)
+update public.oculi_demo_catalog_items catalog
+set payload = jsonb_set(catalog.payload, '{navigationAddress}', to_jsonb(place_addresses.navigation_address), true),
+    updated_at = now()
+from place_addresses
+where catalog.kind = 'place'
+  and catalog.item_id = place_addresses.item_id;
+
+create index if not exists oculi_demo_catalog_items_navigation_address_idx
+  on public.oculi_demo_catalog_items ((payload->>'navigationAddress'))
+  where kind = 'place';
+
 insert into public.oculi_demo_catalog_items (kind, item_id, payload, updated_at)
 select 'place', value->>'id', value, now()
 from jsonb_array_elements($$[
-  {"id":"marshall-beach","areaId":"sf","name":"Marshall's Beach","description":"Rocky shoreline, bridge scale, and compressed sunset frames below the bluffs.","lat":37.8008,"lng":-122.4832,"fuzzyLocationLabel":"Below the Presidio bluffs","timCurated":true,"saveCount":734,"recentActivityScore":86,"bestTimes":["Sunset","Low tide","Golden hour"],"tags":["beach","bridge","coast","landscape"],"coverPhotoUrl":"/generated/baker-beach.png"},
-  {"id":"fort-point","areaId":"sf","name":"Fort Point","description":"Brick arches, bridge understructure, wave texture, and dramatic shadow.","lat":37.8107,"lng":-122.4772,"fuzzyLocationLabel":"Under the south bridge approach","timCurated":false,"saveCount":612,"recentActivityScore":83,"bestTimes":["Morning","Blue hour","Foggy mornings"],"tags":["bridge","architecture","street","waterfront"],"coverPhotoUrl":"/generated/golden-gate-overlook.png"},
-  {"id":"chrissy-field","areaId":"sf","name":"Chrissy Field","description":"Open waterfront, runners, dogs, bridge silhouettes, and clean fog layers.","lat":37.8037,"lng":-122.4636,"fuzzyLocationLabel":"Marina waterfront lawns","timCurated":false,"saveCount":566,"recentActivityScore":80,"bestTimes":["Sunrise","Golden hour","Daylight"],"tags":["waterfront","bridge","portraits","landscape"],"coverPhotoUrl":"/generated/golden-gate-overlook.png"},
-  {"id":"coit-tower","areaId":"sf","name":"Coit Tower / Telegraph Hill","description":"City layers, bay views, stairway details, and North Beach color.","lat":37.8024,"lng":-122.4058,"fuzzyLocationLabel":"Telegraph Hill public paths","timCurated":false,"saveCount":458,"recentActivityScore":73,"bestTimes":["Morning","Clear afternoons","Blue hour"],"tags":["skyline","architecture","street","bay"],"coverPhotoUrl":"/generated/embarcadero.png"},
-  {"id":"salesforce-park","areaId":"sf","name":"Salesforce Park","description":"Elevated garden paths, glass reflections, clean portrait shade, and skyline edges.","lat":37.7897,"lng":-122.3963,"fuzzyLocationLabel":"Downtown elevated park","timCurated":false,"saveCount":394,"recentActivityScore":76,"bestTimes":["Daylight","Late afternoon","Blue hour"],"tags":["architecture","portraits","reflections","skyline"],"coverPhotoUrl":"/generated/embarcadero.png"},
-  {"id":"chinatown-grant","areaId":"sf","name":"Chinatown Grant Avenue","description":"Layered signs, lanterns, compressed storefronts, and strong street color.","lat":37.7941,"lng":-122.4078,"fuzzyLocationLabel":"Grant Avenue corridor","timCurated":false,"saveCount":376,"recentActivityScore":77,"bestTimes":["Daylight","Night","Rainy evenings"],"tags":["street","color","architecture","night"],"coverPhotoUrl":"/generated/painted-ladies.png"},
-  {"id":"ocean-beach","areaId":"sf","name":"Ocean Beach","description":"Wide negative space, surfers, dunes, and soft Pacific haze.","lat":37.7594,"lng":-122.5107,"fuzzyLocationLabel":"Outer Sunset shoreline","timCurated":false,"saveCount":421,"recentActivityScore":65,"bestTimes":["Sunset","Overcast days","Morning fog"],"tags":["beach","coast","landscape","surfers"],"coverPhotoUrl":"/generated/lands-end.png"},
-  {"id":"bernal-heights","areaId":"sf","name":"Bernal Heights Park","description":"Neighborhood hill views, skyline diagonals, dogs, and warm grass texture.","lat":37.743,"lng":-122.4148,"fuzzyLocationLabel":"Bernal hilltop paths","timCurated":false,"saveCount":402,"recentActivityScore":68,"bestTimes":["Sunrise","Sunset","Golden hour"],"tags":["skyline","landscape","portraits","trail"],"coverPhotoUrl":"/generated/twin-peaks.png"},
-  {"id":"grace-cathedral","areaId":"sf","name":"Grace Cathedral","description":"Stone facades, doors, stairs, and calm portrait shade around Nob Hill.","lat":37.7919,"lng":-122.4132,"fuzzyLocationLabel":"Nob Hill plaza","timCurated":false,"saveCount":352,"recentActivityScore":61,"bestTimes":["Morning","Late afternoon","Daylight"],"tags":["architecture","portraits","stairs","stone"],"coverPhotoUrl":"/generated/palace-fine-arts.png"},
-  {"id":"mission-murals","areaId":"sf","name":"Mission Murals","description":"Colorful alleys, street portraits, painted walls, and layered neighborhood texture.","lat":37.7524,"lng":-122.4125,"fuzzyLocationLabel":"Clarion and Balmy alley area","timCurated":false,"saveCount":465,"recentActivityScore":79,"bestTimes":["Daylight","Late afternoon","Overcast days"],"tags":["street","color","portraits","murals"],"coverPhotoUrl":"/generated/painted-ladies.png"}
+  {"id":"marshall-beach","areaId":"sf","name":"Marshall's Beach","description":"Rocky shoreline, bridge scale, and compressed sunset frames below the bluffs.","lat":37.8008,"lng":-122.4832,"fuzzyLocationLabel":"Below the Presidio bluffs","timCurated":true,"saveCount":734,"recentActivityScore":86,"bestTimes":["Sunset","Low tide","Golden hour"],"tags":["beach","bridge","coast","landscape"],"coverPhotoUrl":"/generated/marshall-beach-rocks.png"},
+  {"id":"fort-point","areaId":"sf","name":"Fort Point","description":"Brick arches, bridge understructure, wave texture, and dramatic shadow.","lat":37.8107,"lng":-122.4772,"fuzzyLocationLabel":"Under the south bridge approach","timCurated":false,"saveCount":612,"recentActivityScore":83,"bestTimes":["Morning","Blue hour","Foggy mornings"],"tags":["bridge","architecture","street","waterfront"],"coverPhotoUrl":"/generated/fort-point-arches.png"},
+  {"id":"chrissy-field","areaId":"sf","name":"Chrissy Field","description":"Open waterfront, runners, dogs, bridge silhouettes, and clean fog layers.","lat":37.8037,"lng":-122.4636,"fuzzyLocationLabel":"Marina waterfront lawns","timCurated":false,"saveCount":566,"recentActivityScore":80,"bestTimes":["Sunrise","Golden hour","Daylight"],"tags":["waterfront","bridge","portraits","landscape"],"coverPhotoUrl":"/generated/chrissy-field-waterfront.png"},
+  {"id":"coit-tower","areaId":"sf","name":"Coit Tower / Telegraph Hill","description":"City layers, bay views, stairway details, and North Beach color.","lat":37.8024,"lng":-122.4058,"fuzzyLocationLabel":"Telegraph Hill public paths","timCurated":false,"saveCount":458,"recentActivityScore":73,"bestTimes":["Morning","Clear afternoons","Blue hour"],"tags":["skyline","architecture","street","bay"],"coverPhotoUrl":"/generated/coit-tower-morning.png"},
+  {"id":"salesforce-park","areaId":"sf","name":"Salesforce Park","description":"Elevated garden paths, glass reflections, clean portrait shade, and skyline edges.","lat":37.7897,"lng":-122.3963,"fuzzyLocationLabel":"Downtown elevated park","timCurated":false,"saveCount":394,"recentActivityScore":76,"bestTimes":["Daylight","Late afternoon","Blue hour"],"tags":["architecture","portraits","reflections","skyline"],"coverPhotoUrl":"/generated/salesforce-park-reflections.png"},
+  {"id":"chinatown-grant","areaId":"sf","name":"Chinatown Grant Avenue","description":"Layered signs, lanterns, compressed storefronts, and strong street color.","lat":37.7941,"lng":-122.4078,"fuzzyLocationLabel":"Grant Avenue corridor","timCurated":false,"saveCount":376,"recentActivityScore":77,"bestTimes":["Daylight","Night","Rainy evenings"],"tags":["street","color","architecture","night"],"coverPhotoUrl":"/generated/chinatown-grant-night.png"},
+  {"id":"ocean-beach","areaId":"sf","name":"Ocean Beach","description":"Wide negative space, surfers, dunes, and soft Pacific haze.","lat":37.7594,"lng":-122.5107,"fuzzyLocationLabel":"Outer Sunset shoreline","timCurated":false,"saveCount":421,"recentActivityScore":65,"bestTimes":["Sunset","Overcast days","Morning fog"],"tags":["beach","coast","landscape","surfers"],"coverPhotoUrl":"/generated/ocean-beach-surf.png"},
+  {"id":"bernal-heights","areaId":"sf","name":"Bernal Heights Park","description":"Neighborhood hill views, skyline diagonals, dogs, and warm grass texture.","lat":37.743,"lng":-122.4148,"fuzzyLocationLabel":"Bernal hilltop paths","timCurated":false,"saveCount":402,"recentActivityScore":68,"bestTimes":["Sunrise","Sunset","Golden hour"],"tags":["skyline","landscape","portraits","trail"],"coverPhotoUrl":"/generated/bernal-heights-golden-hour.png"},
+  {"id":"grace-cathedral","areaId":"sf","name":"Grace Cathedral","description":"Stone facades, doors, stairs, and calm portrait shade around Nob Hill.","lat":37.7919,"lng":-122.4132,"fuzzyLocationLabel":"Nob Hill plaza","timCurated":false,"saveCount":352,"recentActivityScore":61,"bestTimes":["Morning","Late afternoon","Daylight"],"tags":["architecture","portraits","stairs","stone"],"coverPhotoUrl":"/generated/grace-cathedral-stairs.png"},
+  {"id":"mission-murals","areaId":"sf","name":"Mission Murals","description":"Colorful alleys, street portraits, painted walls, and layered neighborhood texture.","lat":37.7524,"lng":-122.4125,"fuzzyLocationLabel":"Clarion and Balmy alley area","timCurated":false,"saveCount":465,"recentActivityScore":79,"bestTimes":["Daylight","Late afternoon","Overcast days"],"tags":["street","color","portraits","murals"],"coverPhotoUrl":"/generated/mission-murals-color.png"}
 ]$$::jsonb) as value
 on conflict (kind, item_id) do update
 set payload = excluded.payload,
@@ -132,28 +262,28 @@ set payload = excluded.payload,
 insert into public.oculi_demo_catalog_items (kind, item_id, payload, updated_at)
 select 'photo', value->>'id', value, now()
 from jsonb_array_elements($$[
-  {"id":"photo-7","placeId":"golden-gate-overlook","userId":"user-sam","imageUrl":"/generated/golden-gate-overlook.png","caption":"Bridge tower vanished, then came back with a clean orange edge.","locationLabel":"Golden Gate Bridge Overlook","metadataText":"135mm, fog break","shotAtTimeOfDay":"Blue hour","tags":["bridge","fog","telephoto"],"createdAt":"2026-07-06T13:52:00.000Z","likeCount":221},
-  {"id":"photo-8","placeId":"golden-gate-overlook","userId":"user-nora","imageUrl":"/generated/golden-gate-overlook.png","caption":"Layered headlands behind the south tower.","locationLabel":"Golden Gate Bridge Overlook","metadataText":"85mm, haze","shotAtTimeOfDay":"Sunrise","tags":["landscape","bridge","haze"],"createdAt":"2026-07-05T14:02:00.000Z","likeCount":168},
-  {"id":"photo-9","placeId":"battery-spencer","userId":"user-maya","imageUrl":"/generated/golden-gate-overlook.png","caption":"Classic high bridge angle, but the fog line kept it from feeling flat.","locationLabel":"Battery Spencer","metadataText":"70mm, handheld","shotAtTimeOfDay":"Golden hour","tags":["bridge","overlook","fog"],"createdAt":"2026-07-05T03:08:00.000Z","likeCount":196},
-  {"id":"photo-10","placeId":"battery-spencer","userId":"user-sam","imageUrl":"/generated/golden-gate-overlook.png","caption":"Traffic trails under the tower from the overlook rail.","locationLabel":"Battery Spencer","metadataText":"Tripod, 4s exposure","shotAtTimeOfDay":"Night","tags":["bridge","night","long exposure"],"createdAt":"2026-07-04T05:12:00.000Z","likeCount":151},
-  {"id":"photo-11","placeId":"marshall-beach","userId":"user-jules","imageUrl":"/generated/baker-beach.png","caption":"The rocks make the foreground do half the work.","locationLabel":"Marshall's Beach","metadataText":"24mm, low tide","shotAtTimeOfDay":"Sunset","tags":["beach","bridge","coast"],"createdAt":"2026-07-04T03:22:00.000Z","likeCount":122},
-  {"id":"photo-12","placeId":"marshall-beach","userId":"user-lena","imageUrl":"/generated/baker-beach.png","caption":"Small silhouettes below the bridge made the scale click.","locationLabel":"Marshall's Beach","metadataText":"50mm, sunset haze","shotAtTimeOfDay":"Golden hour","tags":["landscape","beach","silhouette"],"createdAt":"2026-07-03T03:40:00.000Z","likeCount":109},
-  {"id":"photo-13","placeId":"fort-point","userId":"user-isha","imageUrl":"/generated/golden-gate-overlook.png","caption":"Brick arch shadows under the bridge are great for portraits.","locationLabel":"Fort Point","metadataText":"35mm, shade","shotAtTimeOfDay":"Morning","tags":["architecture","bridge","portraits"],"createdAt":"2026-07-02T18:35:00.000Z","likeCount":86},
-  {"id":"photo-14","placeId":"chrissy-field","userId":"user-nora","imageUrl":"/generated/golden-gate-overlook.png","caption":"Easy waterfront frames with enough room to wait out the crowds.","locationLabel":"Chrissy Field","metadataText":"35mm, soft wind","shotAtTimeOfDay":"Daylight","tags":["waterfront","bridge","portraits"],"createdAt":"2026-07-02T21:05:00.000Z","likeCount":91},
-  {"id":"photo-15","placeId":"palace-fine-arts","userId":"user-isha","imageUrl":"/generated/palace-fine-arts.png","caption":"Soft shade by the columns, clean enough for headshots.","locationLabel":"Palace of Fine Arts","metadataText":"85mm, open shade","shotAtTimeOfDay":"Morning","tags":["architecture","portraits","shade"],"createdAt":"2026-07-02T17:15:00.000Z","likeCount":143},
-  {"id":"photo-16","placeId":"twin-peaks","userId":"user-sam","imageUrl":"/generated/twin-peaks.png","caption":"Windy, but the skyline depth is unmatched when the haze is light.","locationLabel":"Twin Peaks","metadataText":"105mm, clear afternoon","shotAtTimeOfDay":"Daylight","tags":["skyline","wide-angle","haze"],"createdAt":"2026-07-02T00:30:00.000Z","likeCount":174},
-  {"id":"photo-17","placeId":"dolores-park","userId":"user-lena","imageUrl":"/generated/twin-peaks.png","caption":"Portrait backdrop without needing to climb all the way up Twin Peaks.","locationLabel":"Dolores Park","metadataText":"50mm, late sun","shotAtTimeOfDay":"Late afternoon","tags":["portraits","skyline","social"],"createdAt":"2026-07-01T23:45:00.000Z","likeCount":74},
-  {"id":"photo-18","placeId":"painted-ladies","userId":"user-isha","imageUrl":"/generated/painted-ladies.png","caption":"Cloud cover kept the pastel facades from clipping.","locationLabel":"Painted Ladies / Alamo Square","metadataText":"35mm, overcast","shotAtTimeOfDay":"Daylight","tags":["architecture","color","skyline"],"createdAt":"2026-07-01T20:20:00.000Z","likeCount":117},
-  {"id":"photo-19","placeId":"coit-tower","userId":"user-sam","imageUrl":"/generated/embarcadero.png","caption":"Bay layers from Telegraph Hill before the afternoon glare.","locationLabel":"Coit Tower / Telegraph Hill","metadataText":"70mm, clear morning","shotAtTimeOfDay":"Morning","tags":["skyline","bay","architecture"],"createdAt":"2026-07-01T16:18:00.000Z","likeCount":101},
-  {"id":"photo-20","placeId":"salesforce-park","userId":"user-maya","imageUrl":"/generated/embarcadero.png","caption":"Glass reflections and garden shade in one quick loop.","locationLabel":"Salesforce Park","metadataText":"35mm, reflective glass","shotAtTimeOfDay":"Blue hour","tags":["architecture","reflections","portraits"],"createdAt":"2026-06-30T04:05:00.000Z","likeCount":89},
-  {"id":"photo-21","placeId":"chinatown-grant","userId":"user-lena","imageUrl":"/generated/painted-ladies.png","caption":"Lanterns and storefront reds after the light went cool.","locationLabel":"Chinatown Grant Avenue","metadataText":"35mm, neon spill","shotAtTimeOfDay":"Night","tags":["street","color","night"],"createdAt":"2026-06-30T05:18:00.000Z","likeCount":96},
-  {"id":"photo-22","placeId":"ocean-beach","userId":"user-nora","imageUrl":"/generated/lands-end.png","caption":"Muted surf lines and tiny figures along the dunes.","locationLabel":"Ocean Beach","metadataText":"70mm, overcast","shotAtTimeOfDay":"Overcast days","tags":["beach","coast","landscape"],"createdAt":"2026-06-29T22:40:00.000Z","likeCount":65},
-  {"id":"photo-23","placeId":"bernal-heights","userId":"user-eli","imageUrl":"/generated/twin-peaks.png","caption":"A smaller hill with a softer neighborhood skyline angle.","locationLabel":"Bernal Heights Park","metadataText":"50mm, golden grass","shotAtTimeOfDay":"Sunset","tags":["skyline","trail","golden hour"],"createdAt":"2026-06-29T03:25:00.000Z","likeCount":83},
-  {"id":"photo-24","placeId":"grace-cathedral","userId":"user-isha","imageUrl":"/generated/palace-fine-arts.png","caption":"Stairs and stone texture made a simple portrait set.","locationLabel":"Grace Cathedral","metadataText":"50mm, open shade","shotAtTimeOfDay":"Late afternoon","tags":["architecture","portraits","stairs"],"createdAt":"2026-06-28T23:10:00.000Z","likeCount":72},
-  {"id":"photo-25","placeId":"mission-murals","userId":"user-jules","imageUrl":"/generated/painted-ladies.png","caption":"Color blocks are perfect when the sky is too flat.","locationLabel":"Mission Murals","metadataText":"35mm, overcast","shotAtTimeOfDay":"Daylight","tags":["street","color","portraits"],"createdAt":"2026-06-28T19:45:00.000Z","likeCount":111},
+  {"id":"photo-7","placeId":"golden-gate-overlook","userId":"user-sam","imageUrl":"/generated/golden-gate-overlook-fog-break.png","caption":"Bridge tower vanished, then came back with a clean orange edge.","locationLabel":"Golden Gate Bridge Overlook","metadataText":"135mm, fog break","shotAtTimeOfDay":"Blue hour","tags":["bridge","fog","telephoto"],"createdAt":"2026-07-06T13:52:00.000Z","likeCount":221},
+  {"id":"photo-8","placeId":"golden-gate-overlook","userId":"user-nora","imageUrl":"/generated/golden-gate-overlook-headlands.png","caption":"Layered headlands behind the south tower.","locationLabel":"Golden Gate Bridge Overlook","metadataText":"85mm, haze","shotAtTimeOfDay":"Sunrise","tags":["landscape","bridge","haze"],"createdAt":"2026-07-05T14:02:00.000Z","likeCount":168},
+  {"id":"photo-9","placeId":"battery-spencer","userId":"user-maya","imageUrl":"/generated/battery-spencer-golden-hour.png","caption":"Classic high bridge angle, but the fog line kept it from feeling flat.","locationLabel":"Battery Spencer","metadataText":"70mm, handheld","shotAtTimeOfDay":"Golden hour","tags":["bridge","overlook","fog"],"createdAt":"2026-07-05T03:08:00.000Z","likeCount":196},
+  {"id":"photo-10","placeId":"battery-spencer","userId":"user-sam","imageUrl":"/generated/battery-spencer-night.png","caption":"Traffic trails under the tower from the overlook rail.","locationLabel":"Battery Spencer","metadataText":"Tripod, 4s exposure","shotAtTimeOfDay":"Night","tags":["bridge","night","long exposure"],"createdAt":"2026-07-04T05:12:00.000Z","likeCount":151},
+  {"id":"photo-11","placeId":"marshall-beach","userId":"user-jules","imageUrl":"/generated/marshall-beach-rocks.png","caption":"The rocks make the foreground do half the work.","locationLabel":"Marshall's Beach","metadataText":"24mm, low tide","shotAtTimeOfDay":"Sunset","tags":["beach","bridge","coast"],"createdAt":"2026-07-04T03:22:00.000Z","likeCount":122},
+  {"id":"photo-12","placeId":"marshall-beach","userId":"user-lena","imageUrl":"/generated/marshall-beach-silhouettes.png","caption":"Small silhouettes below the bridge made the scale click.","locationLabel":"Marshall's Beach","metadataText":"50mm, sunset haze","shotAtTimeOfDay":"Golden hour","tags":["landscape","beach","silhouette"],"createdAt":"2026-07-03T03:40:00.000Z","likeCount":109},
+  {"id":"photo-13","placeId":"fort-point","userId":"user-isha","imageUrl":"/generated/fort-point-arches.png","caption":"Brick arch shadows under the bridge are great for portraits.","locationLabel":"Fort Point","metadataText":"35mm, shade","shotAtTimeOfDay":"Morning","tags":["architecture","bridge","portraits"],"createdAt":"2026-07-02T18:35:00.000Z","likeCount":86},
+  {"id":"photo-14","placeId":"chrissy-field","userId":"user-nora","imageUrl":"/generated/chrissy-field-waterfront.png","caption":"Easy waterfront frames with enough room to wait out the crowds.","locationLabel":"Chrissy Field","metadataText":"35mm, soft wind","shotAtTimeOfDay":"Daylight","tags":["waterfront","bridge","portraits"],"createdAt":"2026-07-02T21:05:00.000Z","likeCount":91},
+  {"id":"photo-15","placeId":"palace-fine-arts","userId":"user-isha","imageUrl":"/generated/palace-fine-arts-morning.png","caption":"Soft shade by the columns, clean enough for headshots.","locationLabel":"Palace of Fine Arts","metadataText":"85mm, open shade","shotAtTimeOfDay":"Morning","tags":["architecture","portraits","shade"],"createdAt":"2026-07-02T17:15:00.000Z","likeCount":143},
+  {"id":"photo-16","placeId":"twin-peaks","userId":"user-sam","imageUrl":"/generated/twin-peaks-daylight.png","caption":"Windy, but the skyline depth is unmatched when the haze is light.","locationLabel":"Twin Peaks","metadataText":"105mm, clear afternoon","shotAtTimeOfDay":"Daylight","tags":["skyline","wide-angle","haze"],"createdAt":"2026-07-02T00:30:00.000Z","likeCount":174},
+  {"id":"photo-17","placeId":"dolores-park","userId":"user-lena","imageUrl":"/generated/dolores-park-late-afternoon.png","caption":"Portrait backdrop without needing to climb all the way up Twin Peaks.","locationLabel":"Dolores Park","metadataText":"50mm, late sun","shotAtTimeOfDay":"Late afternoon","tags":["portraits","skyline","social"],"createdAt":"2026-07-01T23:45:00.000Z","likeCount":74},
+  {"id":"photo-18","placeId":"painted-ladies","userId":"user-isha","imageUrl":"/generated/painted-ladies-cloud-cover.png","caption":"Cloud cover kept the pastel facades from clipping.","locationLabel":"Painted Ladies / Alamo Square","metadataText":"35mm, overcast","shotAtTimeOfDay":"Daylight","tags":["architecture","color","skyline"],"createdAt":"2026-07-01T20:20:00.000Z","likeCount":117},
+  {"id":"photo-19","placeId":"coit-tower","userId":"user-sam","imageUrl":"/generated/coit-tower-morning.png","caption":"Bay layers from Telegraph Hill before the afternoon glare.","locationLabel":"Coit Tower / Telegraph Hill","metadataText":"70mm, clear morning","shotAtTimeOfDay":"Morning","tags":["skyline","bay","architecture"],"createdAt":"2026-07-01T16:18:00.000Z","likeCount":101},
+  {"id":"photo-20","placeId":"salesforce-park","userId":"user-maya","imageUrl":"/generated/salesforce-park-reflections.png","caption":"Glass reflections and garden shade in one quick loop.","locationLabel":"Salesforce Park","metadataText":"35mm, reflective glass","shotAtTimeOfDay":"Blue hour","tags":["architecture","reflections","portraits"],"createdAt":"2026-06-30T04:05:00.000Z","likeCount":89},
+  {"id":"photo-21","placeId":"chinatown-grant","userId":"user-lena","imageUrl":"/generated/chinatown-grant-night.png","caption":"Lanterns and storefront reds after the light went cool.","locationLabel":"Chinatown Grant Avenue","metadataText":"35mm, neon spill","shotAtTimeOfDay":"Night","tags":["street","color","night"],"createdAt":"2026-06-30T05:18:00.000Z","likeCount":96},
+  {"id":"photo-22","placeId":"ocean-beach","userId":"user-nora","imageUrl":"/generated/ocean-beach-surf.png","caption":"Muted surf lines and tiny figures along the dunes.","locationLabel":"Ocean Beach","metadataText":"70mm, overcast","shotAtTimeOfDay":"Overcast days","tags":["beach","coast","landscape"],"createdAt":"2026-06-29T22:40:00.000Z","likeCount":65},
+  {"id":"photo-23","placeId":"bernal-heights","userId":"user-eli","imageUrl":"/generated/bernal-heights-golden-hour.png","caption":"A smaller hill with a softer neighborhood skyline angle.","locationLabel":"Bernal Heights Park","metadataText":"50mm, golden grass","shotAtTimeOfDay":"Sunset","tags":["skyline","trail","golden hour"],"createdAt":"2026-06-29T03:25:00.000Z","likeCount":83},
+  {"id":"photo-24","placeId":"grace-cathedral","userId":"user-isha","imageUrl":"/generated/grace-cathedral-stairs.png","caption":"Stairs and stone texture made a simple portrait set.","locationLabel":"Grace Cathedral","metadataText":"50mm, open shade","shotAtTimeOfDay":"Late afternoon","tags":["architecture","portraits","stairs"],"createdAt":"2026-06-28T23:10:00.000Z","likeCount":72},
+  {"id":"photo-25","placeId":"mission-murals","userId":"user-jules","imageUrl":"/generated/mission-murals-color.png","caption":"Color blocks are perfect when the sky is too flat.","locationLabel":"Mission Murals","metadataText":"35mm, overcast","shotAtTimeOfDay":"Daylight","tags":["street","color","portraits"],"createdAt":"2026-06-28T19:45:00.000Z","likeCount":111},
   {"id":"photo-26","placeId":"sutro-baths","userId":"user-sam","imageUrl":"/generated/sutro-baths.png","caption":"Water channels gave just enough leading line into the ruins.","locationLabel":"Sutro Baths","metadataText":"24mm, overcast","shotAtTimeOfDay":"Overcast days","tags":["ruins","coast","long exposure"],"createdAt":"2026-06-27T21:22:00.000Z","likeCount":94},
-  {"id":"photo-27","placeId":"baker-beach","userId":"user-maya","imageUrl":"/generated/baker-beach.png","caption":"The bridge tucked into the fog right as the sand warmed up.","locationLabel":"Baker Beach","metadataText":"50mm, sunset fog","shotAtTimeOfDay":"Sunset","tags":["beach","bridge","fog"],"createdAt":"2026-06-27T03:50:00.000Z","likeCount":156},
-  {"id":"photo-28","placeId":"embarcadero","userId":"user-lena","imageUrl":"/generated/embarcadero.png","caption":"Blue-hour glass and ferry lights lined up for one block.","locationLabel":"Embarcadero Waterfront","metadataText":"35mm, handheld","shotAtTimeOfDay":"Blue hour","tags":["waterfront","street","reflections"],"createdAt":"2026-06-26T04:35:00.000Z","likeCount":104}
+  {"id":"photo-27","placeId":"baker-beach","userId":"user-maya","imageUrl":"/generated/baker-beach-sunset-fog.png","caption":"The bridge tucked into the fog right as the sand warmed up.","locationLabel":"Baker Beach","metadataText":"50mm, sunset fog","shotAtTimeOfDay":"Sunset","tags":["beach","bridge","fog"],"createdAt":"2026-06-27T03:50:00.000Z","likeCount":156},
+  {"id":"photo-28","placeId":"embarcadero","userId":"user-lena","imageUrl":"/generated/embarcadero-blue-hour.png","caption":"Blue-hour glass and ferry lights lined up for one block.","locationLabel":"Embarcadero Waterfront","metadataText":"35mm, handheld","shotAtTimeOfDay":"Blue hour","tags":["waterfront","street","reflections"],"createdAt":"2026-06-26T04:35:00.000Z","likeCount":104}
 ]$$::jsonb) as value
 on conflict (kind, item_id) do update
 set payload = excluded.payload,
@@ -165,14 +295,14 @@ insert into public.oculi_demo_catalog_items (kind, item_id, payload, updated_at)
 select 'user', value->>'id', value, now()
 from jsonb_array_elements($oculi_user$[
   {
-    "id": "user-tim",
-    "name": "Tim",
-    "username": "@tim",
-    "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&q=80",
-    "bio": "Building a ranked map of places worth shooting.",
+    "id": "user-guest",
+    "name": "John Doe",
+    "username": "@john.doe",
+    "avatarUrl": "/generated/default-avatar.svg",
+    "bio": "Guest photographer collecting public photo spots around the city.",
     "homeArea": "San Francisco",
-    "followerCount": 128,
-    "followingCount": 46
+    "followerCount": 0,
+    "followingCount": 2
   },
   {
     "id": "user-maya",
@@ -449,7 +579,7 @@ from jsonb_array_elements($oculi_place$[
       "skyline",
       "social"
     ],
-    "coverPhotoUrl": "/generated/twin-peaks.png"
+    "coverPhotoUrl": "/generated/dolores-park-late-afternoon.png"
   },
   {
     "id": "painted-ladies",
@@ -493,7 +623,7 @@ from jsonb_array_elements($oculi_place$[
       "overlook",
       "telephoto"
     ],
-    "coverPhotoUrl": "/generated/golden-gate-overlook.png"
+    "coverPhotoUrl": "/generated/battery-spencer-golden-hour.png"
   },
   {
     "id": "marshall-beach",
@@ -517,7 +647,7 @@ from jsonb_array_elements($oculi_place$[
       "coast",
       "landscape"
     ],
-    "coverPhotoUrl": "/generated/baker-beach.png"
+    "coverPhotoUrl": "/generated/marshall-beach-rocks.png"
   },
   {
     "id": "fort-point",
@@ -541,7 +671,7 @@ from jsonb_array_elements($oculi_place$[
       "street",
       "waterfront"
     ],
-    "coverPhotoUrl": "/generated/golden-gate-overlook.png"
+    "coverPhotoUrl": "/generated/fort-point-arches.png"
   },
   {
     "id": "chrissy-field",
@@ -565,7 +695,7 @@ from jsonb_array_elements($oculi_place$[
       "portraits",
       "landscape"
     ],
-    "coverPhotoUrl": "/generated/golden-gate-overlook.png"
+    "coverPhotoUrl": "/generated/chrissy-field-waterfront.png"
   },
   {
     "id": "coit-tower",
@@ -589,7 +719,7 @@ from jsonb_array_elements($oculi_place$[
       "street",
       "bay"
     ],
-    "coverPhotoUrl": "/generated/embarcadero.png"
+    "coverPhotoUrl": "/generated/coit-tower-morning.png"
   },
   {
     "id": "salesforce-park",
@@ -613,7 +743,7 @@ from jsonb_array_elements($oculi_place$[
       "reflections",
       "skyline"
     ],
-    "coverPhotoUrl": "/generated/embarcadero.png"
+    "coverPhotoUrl": "/generated/salesforce-park-reflections.png"
   },
   {
     "id": "chinatown-grant",
@@ -637,7 +767,7 @@ from jsonb_array_elements($oculi_place$[
       "architecture",
       "night"
     ],
-    "coverPhotoUrl": "/generated/painted-ladies.png"
+    "coverPhotoUrl": "/generated/chinatown-grant-night.png"
   },
   {
     "id": "ocean-beach",
@@ -661,7 +791,7 @@ from jsonb_array_elements($oculi_place$[
       "landscape",
       "surfers"
     ],
-    "coverPhotoUrl": "/generated/lands-end.png"
+    "coverPhotoUrl": "/generated/ocean-beach-surf.png"
   },
   {
     "id": "bernal-heights",
@@ -685,7 +815,7 @@ from jsonb_array_elements($oculi_place$[
       "portraits",
       "trail"
     ],
-    "coverPhotoUrl": "/generated/twin-peaks.png"
+    "coverPhotoUrl": "/generated/bernal-heights-golden-hour.png"
   },
   {
     "id": "grace-cathedral",
@@ -709,7 +839,7 @@ from jsonb_array_elements($oculi_place$[
       "stairs",
       "stone"
     ],
-    "coverPhotoUrl": "/generated/palace-fine-arts.png"
+    "coverPhotoUrl": "/generated/grace-cathedral-stairs.png"
   },
   {
     "id": "mission-murals",
@@ -733,7 +863,7 @@ from jsonb_array_elements($oculi_place$[
       "portraits",
       "murals"
     ],
-    "coverPhotoUrl": "/generated/painted-ladies.png"
+    "coverPhotoUrl": "/generated/mission-murals-color.png"
   }
 ]$oculi_place$::jsonb) as value
 on conflict (kind, item_id) do update
@@ -848,7 +978,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-7",
     "placeId": "golden-gate-overlook",
     "userId": "user-sam",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/golden-gate-overlook-fog-break.png",
     "caption": "Bridge tower vanished, then came back with a clean orange edge.",
     "locationLabel": "Golden Gate Bridge Overlook",
     "metadataText": "135mm, fog break",
@@ -865,7 +995,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-8",
     "placeId": "golden-gate-overlook",
     "userId": "user-nora",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/golden-gate-overlook-headlands.png",
     "caption": "Layered headlands behind the south tower.",
     "locationLabel": "Golden Gate Bridge Overlook",
     "metadataText": "85mm, haze",
@@ -882,7 +1012,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-9",
     "placeId": "battery-spencer",
     "userId": "user-maya",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/battery-spencer-golden-hour.png",
     "caption": "Classic high bridge angle, but the fog line kept it from feeling flat.",
     "locationLabel": "Battery Spencer",
     "metadataText": "70mm, handheld",
@@ -899,7 +1029,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-10",
     "placeId": "battery-spencer",
     "userId": "user-sam",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/battery-spencer-night.png",
     "caption": "Traffic trails under the tower from the overlook rail.",
     "locationLabel": "Battery Spencer",
     "metadataText": "Tripod, 4s exposure",
@@ -916,7 +1046,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-11",
     "placeId": "marshall-beach",
     "userId": "user-jules",
-    "imageUrl": "/generated/baker-beach.png",
+    "imageUrl": "/generated/marshall-beach-rocks.png",
     "caption": "The rocks make the foreground do half the work.",
     "locationLabel": "Marshall's Beach",
     "metadataText": "24mm, low tide",
@@ -933,7 +1063,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-12",
     "placeId": "marshall-beach",
     "userId": "user-lena",
-    "imageUrl": "/generated/baker-beach.png",
+    "imageUrl": "/generated/marshall-beach-silhouettes.png",
     "caption": "Small silhouettes below the bridge made the scale click.",
     "locationLabel": "Marshall's Beach",
     "metadataText": "50mm, sunset haze",
@@ -950,7 +1080,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-13",
     "placeId": "fort-point",
     "userId": "user-isha",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/fort-point-arches.png",
     "caption": "Brick arch shadows under the bridge are great for portraits.",
     "locationLabel": "Fort Point",
     "metadataText": "35mm, shade",
@@ -967,7 +1097,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-14",
     "placeId": "chrissy-field",
     "userId": "user-nora",
-    "imageUrl": "/generated/golden-gate-overlook.png",
+    "imageUrl": "/generated/chrissy-field-waterfront.png",
     "caption": "Easy waterfront frames with enough room to wait out the crowds.",
     "locationLabel": "Chrissy Field",
     "metadataText": "35mm, soft wind",
@@ -984,7 +1114,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-15",
     "placeId": "palace-fine-arts",
     "userId": "user-isha",
-    "imageUrl": "/generated/palace-fine-arts.png",
+    "imageUrl": "/generated/palace-fine-arts-morning.png",
     "caption": "Soft shade by the columns, clean enough for headshots.",
     "locationLabel": "Palace of Fine Arts",
     "metadataText": "85mm, open shade",
@@ -1001,7 +1131,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-16",
     "placeId": "twin-peaks",
     "userId": "user-sam",
-    "imageUrl": "/generated/twin-peaks.png",
+    "imageUrl": "/generated/twin-peaks-daylight.png",
     "caption": "Windy, but the skyline depth is unmatched when the haze is light.",
     "locationLabel": "Twin Peaks",
     "metadataText": "105mm, clear afternoon",
@@ -1018,7 +1148,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-17",
     "placeId": "dolores-park",
     "userId": "user-lena",
-    "imageUrl": "/generated/twin-peaks.png",
+    "imageUrl": "/generated/dolores-park-late-afternoon.png",
     "caption": "Portrait backdrop without needing to climb all the way up Twin Peaks.",
     "locationLabel": "Dolores Park",
     "metadataText": "50mm, late sun",
@@ -1035,7 +1165,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-18",
     "placeId": "painted-ladies",
     "userId": "user-isha",
-    "imageUrl": "/generated/painted-ladies.png",
+    "imageUrl": "/generated/painted-ladies-cloud-cover.png",
     "caption": "Cloud cover kept the pastel facades from clipping.",
     "locationLabel": "Painted Ladies / Alamo Square",
     "metadataText": "35mm, overcast",
@@ -1052,7 +1182,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-19",
     "placeId": "coit-tower",
     "userId": "user-sam",
-    "imageUrl": "/generated/embarcadero.png",
+    "imageUrl": "/generated/coit-tower-morning.png",
     "caption": "Bay layers from Telegraph Hill before the afternoon glare.",
     "locationLabel": "Coit Tower / Telegraph Hill",
     "metadataText": "70mm, clear morning",
@@ -1069,7 +1199,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-20",
     "placeId": "salesforce-park",
     "userId": "user-maya",
-    "imageUrl": "/generated/embarcadero.png",
+    "imageUrl": "/generated/salesforce-park-reflections.png",
     "caption": "Glass reflections and garden shade in one quick loop.",
     "locationLabel": "Salesforce Park",
     "metadataText": "35mm, reflective glass",
@@ -1086,7 +1216,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-21",
     "placeId": "chinatown-grant",
     "userId": "user-lena",
-    "imageUrl": "/generated/painted-ladies.png",
+    "imageUrl": "/generated/chinatown-grant-night.png",
     "caption": "Lanterns and storefront reds after the light went cool.",
     "locationLabel": "Chinatown Grant Avenue",
     "metadataText": "35mm, neon spill",
@@ -1103,7 +1233,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-22",
     "placeId": "ocean-beach",
     "userId": "user-nora",
-    "imageUrl": "/generated/lands-end.png",
+    "imageUrl": "/generated/ocean-beach-surf.png",
     "caption": "Muted surf lines and tiny figures along the dunes.",
     "locationLabel": "Ocean Beach",
     "metadataText": "70mm, overcast",
@@ -1120,7 +1250,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-23",
     "placeId": "bernal-heights",
     "userId": "user-eli",
-    "imageUrl": "/generated/twin-peaks.png",
+    "imageUrl": "/generated/bernal-heights-golden-hour.png",
     "caption": "A smaller hill with a softer neighborhood skyline angle.",
     "locationLabel": "Bernal Heights Park",
     "metadataText": "50mm, golden grass",
@@ -1137,7 +1267,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-24",
     "placeId": "grace-cathedral",
     "userId": "user-isha",
-    "imageUrl": "/generated/palace-fine-arts.png",
+    "imageUrl": "/generated/grace-cathedral-stairs.png",
     "caption": "Stairs and stone texture made a simple portrait set.",
     "locationLabel": "Grace Cathedral",
     "metadataText": "50mm, open shade",
@@ -1154,7 +1284,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-25",
     "placeId": "mission-murals",
     "userId": "user-jules",
-    "imageUrl": "/generated/painted-ladies.png",
+    "imageUrl": "/generated/mission-murals-color.png",
     "caption": "Color blocks are perfect when the sky is too flat.",
     "locationLabel": "Mission Murals",
     "metadataText": "35mm, overcast",
@@ -1188,7 +1318,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-27",
     "placeId": "baker-beach",
     "userId": "user-maya",
-    "imageUrl": "/generated/baker-beach.png",
+    "imageUrl": "/generated/baker-beach-sunset-fog.png",
     "caption": "The bridge tucked into the fog right as the sand warmed up.",
     "locationLabel": "Baker Beach",
     "metadataText": "50mm, sunset fog",
@@ -1205,7 +1335,7 @@ from jsonb_array_elements($oculi_photo$[
     "id": "photo-28",
     "placeId": "embarcadero",
     "userId": "user-lena",
-    "imageUrl": "/generated/embarcadero.png",
+    "imageUrl": "/generated/embarcadero-blue-hour.png",
     "caption": "Blue-hour glass and ferry lights lined up for one block.",
     "locationLabel": "Embarcadero Waterfront",
     "metadataText": "35mm, handheld",
@@ -1222,3 +1352,35 @@ from jsonb_array_elements($oculi_photo$[
 on conflict (kind, item_id) do update
 set payload = excluded.payload,
     updated_at = excluded.updated_at;
+
+-- Re-apply navigation addresses after the full demo catalog seed so the final
+-- place payloads match the route planner data contract.
+with final_place_addresses(item_id, navigation_address) as (
+  values
+    ('golden-gate-overlook', 'Golden Gate Bridge Overlook, Lincoln Blvd, San Francisco, CA'),
+    ('baker-beach', 'Baker Beach, Battery Chamberlin Rd, San Francisco, CA'),
+    ('palace-fine-arts', 'Palace of Fine Arts, 3601 Lyon St, San Francisco, CA'),
+    ('twin-peaks', 'Twin Peaks, 501 Twin Peaks Blvd, San Francisco, CA'),
+    ('lands-end', 'Lands End Trail, 680 Point Lobos Ave, San Francisco, CA'),
+    ('sutro-baths', 'Sutro Baths, 1004 Point Lobos Ave, San Francisco, CA'),
+    ('embarcadero', 'Ferry Building, 1 Ferry Building, San Francisco, CA'),
+    ('dolores-park', 'Mission Dolores Park, Dolores St & 19th St, San Francisco, CA'),
+    ('painted-ladies', 'Painted Ladies, Steiner St & Hayes St, San Francisco, CA'),
+    ('battery-spencer', 'Battery Spencer, Conzelman Rd, Sausalito, CA'),
+    ('marshall-beach', 'Marshall''s Beach, Batteries to Bluffs Trail, San Francisco, CA'),
+    ('fort-point', 'Fort Point National Historic Site, Long Ave & Marine Dr, San Francisco, CA'),
+    ('chrissy-field', 'Chrissy Field East Beach, 1199 E Beach, San Francisco, CA'),
+    ('coit-tower', 'Coit Tower, 1 Telegraph Hill Blvd, San Francisco, CA'),
+    ('salesforce-park', 'Salesforce Park, 425 Mission St, San Francisco, CA'),
+    ('chinatown-grant', 'Grant Avenue, Chinatown, San Francisco, CA'),
+    ('ocean-beach', 'Ocean Beach, Great Hwy, San Francisco, CA'),
+    ('bernal-heights', 'Bernal Heights Park, 3400-3416 Folsom St, San Francisco, CA'),
+    ('grace-cathedral', 'Grace Cathedral, 1100 California St, San Francisco, CA'),
+    ('mission-murals', 'Clarion Alley Murals, Clarion Alley, San Francisco, CA')
+)
+update public.oculi_demo_catalog_items catalog
+set payload = jsonb_set(catalog.payload, '{navigationAddress}', to_jsonb(final_place_addresses.navigation_address), true),
+    updated_at = now()
+from final_place_addresses
+where catalog.kind = 'place'
+  and catalog.item_id = final_place_addresses.item_id;

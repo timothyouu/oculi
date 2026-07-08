@@ -1,16 +1,18 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { areas, currentUserId, photos as seedPhotos, places, users } from "./data";
+import { currentUserId } from "./data";
 import {
   isRemoteStateEnabled,
+  loadRemoteDemoCatalog,
   loadRemoteDemoState,
   resetRemoteDemoState,
   saveRemoteDemoState,
+  seedCatalog,
   uploadPhotoFile,
 } from "./remote-state";
 import { sortTopPlaces } from "./scoring";
-import { createInitialDemoState } from "./storage";
+import { createInitialDemoState, loadLocalDemoState, resetLocalDemoState, saveLocalDemoState } from "./storage";
 import type { AddPhotoInput, Area, DemoState, Photo, Place, User } from "./types";
 
 type DemoContextValue = {
@@ -51,14 +53,23 @@ function makeId(prefix: string) {
 
 export function DemoStateProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<DemoState>(() => createInitialDemoState());
+  const [catalog, setCatalog] = useState(seedCatalog);
   const [hasLoadedRemoteState, setHasLoadedRemoteState] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    loadRemoteDemoState().then((remoteState) => {
+    if (!isRemoteStateEnabled()) {
+      setState(loadLocalDemoState());
+      setCatalog(seedCatalog);
+      setHasLoadedRemoteState(true);
+      return;
+    }
+
+    Promise.all([loadRemoteDemoState(), loadRemoteDemoCatalog()]).then(([remoteState, remoteCatalog]) => {
       if (cancelled) return;
       setState(remoteState);
+      setCatalog(remoteCatalog);
       setHasLoadedRemoteState(true);
     });
 
@@ -68,10 +79,11 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!hasLoadedRemoteState || !isRemoteStateEnabled()) return;
+    if (!hasLoadedRemoteState) return;
 
     const timeout = window.setTimeout(() => {
-      saveRemoteDemoState(state);
+      saveLocalDemoState(state);
+      if (isRemoteStateEnabled()) saveRemoteDemoState(state);
     }, 350);
 
     return () => window.clearTimeout(timeout);
@@ -83,6 +95,10 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         const next = fn(prev);
         return next;
       });
+    const users = catalog.users;
+    const areas = catalog.areas;
+    const places = catalog.places;
+    const seedPhotos = catalog.photos;
     const currentUser = users.find((user) => user.id === currentUserId) ?? users[0];
 
     return {
@@ -161,10 +177,11 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       },
       resetDemoState: () => {
         setState(createInitialDemoState());
+        resetLocalDemoState();
         resetRemoteDemoState();
       }
     };
-  }, [hasLoadedRemoteState, state]);
+  }, [catalog, hasLoadedRemoteState, state]);
 
   return <DemoStateContext.Provider value={value}>{children}</DemoStateContext.Provider>;
 }

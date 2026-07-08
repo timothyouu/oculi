@@ -28,6 +28,7 @@ export type Place = {
   lat: number;
   lng: number;
   fuzzyLocationLabel: string;
+  navigationAddress?: string;
   timCurated: boolean;
   saveCount: number;
   recentActivityScore: number;

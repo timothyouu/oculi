@@ -3,7 +3,6 @@
 import { useState, type ReactNode } from "react";
 import { Bookmark, Compass, Map, PlusCircle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { places } from "@/lib/data";
 import { useDemoState } from "@/lib/demo-state";
 import type { User } from "../lib/types";
 import { TopNav } from "./top-nav";
@@ -94,7 +93,7 @@ export function AppShell({
       </main>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--line)] bg-[rgba(255,253,248,0.94)] px-3 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-10px_30px_rgba(39,34,27,0.08)] backdrop-blur-xl md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--line)] bg-[var(--mobile-nav-bg)] px-3 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-10px_30px_rgba(39,34,27,0.08)] backdrop-blur-xl md:hidden"
         aria-label="Mobile navigation"
       >
         <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
@@ -126,10 +125,10 @@ export function AppShell({
       </nav>
       <UploadModal
         open={uploadOpen}
-        places={places}
+        places={demo.places}
         onClose={() => setUploadOpen(false)}
         onSubmit={(input) => {
-          const place = places.find((item) => item.id === input.placeId);
+          const place = demo.places.find((item) => item.id === input.placeId);
           demo.addPhoto({
             placeId: input.placeId,
             imageUrl: input.previewUrl,

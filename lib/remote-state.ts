@@ -1,9 +1,10 @@
-import { currentUserId } from "./data";
-import { createInitialDemoState } from "./storage";
+import { areas, currentUserId, photos, places, users } from "./data";
+import { createInitialDemoState, normalizeDemoState } from "./storage";
 import { getSupabaseBrowserClient } from "./supabase";
-import type { DemoState } from "./types";
+import type { Area, DemoState, Photo, Place, User } from "./types";
 
 const STATE_TABLE = "oculi_demo_states";
+const CATALOG_TABLE = "oculi_demo_catalog_items";
 const PHOTO_BUCKET = "oculi-photos";
 
 type StateRow = {
@@ -12,20 +13,43 @@ type StateRow = {
   updated_at?: string;
 };
 
-function normalizeDemoState(state?: Partial<DemoState> | null): DemoState {
-  const initial = createInitialDemoState();
+export type DemoCatalog = {
+  users: User[];
+  areas: Area[];
+  places: Place[];
+  photos: Photo[];
+};
 
-  return {
-    ...initial,
-    ...(state ?? {}),
-    savedPlaceIds: state?.savedPlaceIds ?? initial.savedPlaceIds,
-    followedUserIds: state?.followedUserIds ?? initial.followedUserIds,
-    likedPhotoIds: state?.likedPhotoIds ?? initial.likedPhotoIds,
-    viewedPlaceIds: state?.viewedPlaceIds ?? initial.viewedPlaceIds,
-    placeViews: state?.placeViews ?? initial.placeViews,
-    discoveryActiveIndex: state?.discoveryActiveIndex ?? initial.discoveryActiveIndex,
-    uploadedPhotos: state?.uploadedPhotos ?? initial.uploadedPhotos,
-  };
+type CatalogKind = keyof DemoCatalog;
+
+type CatalogRow = {
+  kind: "user" | "area" | "place" | "photo";
+  item_id: string;
+  payload: unknown;
+};
+
+export const seedCatalog: DemoCatalog = {
+  users,
+  areas,
+  places,
+  photos,
+};
+
+function mergeById<T extends { id: string }>(seedItems: T[], remoteItems: T[]) {
+  const merged = new Map(seedItems.map((item) => [item.id, item]));
+  remoteItems.forEach((item) => merged.set(item.id, item));
+  return Array.from(merged.values());
+}
+
+function isCatalogKind(kind: string): kind is CatalogKind {
+  return kind === "users" || kind === "areas" || kind === "places" || kind === "photos";
+}
+
+function tableKindToCatalogKind(kind: CatalogRow["kind"]): CatalogKind {
+  if (kind === "user") return "users";
+  if (kind === "area") return "areas";
+  if (kind === "place") return "places";
+  return "photos";
 }
 
 export function isRemoteStateEnabled() {
@@ -48,6 +72,44 @@ export async function loadRemoteDemoState(): Promise<DemoState> {
   }
 
   return normalizeDemoState(data?.state);
+}
+
+export async function loadRemoteDemoCatalog(): Promise<DemoCatalog> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return seedCatalog;
+
+  const { data, error } = await supabase
+    .from(CATALOG_TABLE)
+    .select("kind,item_id,payload")
+    .order("item_id", { ascending: true })
+    .returns<CatalogRow[]>();
+
+  if (error) {
+    console.warn("Unable to load Oculi catalog from Supabase.", error.message);
+    return seedCatalog;
+  }
+
+  const remoteCatalog: DemoCatalog = {
+    users: [],
+    areas: [],
+    places: [],
+    photos: [],
+  };
+
+  data?.forEach((row) => {
+    const catalogKind = tableKindToCatalogKind(row.kind);
+    if (!isCatalogKind(catalogKind)) return;
+    remoteCatalog[catalogKind].push(row.payload as never);
+  });
+
+  return {
+    users: mergeById(seedCatalog.users, remoteCatalog.users),
+    areas: mergeById(seedCatalog.areas, remoteCatalog.areas),
+    places: mergeById(seedCatalog.places, remoteCatalog.places),
+    photos: mergeById(seedCatalog.photos, remoteCatalog.photos).sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    ),
+  };
 }
 
 export async function saveRemoteDemoState(state: DemoState) {

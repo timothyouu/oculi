@@ -1,0 +1,11 @@
+.git
+.next
+.codex-tools
+.playwright-cli
+node_modules
+output
+test-results
+playwright-report
+.env
+.env.*
+*.tsbuildinfo

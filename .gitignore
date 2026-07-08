@@ -25,7 +25,11 @@ Thumbs.db
 
 # local tool artifacts
 .playwright-cli/
+playwright-report/
+test-results/
 .codex-tools/
 output/
 supabase/.temp/
 tsconfig.tsbuildinfo
+
+.vercel

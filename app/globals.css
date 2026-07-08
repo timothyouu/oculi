@@ -14,6 +14,47 @@
   --moss-dark: #3f5a45;
   --gold: #d9a12f;
   --chip: #efede7;
+  --body-bg:
+    radial-gradient(circle at 18% 0%, rgba(212, 191, 154, 0.22), transparent 26rem),
+    radial-gradient(circle at 86% 12%, rgba(79, 107, 83, 0.11), transparent 24rem),
+    linear-gradient(180deg, #fbf8f2 0%, #f5f1e8 100%);
+  --nav-bg: rgba(255, 253, 248, 0.88);
+  --mobile-nav-bg: rgba(255, 253, 248, 0.94);
+  --card-bg: rgba(255, 253, 248, 0.9);
+  --elevated-shadow: 0 18px 45px rgba(39, 34, 27, 0.14);
+  --card-shadow: 0 18px 50px rgba(39, 34, 27, 0.08);
+  --app-font-scale: 1;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  background: #11130f;
+  --paper: #11130f;
+  --paper-strong: #191c16;
+  --ink: #f4efe3;
+  --muted: #b8ad9c;
+  --line: #343a2f;
+  --moss: #a7c69b;
+  --moss-dark: #c2d8b8;
+  --gold: #e2b85a;
+  --chip: #252a21;
+  --body-bg:
+    radial-gradient(circle at 18% 0%, rgba(217, 161, 47, 0.12), transparent 26rem),
+    radial-gradient(circle at 86% 12%, rgba(167, 198, 155, 0.13), transparent 24rem),
+    linear-gradient(180deg, #11130f 0%, #171a14 100%);
+  --nav-bg: rgba(25, 28, 22, 0.9);
+  --mobile-nav-bg: rgba(25, 28, 22, 0.95);
+  --card-bg: rgba(25, 28, 22, 0.9);
+  --elevated-shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
+  --card-shadow: 0 18px 50px rgba(0, 0, 0, 0.24);
+}
+
+:root[data-font-size="large"] {
+  --app-font-scale: 1.075;
+}
+
+:root[data-font-size="extra-large"] {
+  --app-font-scale: 1.15;
 }
 
 * {
@@ -26,12 +67,10 @@ html {
 
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(212, 191, 154, 0.22), transparent 26rem),
-    radial-gradient(circle at 86% 12%, rgba(79, 107, 83, 0.11), transparent 24rem),
-    linear-gradient(180deg, #fbf8f2 0%, #f5f1e8 100%);
+  background: var(--body-bg);
   color: var(--ink);
   font-family: Georgia, "Times New Roman", serif;
+  font-size: calc(16px * var(--app-font-scale));
 }
 
 button,
@@ -56,8 +95,8 @@ textarea:focus-visible {
 
 .oculi-card {
   border: 1px solid var(--line);
-  background: rgba(255, 253, 248, 0.9);
-  box-shadow: 0 18px 50px rgba(39, 34, 27, 0.08);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
 }
 
 .oculi-logo-mark {
