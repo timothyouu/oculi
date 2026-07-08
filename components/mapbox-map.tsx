@@ -6,6 +6,7 @@ import { SelectedPlaceCard } from "@/components/selected-place-card";
 import type { Map as MapboxMapInstance, Marker } from "mapbox-gl";
 import type { Photo, Place } from "@/lib/types";
 import { buildPlacePhotoNodes, clusterProjectedPlacePhotoNodes, clusterSizeForZoom } from "@/lib/map-clusters";
+import { shouldFallbackToStylizedMap } from "@/lib/mapbox-fallback";
 import { StylizedMap } from "./stylized-map";
 
 type MapboxMapProps = {
@@ -70,12 +71,17 @@ export function MapboxMap({
   const markersRef = useRef<Marker[]>([]);
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState("");
+  const [mapUnauthorized, setMapUnauthorized] = useState(false);
   const [mapZoom, setMapZoom] = useState(11.1);
   const [mapViewTick, setMapViewTick] = useState(0);
   const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const selected = places.find((place) => place.id === selectedPlaceId) || places[0];
   const placeNodes = useMemo(() => buildPlacePhotoNodes(places, photos), [photos, places]);
-  const shouldUseStylizedFallback = !requireMapbox && (!accessToken || Boolean(mapError));
+  const shouldUseStylizedFallback = shouldFallbackToStylizedMap({
+    requireMapbox,
+    hasAccessToken: Boolean(accessToken),
+    unauthorized: mapUnauthorized,
+  });
   const visiblePlaceClusters = useMemo(() => {
     void mapViewTick;
     const map = mapRef.current;
@@ -113,9 +119,13 @@ export function MapboxMap({
     };
     const handleError = (event: { error?: { message?: string; status?: number } }) => {
       const status = event.error?.status;
-      const detail = event.error?.message;
-      const statusText = status === 401 || status === 403 ? " Mapbox rejected the token or referrer." : "";
-      setMapError(`Mapbox could not load the live map.${statusText}${detail ? ` ${detail}` : ""}`);
+      // Mapbox GL emits `error` events for transient, non-fatal reasons (tiles
+      // canceled during a pan, sprite/glyph fetch hiccups, a single 404 tile).
+      // Only a hard auth rejection means the live map genuinely can't work, so
+      // only that should fall back to the stylized map.
+      if (status !== 401 && status !== 403) return;
+      setMapUnauthorized(true);
+      setMapError("Mapbox rejected the token or referrer for this domain.");
     };
 
     map.on("load", handleLoad);
@@ -174,13 +184,16 @@ export function MapboxMap({
     fetch(tileHealthCheckUrl, { referrerPolicy: "origin", signal: controller.signal })
       .then((response) => {
         if (response.status === 401 || response.status === 403) {
-          setMapError(`Mapbox is connected, but Mapbox is returning 403 for vector tiles. Check that the token has styles:read and fonts:read, allows ${allowedOrigin}, and is not using a noreferrer or same-origin referrer policy.`);
+          setMapUnauthorized(true);
+          setMapError(`Mapbox is connected, but Mapbox is returning ${response.status} for vector tiles. Check that the token has styles:read and fonts:read, allows ${allowedOrigin}, and is not using a noreferrer or same-origin referrer policy.`);
           return;
         }
+        setMapUnauthorized(false);
         setMapError("");
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
+        // A network hiccup is not an auth failure — surface a banner but keep the live map.
         setMapError("Mapbox is connected, but the app could not load map tiles from Mapbox.");
       });
 
