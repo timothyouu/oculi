@@ -5,6 +5,7 @@ import { Bookmark, Car, Map, MapPin, MoreHorizontal, Share, Star, Footprints } f
 import { useRouter } from "next/navigation";
 import { useDemoState } from "@/lib/demo-state";
 import { formatPlaceLocation } from "@/lib/location-labels";
+import { accessibilityForPlace } from "@/lib/place-accessibility";
 import type { Photo, Place } from "../lib/types";
 import { BackButton } from "./back-button";
 import { MapboxMap } from "./mapbox-map";
@@ -109,7 +110,7 @@ export function PlaceDetail({
           <div className="grid grid-cols-4 gap-2 border-y border-[var(--line)] py-4 text-sm text-[var(--muted)]">
             <span className="flex items-center gap-2"><Bookmark className="size-4" />{place.saveCount} saves</span>
             <span className="flex items-center gap-2"><Star className="size-4" />4.8</span>
-            <span className="flex items-center gap-2"><Car className="size-4" />Easy</span>
+            <span className="flex items-center gap-2"><Car className="size-4" />{accessibilityForPlace(place)}</span>
             <span className="flex items-center gap-2"><Footprints className="size-4" />0.3 mi</span>
           </div>
           <section className="space-y-3">

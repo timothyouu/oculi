@@ -8,6 +8,7 @@ import { useDemoState } from "@/lib/demo-state";
 import { buildSearchCorpus, getSearchCorrection, matchesCorrectedQuery } from "@/lib/search-corrections";
 import { rankSearchResults } from "@/lib/search-ranking";
 import { sortTopPlaces } from "@/lib/scoring";
+import { accessibilityForPlace, accessibilityOptions } from "@/lib/place-accessibility";
 import {
   BookOpen,
   Building2,
@@ -50,24 +51,8 @@ const sceneOptions = [
   { label: "Color", value: "color", icon: Palette },
 ];
 
-const accessibilityOptions = ["Easy", "Moderate", "Difficult"];
-
 function normalizedText(parts: Array<string | string[] | undefined>) {
   return parts.flatMap((part) => (Array.isArray(part) ? part : part ? [part] : [])).join(" ").toLowerCase();
-}
-
-function accessibilityForPlace(place: Place) {
-  const text = normalizedText([place.tags, place.bestTimes, place.description]);
-
-  if (["trail", "ruins", "long exposure", "night", "low tide"].some((term) => text.includes(term))) {
-    return "Difficult";
-  }
-
-  if (["coast", "overlook", "skyline", "bridge", "waterfront", "beach"].some((term) => text.includes(term))) {
-    return "Moderate";
-  }
-
-  return "Easy";
 }
 
 function placeSearchFields(place: Place, area?: { id?: string; name: string; region: string }, placePhotos: Photo[] = []) {
