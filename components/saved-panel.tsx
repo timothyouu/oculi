@@ -450,6 +450,7 @@ function ShootPlanner({
           places={previewPlaces}
           photos={savedPhotos}
           selectedPlaceId={activeRoute.stops[0]?.place.id}
+          savedPlaceIds={savedPlaces.map((place) => place.id)}
           onSelectPlace={onOpenPlace}
           onToggleSaved={onToggleSaved}
           onOpenPlace={onOpenPlace}

@@ -75,6 +75,7 @@ export function MapboxMap({
   const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const selected = places.find((place) => place.id === selectedPlaceId) || places[0];
   const placeNodes = useMemo(() => buildPlacePhotoNodes(places, photos), [photos, places]);
+  const shouldUseStylizedFallback = !requireMapbox && (!accessToken || Boolean(mapError));
   const visiblePlaceClusters = useMemo(() => {
     void mapViewTick;
     const map = mapRef.current;
@@ -88,7 +89,7 @@ export function MapboxMap({
   }, [mapReady, mapViewTick, mapZoom, placeNodes]);
 
   useEffect(() => {
-    if (!accessToken || !containerRef.current || mapRef.current) return;
+    if (!accessToken || shouldUseStylizedFallback || !containerRef.current || mapRef.current) return;
 
     setMapError("");
     mapboxgl.accessToken = accessToken;
@@ -107,20 +108,41 @@ export function MapboxMap({
 
     map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right");
     map.addControl(new mapboxgl.AttributionControl({ compact: true }), "bottom-left");
-    map.on("load", () => {
+    const handleLoad = () => {
       setMapReady(true);
-    });
+    };
+    const handleError = (event: { error?: { message?: string; status?: number } }) => {
+      const status = event.error?.status;
+      const detail = event.error?.message;
+      const statusText = status === 401 || status === 403 ? " Mapbox rejected the token or referrer." : "";
+      setMapError(`Mapbox could not load the live map.${statusText}${detail ? ` ${detail}` : ""}`);
+    };
+
+    map.on("load", handleLoad);
+    map.on("error", handleError);
 
     mapRef.current = map;
 
     return () => {
+      map.off("load", handleLoad);
+      map.off("error", handleError);
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
       map.remove();
       mapRef.current = null;
       setMapReady(false);
     };
-  }, [accessToken]);
+  }, [accessToken, shouldUseStylizedFallback]);
+
+  useEffect(() => {
+    if (!shouldUseStylizedFallback || !mapRef.current) return;
+
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
+    mapRef.current.remove();
+    mapRef.current = null;
+    setMapReady(false);
+  }, [shouldUseStylizedFallback]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -228,7 +250,7 @@ export function MapboxMap({
     map.easeTo({ center: [selected.lng, selected.lat], zoom: Math.max(map.getZoom(), 12.8), duration: 650 });
   }, [autoFocusSelected, mapReady, selected]);
 
-  if (!accessToken && !requireMapbox) {
+  if (shouldUseStylizedFallback) {
     return (
       <div className="relative h-full">
         <StylizedMap
@@ -243,7 +265,11 @@ export function MapboxMap({
           className={className}
         />
         <div className="absolute left-5 top-5 z-30 max-w-sm rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] px-4 py-3 text-sm text-[var(--ink)] shadow-[0_12px_30px_rgba(39,34,27,0.12)]">
-          Add <span className="font-sans">NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN</span> to .env and restart the dev server to enable Mapbox.
+          {mapError || (
+            <>
+              Add <span className="font-sans">NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN</span> to .env and restart the dev server to enable Mapbox.
+            </>
+          )}
         </div>
       </div>
     );
