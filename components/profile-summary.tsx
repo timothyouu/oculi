@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bookmark, Check, Grid2X2, Heart, MapPin, X } from "lucide-react";
 import { useDemoState } from "@/lib/demo-state";
 import { formatPlaceLocation } from "@/lib/location-labels";
@@ -34,6 +34,7 @@ export function ProfileSummary({
   const [activeTab, setActiveTab] = useState<"Photos" | "Saved">("Photos");
   const [status, setStatus] = useState("");
   const [editOpen, setEditOpen] = useState(false);
+  const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
   const favoriteTags = useMemo(() => {
     if (isCurrentUser) return state.profile.favoriteTags;
 
@@ -57,6 +58,24 @@ export function ProfileSummary({
     () => [...photos].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [photos],
   );
+  const selectedPhoto = useMemo(
+    () => sortedPhotos.find((photo) => photo.id === selectedPhotoId) ?? null,
+    [selectedPhotoId, sortedPhotos],
+  );
+
+  useEffect(() => {
+    if (!selectedPhotoId) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedPhotoId(null);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedPhotoId]);
 
   return (
     <section className="space-y-8">
@@ -133,45 +152,23 @@ export function ProfileSummary({
       </div>
 
       {activeTab === "Photos" ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-3 gap-1 sm:gap-1.5 lg:gap-2">
           {sortedPhotos.map((photo) => (
             <button
               key={photo.id}
               type="button"
-              className="overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] text-left shadow-[0_10px_24px_rgba(39,34,27,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(39,34,27,0.1)]"
-              onClick={() => onOpenPlace?.(photo.placeId)}
+              className="group relative aspect-square overflow-hidden bg-[var(--chip)] text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--moss)]"
+              onClick={() => setSelectedPhotoId(photo.id)}
+              aria-label={`Open photo details: ${photo.caption}`}
             >
-              <img src={photo.imageUrl} alt={photo.caption} className="aspect-[16/11] w-full object-cover" />
-              <span className="block space-y-3 p-4">
-                <span className="flex items-start justify-between gap-3">
-                  <span className="min-w-0">
-                    <span className="block truncate text-base font-semibold text-[var(--ink)]">
-                      {placesById.get(photo.placeId)?.name ?? photo.locationLabel}
-                    </span>
-                    <span className="mt-1 flex items-center gap-1.5 text-sm text-[var(--muted)]">
-                      <MapPin className="size-4 shrink-0" />
-                      <span className="truncate">{photo.locationLabel}</span>
-                    </span>
-                  </span>
-                  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--chip)] px-2.5 py-1 text-sm text-[var(--ink)]/75">
-                    <Heart className="size-4" />
-                    {photo.likeCount}
-                  </span>
-                </span>
-                <span className="block text-sm leading-5 text-[var(--ink)]/78">{photo.caption}</span>
-                <span className="flex flex-wrap gap-2">
-                  {photo.shotAtTimeOfDay ? (
-                    <span className="rounded-full bg-[var(--moss)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--moss)]">
-                      {photo.shotAtTimeOfDay}
-                    </span>
-                  ) : null}
-                  {photo.tags.slice(0, 3).map((tag) => (
-                    <span key={tag} className="rounded-full bg-[var(--chip)] px-2.5 py-1 text-xs capitalize text-[var(--ink)]/70">
-                      {tag}
-                    </span>
-                  ))}
-                </span>
-                {photo.metadataText ? <span className="block text-xs text-[var(--muted)]">{photo.metadataText}</span> : null}
+              <img
+                src={photo.imageUrl}
+                alt={photo.caption}
+                className="size-full object-cover transition duration-300 group-hover:scale-[1.03]"
+              />
+              <span className="pointer-events-none absolute inset-0 bg-black/0 transition group-hover:bg-black/10 group-focus-visible:bg-black/10" />
+              <span className="sr-only">
+                {placesById.get(photo.placeId)?.name ?? photo.locationLabel}, {photo.likeCount} likes
               </span>
             </button>
           ))}
@@ -211,7 +208,118 @@ export function ProfileSummary({
           }}
         />
       ) : null}
+      {selectedPhoto ? (
+        <PhotoDetailModal
+          photo={selectedPhoto}
+          place={placesById.get(selectedPhoto.placeId)}
+          onClose={() => setSelectedPhotoId(null)}
+          onOpenPlace={(placeId) => {
+            setSelectedPhotoId(null);
+            onOpenPlace?.(placeId);
+          }}
+        />
+      ) : null}
     </section>
+  );
+}
+
+function PhotoDetailModal({
+  photo,
+  place,
+  onClose,
+  onOpenPlace,
+}: {
+  photo: Photo;
+  place?: Place;
+  onClose: () => void;
+  onOpenPlace?: (placeId: string) => void;
+}) {
+  const takenLabel = new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(photo.createdAt));
+
+  return (
+    <div
+      className="fixed inset-0 z-50 grid place-items-center bg-black/55 px-3 py-6 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="photo-detail-title"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className="grid max-h-[min(860px,calc(100vh-3rem))] w-full max-w-5xl overflow-hidden rounded-lg bg-[var(--paper-strong)] text-[var(--ink)] shadow-[0_24px_70px_rgba(0,0,0,0.25)] md:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+        <div className="grid min-h-0 place-items-center bg-black">
+          <img src={photo.imageUrl} alt={photo.caption} className="max-h-[70vh] w-full object-contain md:max-h-[min(860px,calc(100vh-3rem))]" />
+        </div>
+        <div className="min-h-0 overflow-auto p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p id="photo-detail-title" className="text-xl font-semibold">
+                {place?.name ?? photo.locationLabel}
+              </p>
+              <p className="mt-1 flex items-center gap-1.5 text-sm text-[var(--muted)]">
+                <MapPin className="size-4 shrink-0" aria-hidden="true" />
+                <span>{photo.locationLabel}</span>
+              </p>
+            </div>
+            <button type="button" className="grid size-9 shrink-0 place-items-center rounded-full hover:bg-[var(--chip)]" aria-label="Close photo details" onClick={onClose}>
+              <X className="size-5" aria-hidden="true" />
+            </button>
+          </div>
+
+          <p className="mt-5 text-base leading-7 text-[var(--ink)]/82">{photo.caption}</p>
+
+          <dl className="mt-6 grid gap-4 text-sm">
+            <div className="flex items-center justify-between gap-4 border-t border-[var(--line)] pt-4">
+              <dt className="text-[var(--muted)]">Likes</dt>
+              <dd className="inline-flex items-center gap-1.5 font-semibold">
+                <Heart className="size-4" aria-hidden="true" />
+                {photo.likeCount.toLocaleString()}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-4 border-t border-[var(--line)] pt-4">
+              <dt className="text-[var(--muted)]">Posted</dt>
+              <dd className="font-semibold">{takenLabel}</dd>
+            </div>
+            {photo.shotAtTimeOfDay ? (
+              <div className="flex items-center justify-between gap-4 border-t border-[var(--line)] pt-4">
+                <dt className="text-[var(--muted)]">Best time</dt>
+                <dd className="font-semibold">{photo.shotAtTimeOfDay}</dd>
+              </div>
+            ) : null}
+            {photo.metadataText ? (
+              <div className="border-t border-[var(--line)] pt-4">
+                <dt className="text-[var(--muted)]">Details</dt>
+                <dd className="mt-1 font-semibold">{photo.metadataText}</dd>
+              </div>
+            ) : null}
+          </dl>
+
+          {photo.tags.length ? (
+            <div className="mt-6 flex flex-wrap gap-2">
+              {photo.tags.map((tag) => (
+                <span key={tag} className="rounded-full bg-[var(--chip)] px-3 py-1.5 text-xs capitalize text-[var(--ink)]/74">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          ) : null}
+
+          {place ? (
+            <button
+              type="button"
+              className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-[var(--moss)] px-5 text-sm font-semibold text-white outline-none transition hover:opacity-92 focus-visible:ring-2 focus-visible:ring-[var(--moss)] focus-visible:ring-offset-2"
+              onClick={() => onOpenPlace?.(place.id)}
+            >
+              View place
+            </button>
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
 }
 
