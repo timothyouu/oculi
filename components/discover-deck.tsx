@@ -10,6 +10,7 @@ import {
   X
 } from "lucide-react";
 import type { Photo, Place, User } from "../lib/types";
+import { ResilientImage } from "./resilient-image";
 
 const TUTORIAL_STORAGE_KEY = "oculi:has-seen-discover-tutorial";
 
@@ -204,7 +205,7 @@ export function DiscoverDeck({
             )}
             aria-hidden="true"
           >
-            <img src={item.photo.imageUrl} alt="" draggable={false} className="h-full w-full object-cover" />
+            <ResilientImage src={item.photo.imageUrl} alt="" draggable={false} className="h-full w-full object-cover" />
           </div>
         ))}
 
@@ -233,9 +234,10 @@ export function DiscoverDeck({
               onClick={() => onOpenPlace(active.place.id)}
               aria-label={`Open ${active.place.name}`}
             >
-              <img
+              <ResilientImage
                 src={active.photo.imageUrl}
                 alt={active.photo.caption || `${active.place.name} preview`}
+                fallbackSrc={active.place.coverPhotoUrl}
                 draggable={false}
                 className="aspect-[3/2] w-full object-cover transition duration-500 group-hover:scale-[1.01] max-sm:aspect-[4/5]"
               />
@@ -255,7 +257,7 @@ export function DiscoverDeck({
                       onOpenProfile(active.photographer.id);
                     }}
                   >
-                    <img
+                    <ResilientImage
                       src={active.photographer.avatarUrl}
                       alt=""
                       className="size-6 rounded-full border border-white/60 object-cover shadow-sm"

@@ -27,6 +27,7 @@ import {
   X,
 } from "lucide-react";
 import { MapboxMap } from "@/components/mapbox-map";
+import { ResilientImage } from "@/components/resilient-image";
 import { useDemoState } from "@/lib/demo-state";
 import { formatPlaceLocation } from "@/lib/location-labels";
 import type { Photo, Place } from "../lib/types";
@@ -266,7 +267,7 @@ export function SavedPanel({
           {visiblePlaces.map((place) => (
             <article key={place.id} className="overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_16px_42px_rgba(39,34,27,0.08)]">
               <button type="button" className="relative block w-full text-left" onClick={() => onOpenPlace?.(place.id)}>
-                <img src={place.coverPhotoUrl} alt="" className="aspect-[4/3] w-full object-cover" />
+                <ResilientImage src={place.coverPhotoUrl} alt="" className="aspect-[4/3] w-full object-cover" />
                 <span className="absolute right-3 top-3 grid h-10 w-7 place-items-center rounded-b bg-[var(--gold)] text-white">
                   <Bookmark className="size-4 fill-current" />
                 </span>
