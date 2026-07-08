@@ -2,13 +2,27 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppShell } from "@/components/app-shell";
-import { BackButton } from "@/components/back-button";
 import { MapboxMap } from "@/components/mapbox-map";
 import { PlaceDetailPopup } from "@/components/place-detail-popup";
 import { useDemoState } from "@/lib/demo-state";
 import { buildSearchCorpus, getSearchCorrection, matchesCorrectedQuery } from "@/lib/search-corrections";
 import { sortTopPlaces } from "@/lib/scoring";
-import { BookOpen, Building2, CloudSun, Landmark, MapPin, Mountain, Navigation, Palette, Users, Waves } from "lucide-react";
+import {
+  BookOpen,
+  Building2,
+  ChevronDown,
+  CloudSun,
+  Landmark,
+  MapPin,
+  Mountain,
+  Navigation,
+  Palette,
+  Search,
+  SlidersHorizontal,
+  Users,
+  Waves,
+  X,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import type { Photo, Place } from "@/lib/types";
 
@@ -21,6 +35,21 @@ const lightAliases: Record<string, string[]> = {
   Daylight: ["daylight", "morning", "afternoon", "clear", "overcast", "low tide"],
   Night: ["night"],
 };
+
+const lightOptions = ["Any", "Golden hour", "Sunrise", "Sunset", "Blue hour", "Daylight", "Night"];
+
+const sceneOptions = [
+  { label: "Landscape", value: "landscape", icon: Mountain },
+  { label: "Cityscape", value: "skyline", icon: Building2 },
+  { label: "Seascape", value: "coast", icon: Waves },
+  { label: "Architecture", value: "architecture", icon: BookOpen },
+  { label: "Portraits", value: "portraits", icon: Users },
+  { label: "Street", value: "street", icon: MapPin },
+  { label: "Bridge", value: "bridge", icon: Landmark },
+  { label: "Color", value: "color", icon: Palette },
+];
+
+const accessibilityOptions = ["Easy", "Moderate", "Difficult"];
 
 function normalizedText(parts: Array<string | string[] | undefined>) {
   return parts.flatMap((part) => (Array.isArray(part) ? part : part ? [part] : [])).join(" ").toLowerCase();
@@ -48,6 +77,10 @@ function matchesLightFilter(lightFilter: string, place: Place, photo: Photo) {
   return aliases.some((alias) => text.includes(alias));
 }
 
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
 export default function MapPage() {
   const { photos, places, state, toggleSavedPlace, recordPlaceView } = useDemoState();
   const topPlaces = useMemo(() => sortTopPlaces(places), [places]);
@@ -55,7 +88,7 @@ export default function MapPage() {
   const [detailPlaceId, setDetailPlaceId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [lightFilter, setLightFilter] = useState("Any");
-  const [sceneFilters, setSceneFilters] = useState(["landscape", "portraits"]);
+  const [sceneFilters, setSceneFilters] = useState<string[]>([]);
   const [accessibilityFilters, setAccessibilityFilters] = useState<string[]>([]);
   const [nearStatus, setNearStatus] = useState("");
   const popupHistoryRef = useRef(false);
@@ -102,6 +135,15 @@ export default function MapPage() {
   const mapPlaces = topPlaces.filter((place) => filteredPhotoPlaceIds.has(place.id));
   const selectedIsVisible = mapPlaces.some((place) => place.id === selectedPlaceId);
   const visibleSelectedPlaceId = selectedIsVisible ? selectedPlaceId : mapPlaces[0]?.id;
+  const activeFilterCount =
+    (query.trim() ? 1 : 0) +
+    (lightFilter !== "Any" ? 1 : 0) +
+    sceneFilters.length +
+    accessibilityFilters.length;
+  const activeSceneOptions = sceneFilters
+    .map((value) => sceneOptions.find((option) => option.value === value))
+    .filter((option): option is (typeof sceneOptions)[number] => Boolean(option));
+  const resultSummary = `${mapPlaces.length} place${mapPlaces.length === 1 ? "" : "s"} · ${filteredPhotos.length} photo${filteredPhotos.length === 1 ? "" : "s"}`;
 
   function toggleSceneFilter(filter: string) {
     setSceneFilters((filters) =>
@@ -118,6 +160,14 @@ export default function MapPage() {
   function selectPlace(placeId: string) {
     setSelectedPlaceId(placeId);
     recordPlaceView(placeId);
+  }
+
+  function clearFilters() {
+    setQuery("");
+    setLightFilter("Any");
+    setSceneFilters([]);
+    setAccessibilityFilters([]);
+    setNearStatus("");
   }
 
   const openPlace = useCallback((placeId: string) => {
@@ -157,78 +207,276 @@ export default function MapPage() {
   return (
     <AppShell activeItem="map">
       <div className="space-y-5">
-        <BackButton label="Back" fallbackHref="/" />
-        <div className="grid min-h-[560px] overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_24px_70px_rgba(39,34,27,0.10)] lg:h-[calc(100vh-184px)] lg:min-h-[520px] lg:grid-cols-[320px_minmax(0,1fr)]">
-          <aside className="hidden min-h-0 overflow-y-auto border-r border-[var(--line)] bg-[rgba(255,253,248,0.82)] p-7 lg:block">
-            <div className="relative mb-7">
-              <MapPin className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--ink)]/70" />
+        <details className="group rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_14px_34px_rgba(39,34,27,0.08)] lg:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 marker:hidden">
+            <span>
+              <span className="block font-sans text-xs font-semibold uppercase tracking-[0.14em] text-[var(--moss)]">
+                Map filters
+              </span>
+              <span className="text-base text-[var(--ink)]">
+                {activeFilterCount ? `${activeFilterCount} active · ${resultSummary}` : resultSummary}
+              </span>
+            </span>
+            <span className="grid size-10 place-items-center rounded-full bg-[var(--chip)] text-[var(--ink)]">
+              <SlidersHorizontal className="size-5" />
+            </span>
+          </summary>
+          <div className="space-y-4 border-t border-[var(--line)] p-4">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--ink)]/60" />
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                className="h-14 w-full rounded-lg border border-[var(--line)] bg-white pl-12 pr-4 text-base outline-none"
-                placeholder="Search map"
+                className="h-14 w-full rounded-lg border border-[var(--line)] bg-white pl-12 pr-10 text-base outline-none"
+                placeholder="Search city, scene, or mood"
                 aria-label="Search map places"
               />
+              {query ? (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="absolute right-3 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-[var(--muted)] hover:bg-[var(--chip)] hover:text-[var(--ink)]"
+                  aria-label="Clear search"
+                >
+                  <X className="size-4" />
+                </button>
+              ) : null}
             </div>
-            {query.trim() && searchCorrection.wasCorrected ? (
-              <p className="-mt-5 mb-5 px-1 text-sm text-[var(--muted)]" aria-live="polite">
-                Auto-corrected to <span className="font-medium text-[var(--ink)]">{searchCorrection.correctedQuery}</span>
-              </p>
-            ) : null}
-            <FilterSection title="Best light" icon={<CloudSun className="size-5" />}>
-              {["Any", "Golden hour", "Sunrise", "Sunset", "Blue hour", "Daylight", "Night"].map((item) => (
+
+            <div className="grid grid-cols-2 gap-2">
+              <QuickFilterButton
+                active={lightFilter === "Golden hour"}
+                icon={<CloudSun className="size-4" />}
+                label="Golden light"
+                onClick={() => setLightFilter(lightFilter === "Golden hour" ? "Any" : "Golden hour")}
+              />
+              <QuickFilterButton
+                active={sceneFilters.includes("skyline")}
+                icon={<Building2 className="size-4" />}
+                label="City views"
+                onClick={() => toggleSceneFilter("skyline")}
+              />
+              <QuickFilterButton
+                active={sceneFilters.includes("coast")}
+                icon={<Waves className="size-4" />}
+                label="Waterfront"
+                onClick={() => toggleSceneFilter("coast")}
+              />
+              <QuickFilterButton
+                active={accessibilityFilters.includes("Easy")}
+                icon={<MapPin className="size-4" />}
+                label="Easy access"
+                onClick={() => toggleAccessibilityFilter("Easy")}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              {["Any", "Golden hour", "Blue hour", "Night"].map((item) => (
                 <button
                   key={item}
                   type="button"
                   onClick={() => setLightFilter(item)}
-                  className={`rounded-lg border border-[var(--line)] px-4 py-3 text-sm ${lightFilter === item ? "bg-[var(--moss)] text-white" : "bg-white text-[var(--ink)]"}`}
+                  className={cx(
+                    "rounded-lg border px-3 py-2.5 text-left font-sans text-sm transition",
+                    lightFilter === item
+                      ? "border-[var(--moss)] bg-[var(--moss)] text-white"
+                      : "border-[var(--line)] bg-white text-[var(--ink)]",
+                  )}
                 >
                   {item}
                 </button>
               ))}
-            </FilterSection>
-            <FilterSection title="Scene type">
-              {[
-                ["Landscape", "landscape", Mountain],
-                ["Cityscape", "skyline", Building2],
-                ["Seascape", "coast", Waves],
-                ["Architecture", "architecture", BookOpen],
-                ["Portraits", "portraits", Users],
-                ["Street", "street", MapPin],
-                ["Bridge", "bridge", Landmark],
-                ["Color", "color", Palette],
-              ].map(([label, value, Icon]) => {
-                const TypedIcon = Icon as typeof MapPin;
-                const checked = sceneFilters.includes(value as string);
-                return (
-                  <button key={label as string} type="button" className="flex w-full items-center justify-between py-2 text-base" onClick={() => toggleSceneFilter(value as string)}>
-                    <span className="flex items-center gap-3"><TypedIcon className="size-5 text-[var(--muted)]" />{label as string}</span>
-                    <span className={`grid size-5 place-items-center rounded border ${checked ? "border-[var(--moss)] bg-[var(--moss)]" : "border-[var(--muted)]"}`}>
-                      {checked ? <span className="size-2 rounded-full bg-white" /> : null}
-                    </span>
+            </div>
+
+            <div className="flex items-center justify-between gap-3">
+              <button
+                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white font-sans text-sm font-semibold text-[var(--ink)]"
+                onClick={() => {
+                  setNearStatus("Showing the closest seeded photo spots for this demo.");
+                  setSelectedPlaceId(mapPlaces[0]?.id ?? topPlaces[0]?.id);
+                }}
+              >
+                <Navigation className="size-4" /> Near me
+              </button>
+              {activeFilterCount ? (
+                <button type="button" onClick={clearFilters} className="h-11 rounded-lg px-3 font-sans text-sm text-[var(--moss)]">
+                  Clear all
+                </button>
+              ) : null}
+            </div>
+          </div>
+        </details>
+
+        <div className="grid min-h-[560px] overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_24px_70px_rgba(39,34,27,0.10)] lg:h-[calc(100vh-184px)] lg:min-h-[520px] lg:grid-cols-[320px_minmax(0,1fr)]">
+          <aside className="hidden min-h-0 overflow-y-auto border-r border-[var(--line)] bg-[rgba(255,253,248,0.9)] px-5 py-6 lg:block">
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <p className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-[var(--moss)]">
+                  Explore
+                </p>
+                <h1 className="mt-1 text-2xl leading-tight text-[var(--ink)]">Find photo spots</h1>
+              </div>
+              <span className="rounded-full bg-[var(--chip)] px-3 py-1 font-sans text-sm text-[var(--muted)]">
+                {resultSummary}
+              </span>
+            </div>
+
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--ink)]/60" />
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                className="h-14 w-full rounded-lg border border-[var(--line)] bg-white pl-12 pr-10 text-base outline-none shadow-[0_8px_24px_rgba(39,34,27,0.05)]"
+                placeholder="Search city, scene, or mood"
+                aria-label="Search map places"
+              />
+              {query ? (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="absolute right-3 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-[var(--muted)] hover:bg-[var(--chip)] hover:text-[var(--ink)]"
+                  aria-label="Clear search"
+                >
+                  <X className="size-4" />
+                </button>
+              ) : null}
+            </div>
+            {query.trim() && searchCorrection.wasCorrected ? (
+              <p className="mt-3 px-1 text-sm text-[var(--muted)]" aria-live="polite">
+                Auto-corrected to <span className="font-medium text-[var(--ink)]">{searchCorrection.correctedQuery}</span>
+              </p>
+            ) : null}
+
+            <section className="mt-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="font-sans text-sm font-semibold text-[var(--ink)]">Start with</h2>
+                {activeFilterCount ? (
+                  <button type="button" onClick={clearFilters} className="font-sans text-sm text-[var(--moss)]">
+                    Clear all
                   </button>
-                );
-              })}
-            </FilterSection>
-            <FilterSection title="Accessibility">
-              {["Easy", "Moderate", "Difficult"].map((item) => {
-                const checked = accessibilityFilters.includes(item);
-                return (
-                  <button key={item} type="button" className="flex w-full items-center gap-3 py-2 text-base" onClick={() => toggleAccessibilityFilter(item)}>
-                    <span className={`grid size-5 place-items-center rounded border ${checked ? "border-[var(--moss)] bg-[var(--moss)]" : "border-[var(--muted)]"}`}>
-                      {checked ? <span className="size-2 rounded-full bg-white" /> : null}
-                    </span>
-                    {item}
-                  </button>
-                );
-              })}
-            </FilterSection>
-            <p className="text-sm text-[var(--muted)]">
-              Showing {filteredPhotos.length} photo{filteredPhotos.length === 1 ? "" : "s"} across {mapPlaces.length} place{mapPlaces.length === 1 ? "" : "s"}.
-            </p>
-            {nearStatus ? <p className="mb-3 text-sm text-[var(--moss)]">{nearStatus}</p> : null}
+                ) : null}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <QuickFilterButton
+                  active={lightFilter === "Golden hour"}
+                  icon={<CloudSun className="size-4" />}
+                  label="Golden light"
+                  onClick={() => setLightFilter(lightFilter === "Golden hour" ? "Any" : "Golden hour")}
+                />
+                <QuickFilterButton
+                  active={sceneFilters.includes("skyline")}
+                  icon={<Building2 className="size-4" />}
+                  label="City views"
+                  onClick={() => toggleSceneFilter("skyline")}
+                />
+                <QuickFilterButton
+                  active={sceneFilters.includes("coast")}
+                  icon={<Waves className="size-4" />}
+                  label="Waterfront"
+                  onClick={() => toggleSceneFilter("coast")}
+                />
+                <QuickFilterButton
+                  active={accessibilityFilters.includes("Easy")}
+                  icon={<MapPin className="size-4" />}
+                  label="Easy access"
+                  onClick={() => toggleAccessibilityFilter("Easy")}
+                />
+              </div>
+            </section>
+
+            {activeFilterCount ? (
+              <section className="mt-5 rounded-lg border border-[var(--line)] bg-white/76 p-3">
+                <div className="mb-2 flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
+                  <SlidersHorizontal className="size-4" />
+                  Active filters
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {query.trim() ? <ActiveFilterChip label={`Search: ${searchCorrection.correctedQuery}`} onClear={() => setQuery("")} /> : null}
+                  {lightFilter !== "Any" ? <ActiveFilterChip label={lightFilter} onClear={() => setLightFilter("Any")} /> : null}
+                  {activeSceneOptions.map((option) => (
+                    <ActiveFilterChip key={option.value} label={option.label} onClear={() => toggleSceneFilter(option.value)} />
+                  ))}
+                  {accessibilityFilters.map((filter) => (
+                    <ActiveFilterChip key={filter} label={filter} onClear={() => toggleAccessibilityFilter(filter)} />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            <div className="mt-5 space-y-3">
+              <FilterSection title="Best light" icon={<CloudSun className="size-4" />} defaultOpen>
+                <div className="grid grid-cols-2 gap-2">
+                  {lightOptions.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => setLightFilter(item)}
+                      className={cx(
+                        "rounded-lg border px-3 py-2.5 text-left font-sans text-sm transition",
+                        lightFilter === item
+                          ? "border-[var(--moss)] bg-[var(--moss)] text-white"
+                          : "border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--moss)]/50",
+                      )}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </FilterSection>
+
+              <FilterSection title="Scene type" icon={<Mountain className="size-4" />}>
+                <div className="grid grid-cols-2 gap-2">
+                  {sceneOptions.map(({ label, value, icon: Icon }) => {
+                    const checked = sceneFilters.includes(value);
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        className={cx(
+                          "flex items-center gap-2 rounded-lg border px-3 py-2.5 text-left font-sans text-sm transition",
+                          checked
+                            ? "border-[var(--moss)] bg-[var(--moss)] text-white"
+                            : "border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--moss)]/50",
+                        )}
+                        onClick={() => toggleSceneFilter(value)}
+                        aria-pressed={checked}
+                      >
+                        <Icon className={cx("size-4", checked ? "text-white" : "text-[var(--muted)]")} />
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FilterSection>
+
+              <FilterSection title="Ease of visit" icon={<MapPin className="size-4" />}>
+                <div className="grid grid-cols-3 gap-2">
+                  {accessibilityOptions.map((item) => {
+                    const checked = accessibilityFilters.includes(item);
+                    return (
+                      <button
+                        key={item}
+                        type="button"
+                        className={cx(
+                          "rounded-lg border px-3 py-2.5 text-center font-sans text-sm transition",
+                          checked
+                            ? "border-[var(--moss)] bg-[var(--moss)] text-white"
+                            : "border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--moss)]/50",
+                        )}
+                        onClick={() => toggleAccessibilityFilter(item)}
+                        aria-pressed={checked}
+                      >
+                        {item}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FilterSection>
+            </div>
+
+            {nearStatus ? <p className="mt-4 text-sm text-[var(--moss)]">{nearStatus}</p> : null}
             <button
-              className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white text-base"
+              className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white font-sans text-sm font-semibold text-[var(--ink)] shadow-[0_8px_24px_rgba(39,34,27,0.05)] transition hover:border-[var(--moss)]/50"
               onClick={() => {
                 setNearStatus("Showing the closest seeded photo spots for this demo.");
                 setSelectedPlaceId(mapPlaces[0]?.id ?? topPlaces[0]?.id);
@@ -258,14 +506,72 @@ export default function MapPage() {
   );
 }
 
-function FilterSection({ title, icon, children }: { title: string; icon?: ReactNode; children: ReactNode }) {
+function QuickFilterButton({
+  active,
+  icon,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  icon: ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
   return (
-    <section className="mb-7">
-      <h2 className="mb-3 flex items-center justify-between text-lg text-[var(--ink)]">
-        {title}
-        {icon ? <span className="text-[var(--muted)]">{icon}</span> : null}
-      </h2>
-      <div className="flex flex-wrap gap-2">{children}</div>
-    </section>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cx(
+        "flex min-h-12 items-center gap-2 rounded-lg border px-3 text-left font-sans text-sm transition",
+        active
+          ? "border-[var(--moss)] bg-[var(--moss)] text-white"
+          : "border-[var(--line)] bg-white text-[var(--ink)] shadow-[0_8px_24px_rgba(39,34,27,0.04)] hover:border-[var(--moss)]/50",
+      )}
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
+  );
+}
+
+function ActiveFilterChip({ label, onClear }: { label: string; onClear: () => void }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--chip)] py-1 pl-3 pr-1 font-sans text-sm text-[var(--ink)]">
+      {label}
+      <button
+        type="button"
+        onClick={onClear}
+        className="grid size-6 place-items-center rounded-full text-[var(--muted)] hover:bg-white hover:text-[var(--ink)]"
+        aria-label={`Remove ${label} filter`}
+      >
+        <X className="size-3.5" />
+      </button>
+    </span>
+  );
+}
+
+function FilterSection({
+  title,
+  icon,
+  children,
+  defaultOpen = false,
+}: {
+  title: string;
+  icon?: ReactNode;
+  children: ReactNode;
+  defaultOpen?: boolean;
+}) {
+  return (
+    <details className="group rounded-lg border border-[var(--line)] bg-white/68" open={defaultOpen}>
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-base text-[var(--ink)] marker:hidden">
+        <span className="flex items-center gap-2">
+          {icon ? <span className="text-[var(--muted)]">{icon}</span> : null}
+          {title}
+        </span>
+        <ChevronDown className="size-4 text-[var(--muted)] transition group-open:rotate-180" />
+      </summary>
+      <div className="border-t border-[var(--line)] p-3">{children}</div>
+    </details>
   );
 }
