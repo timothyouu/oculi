@@ -2,14 +2,16 @@
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { areas, currentUserId, photos as seedPhotos, places, users } from "./data";
-import { sortTopPlaces } from "./scoring";
 import {
-  createInitialDemoState,
-  loadDemoState,
-  resetDemoState as clearDemoState,
-  saveDemoState
-} from "./storage";
-import type { AddPhotoInput, Area, Comment, DemoState, Photo, Place, Reply, User } from "./types";
+  isRemoteStateEnabled,
+  loadRemoteDemoState,
+  resetRemoteDemoState,
+  saveRemoteDemoState,
+  uploadPhotoFile,
+} from "./remote-state";
+import { sortTopPlaces } from "./scoring";
+import { createInitialDemoState } from "./storage";
+import type { AddPhotoInput, Area, DemoState, Photo, Place, User } from "./types";
 
 type DemoContextValue = {
   state: DemoState;
@@ -18,22 +20,18 @@ type DemoContextValue = {
   places: Place[];
   topPlaces: Place[];
   photos: Photo[];
-  comments: Comment[];
   currentUser: User;
   currentUserId: string;
   savedPlaceIds: string[];
   followedUserIds: string[];
   likedPhotoIds: string[];
-  likedCommentIds: string[];
-  likedReplyIds: string[];
+  isRemoteBacked: boolean;
+  hasLoadedRemoteState: boolean;
+  recordPlaceView: (placeId: string, discoveryActiveIndex?: number) => void;
   toggleSavedPlace: (placeId: string) => void;
   toggleFollowUser: (userId: string) => void;
   togglePhotoLike: (photoId: string) => void;
   addPhoto: (input: AddPhotoInput) => Photo;
-  addComment: (photoId: string, body: string) => Comment | undefined;
-  toggleCommentLike: (commentId: string) => void;
-  addReply: (commentId: string, body: string) => Reply | undefined;
-  toggleReplyLike: (replyId: string) => void;
   resetDemoState: () => void;
 };
 
@@ -53,19 +51,38 @@ function makeId(prefix: string) {
 
 export function DemoStateProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<DemoState>(() => createInitialDemoState());
-  const [hasLoadedStoredState, setHasLoadedStoredState] = useState(false);
+  const [hasLoadedRemoteState, setHasLoadedRemoteState] = useState(false);
 
   useEffect(() => {
-    setState(loadDemoState());
-    setHasLoadedStoredState(true);
+    let cancelled = false;
+
+    loadRemoteDemoState().then((remoteState) => {
+      if (cancelled) return;
+      setState(remoteState);
+      setHasLoadedRemoteState(true);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
-    if (hasLoadedStoredState) saveDemoState(state);
-  }, [hasLoadedStoredState, state]);
+    if (!hasLoadedRemoteState || !isRemoteStateEnabled()) return;
+
+    const timeout = window.setTimeout(() => {
+      saveRemoteDemoState(state);
+    }, 350);
+
+    return () => window.clearTimeout(timeout);
+  }, [hasLoadedRemoteState, state]);
 
   const value = useMemo<DemoContextValue>(() => {
-    const update = (fn: (state: DemoState) => DemoState) => setState((prev) => fn(prev));
+    const update = (fn: (state: DemoState) => DemoState) =>
+      setState((prev) => {
+        const next = fn(prev);
+        return next;
+      });
     const currentUser = users.find((user) => user.id === currentUserId) ?? users[0];
 
     return {
@@ -75,14 +92,38 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       places,
       topPlaces: sortTopPlaces(places),
       photos: [...state.uploadedPhotos, ...seedPhotos],
-      comments: state.comments,
       currentUser,
       currentUserId,
       savedPlaceIds: state.savedPlaceIds,
       followedUserIds: state.followedUserIds,
       likedPhotoIds: state.likedPhotoIds,
-      likedCommentIds: state.likedCommentIds,
-      likedReplyIds: state.likedReplyIds,
+      isRemoteBacked: isRemoteStateEnabled(),
+      hasLoadedRemoteState,
+      recordPlaceView: (placeId, discoveryActiveIndex) =>
+        update((prev) => {
+          const viewedAt = new Date().toISOString();
+          const existingView = prev.placeViews.find((view) => view.placeId === placeId);
+          const placeViews = existingView
+            ? prev.placeViews.map((view) =>
+                view.placeId === placeId
+                  ? { ...view, viewedAt, viewCount: view.viewCount + 1 }
+                  : view,
+              )
+            : [...prev.placeViews, { placeId, viewedAt, viewCount: 1 }];
+
+          return {
+            ...prev,
+            viewedPlaceIds: prev.viewedPlaceIds.includes(placeId)
+              ? prev.viewedPlaceIds
+              : [...prev.viewedPlaceIds, placeId],
+            placeViews,
+            lastViewedPlaceId: placeId,
+            lastDiscoveryPlaceId:
+              discoveryActiveIndex === undefined ? prev.lastDiscoveryPlaceId : placeId,
+            discoveryActiveIndex:
+              discoveryActiveIndex === undefined ? prev.discoveryActiveIndex : discoveryActiveIndex,
+          };
+        }),
       toggleSavedPlace: (placeId) =>
         update((prev) => ({ ...prev, savedPlaceIds: toggleId(prev.savedPlaceIds, placeId) })),
       toggleFollowUser: (userId) => {
@@ -93,9 +134,11 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         update((prev) => ({ ...prev, likedPhotoIds: toggleId(prev.likedPhotoIds, photoId) })),
       addPhoto: (input) => {
         const place = places.find((item) => item.id === input.placeId);
+        const id = makeId("upload");
+        const { file, ...photoInput } = input;
         const photo: Photo = {
-          ...input,
-          id: makeId("upload"),
+          ...photoInput,
+          id,
           userId: currentUserId,
           likeCount: 0,
           createdAt: new Date().toISOString(),
@@ -103,56 +146,25 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
           tags: input.tags ?? []
         };
         update((prev) => ({ ...prev, uploadedPhotos: [photo, ...prev.uploadedPhotos] }));
+        if (file) {
+          uploadPhotoFile(file, id).then((remoteUrl) => {
+            if (!remoteUrl) return;
+            update((prev) => ({
+              ...prev,
+              uploadedPhotos: prev.uploadedPhotos.map((item) =>
+                item.id === id ? { ...item, imageUrl: remoteUrl } : item,
+              ),
+            }));
+          });
+        }
         return photo;
       },
-      addComment: (photoId, body) => {
-        const trimmed = body.trim();
-        if (!trimmed) return undefined;
-
-        const comment: Comment = {
-          id: makeId("comment"),
-          photoId,
-          userId: currentUserId,
-          body: trimmed,
-          createdAt: new Date().toISOString(),
-          likeCount: 0,
-          replies: []
-        };
-
-        update((prev) => ({ ...prev, comments: [...prev.comments, comment] }));
-        return comment;
-      },
-      toggleCommentLike: (commentId) =>
-        update((prev) => ({ ...prev, likedCommentIds: toggleId(prev.likedCommentIds, commentId) })),
-      addReply: (commentId, body) => {
-        const trimmed = body.trim();
-        if (!trimmed) return undefined;
-
-        const reply: Reply = {
-          id: makeId("reply"),
-          userId: currentUserId,
-          body: trimmed,
-          createdAt: new Date().toISOString(),
-          likeCount: 0
-        };
-
-        update((prev) => ({
-          ...prev,
-          comments: prev.comments.map((comment) =>
-            comment.id === commentId
-              ? { ...comment, replies: [...comment.replies, reply] }
-              : comment
-          )
-        }));
-        return reply;
-      },
-      toggleReplyLike: (replyId) =>
-        update((prev) => ({ ...prev, likedReplyIds: toggleId(prev.likedReplyIds, replyId) })),
       resetDemoState: () => {
-        setState(clearDemoState());
+        setState(createInitialDemoState());
+        resetRemoteDemoState();
       }
     };
-  }, [state]);
+  }, [hasLoadedRemoteState, state]);
 
   return <DemoStateContext.Provider value={value}>{children}</DemoStateContext.Provider>;
 }

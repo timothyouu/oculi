@@ -25,4 +25,7 @@ Thumbs.db
 
 # local tool artifacts
 .playwright-cli/
+.codex-tools/
+output/
+supabase/.temp/
 tsconfig.tsbuildinfo

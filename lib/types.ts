@@ -50,27 +50,10 @@ export type Photo = {
   likeCount: number;
 };
 
-export type Reply = {
-  id: string;
-  userId: string;
-  body: string;
-  createdAt: string;
-  likeCount: number;
-};
-
-export type Comment = {
-  id: string;
-  photoId: string;
-  userId: string;
-  body: string;
-  createdAt: string;
-  likeCount: number;
-  replies: Reply[];
-};
-
 export type AddPhotoInput = {
   placeId: string;
   imageUrl: string;
+  file?: File;
   caption: string;
   metadataText?: string;
   shotAtTimeOfDay?: string;
@@ -78,12 +61,20 @@ export type AddPhotoInput = {
   locationLabel?: string;
 };
 
+export type PlaceView = {
+  placeId: string;
+  viewedAt: string;
+  viewCount: number;
+};
+
 export type DemoState = {
   savedPlaceIds: string[];
   followedUserIds: string[];
   likedPhotoIds: string[];
-  likedCommentIds: string[];
-  likedReplyIds: string[];
+  viewedPlaceIds: string[];
+  placeViews: PlaceView[];
+  lastViewedPlaceId?: string;
+  lastDiscoveryPlaceId?: string;
+  discoveryActiveIndex: number;
   uploadedPhotos: Photo[];
-  comments: Comment[];
 };
