@@ -300,7 +300,11 @@ export function MapboxMap({
 
   return (
     <section className={cx("relative overflow-hidden rounded-none bg-[#dfe8df]", className)} aria-label="Live Mapbox map">
-      <div ref={containerRef} className="absolute inset-0" />
+      {/* mapbox-gl.css forces `.mapboxgl-map { position: relative }`, which
+          overrides Tailwind's `absolute`; `inset-0` then can't stretch the
+          container and it collapses to 0 height, leaving the map blank. Size it
+          with explicit width/height so it fills the positioned section instead. */}
+      <div ref={containerRef} className="h-full w-full" />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-24 bg-gradient-to-b from-[rgba(255,253,248,0.62)] to-transparent" />
       {mapError ? (
         <div className="pointer-events-none absolute left-5 top-5 z-30 max-w-md rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] px-4 py-3 text-sm text-[var(--ink)] shadow-[0_12px_30px_rgba(39,34,27,0.12)]">
