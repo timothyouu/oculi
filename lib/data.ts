@@ -38,7 +38,7 @@ export const users: User[] = [
     id: "user-nora",
     name: "Nora Patel",
     username: "@nora.frames",
-    avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-nora-patel.png",
     bio: "Landscape, architecture, and quiet corners.",
     homeArea: "Richmond",
     followerCount: 1510,
@@ -48,7 +48,7 @@ export const users: User[] = [
     id: "user-jules",
     name: "Jules Rivera",
     username: "@julesr",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-jules-rivera.png",
     bio: "Portrait scout. Shade, color, clean backdrops.",
     homeArea: "Oakland",
     followerCount: 756,
@@ -58,7 +58,7 @@ export const users: User[] = [
     id: "user-lena",
     name: "Lena Ortiz",
     username: "@lena.light",
-    avatarUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-lena-ortiz.png",
     bio: "Neighborhood color, stairways, and small light pockets.",
     homeArea: "Noe Valley",
     followerCount: 1280,
@@ -68,7 +68,7 @@ export const users: User[] = [
     id: "user-sam",
     name: "Sam Wilder",
     username: "@samwide",
-    avatarUrl: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-sam-wilder.png",
     bio: "Wide frames, rooftops, piers, and moving weather.",
     homeArea: "North Beach",
     followerCount: 2310,
@@ -79,7 +79,7 @@ export const users: User[] = [
     id: "user-isha",
     name: "Isha Raman",
     username: "@isha.frames",
-    avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-isha-raman.png",
     bio: "Street portraits and architecture details.",
     homeArea: "Inner Sunset",
     followerCount: 890,
@@ -89,7 +89,7 @@ export const users: User[] = [
     id: "user-zoe",
     name: "Zoe Kim",
     username: "@zoekim.photo",
-    avatarUrl: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-zoe-kim.png",
     bio: "Gardens, quiet museums, and soft botanical light.",
     homeArea: "Inner Richmond",
     followerCount: 1740,
@@ -99,7 +99,7 @@ export const users: User[] = [
     id: "user-marcus",
     name: "Marcus Lee",
     username: "@marcusframes",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-marcus-lee.png",
     bio: "Transit lines, long shadows, and downtown geometry.",
     homeArea: "SoMa",
     followerCount: 1325,
@@ -109,7 +109,7 @@ export const users: User[] = [
     id: "user-ava",
     name: "Ava Thompson",
     username: "@ava.coast",
-    avatarUrl: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-ava-thompson.png",
     bio: "Coastal hikes, beaches, and weather that makes a frame.",
     homeArea: "Pacifica",
     followerCount: 2480,
@@ -120,7 +120,7 @@ export const users: User[] = [
     id: "user-diego",
     name: "Diego Alvarez",
     username: "@diego.nights",
-    avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-diego-alvarez.png",
     bio: "Night color, neon, diners, and handheld street sets.",
     homeArea: "Lower Haight",
     followerCount: 1168,
@@ -130,7 +130,7 @@ export const users: User[] = [
     id: "user-hannah",
     name: "Hannah Reed",
     username: "@hannahwide",
-    avatarUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-hannah-reed.png",
     bio: "National parks, desert weather, and sunrise trailheads.",
     homeArea: "Denver",
     followerCount: 3120,
@@ -141,7 +141,7 @@ export const users: User[] = [
     id: "user-noah",
     name: "Noah Singh",
     username: "@noahcitylight",
-    avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-noah-singh.png",
     bio: "Big-city landmarks, rain reflections, and clean night color.",
     homeArea: "Brooklyn",
     followerCount: 2214,
@@ -151,7 +151,7 @@ export const users: User[] = [
     id: "user-camila",
     name: "Camila Santos",
     username: "@camilacoast",
-    avatarUrl: "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-camila-santos.png",
     bio: "Beaches, warm-weather streets, and handheld travel sets.",
     homeArea: "Miami Beach",
     followerCount: 1842,
@@ -161,7 +161,7 @@ export const users: User[] = [
     id: "user-kenji",
     name: "Kenji Watanabe",
     username: "@kenji.crossing",
-    avatarUrl: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?auto=format&fit=crop&w=160&q=80",
+    avatarUrl: "/generated/avatar-kenji-watanabe.png",
     bio: "World landmarks, transit energy, and patient blue-hour frames.",
     homeArea: "Tokyo",
     followerCount: 3920,
@@ -187,7 +187,7 @@ export const areas: Area[] = [
     centerLat: 40.7128,
     centerLng: -74.006,
     description: "Bridges, parks, skyline corridors, rainy streets, and landmark night color.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?brooklyn-bridge,new-york"
+    coverPhotoUrl: "/generated/area-nyc.png"
   },
   {
     id: "dc",
@@ -196,7 +196,7 @@ export const areas: Area[] = [
     centerLat: 38.9072,
     centerLng: -77.0369,
     description: "Monuments, reflecting pools, museums, and clean sunrise symmetry.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?washington-monument,dc"
+    coverPhotoUrl: "/generated/area-dc.png"
   },
   {
     id: "arizona",
@@ -205,7 +205,7 @@ export const areas: Area[] = [
     centerLat: 35.2011,
     centerLng: -111.6392,
     description: "Desert overlooks, canyon light, red rock scale, and clear night skies.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?grand-canyon,arizona"
+    coverPhotoUrl: "/generated/area-arizona.png"
   },
   {
     id: "utah",
@@ -214,7 +214,7 @@ export const areas: Area[] = [
     centerLat: 37.2982,
     centerLng: -113.0263,
     description: "Sandstone cliffs, hoodoos, trail overlooks, and dramatic sunrise shadows.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?zion-national-park"
+    coverPhotoUrl: "/generated/area-utah.png"
   },
   {
     id: "socal",
@@ -223,7 +223,7 @@ export const areas: Area[] = [
     centerLat: 34.0522,
     centerLng: -118.2437,
     description: "Desert trees, coastal piers, observatories, and warm evening haze.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?griffith-observatory,los-angeles"
+    coverPhotoUrl: "/generated/area-socal.png"
   },
   {
     id: "seattle",
@@ -232,7 +232,7 @@ export const areas: Area[] = [
     centerLat: 47.6062,
     centerLng: -122.3321,
     description: "Market color, skyline viewpoints, moody cloud layers, and waterfront texture.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?seattle-skyline,kerry-park"
+    coverPhotoUrl: "/generated/area-seattle.png"
   },
   {
     id: "chicago",
@@ -241,7 +241,7 @@ export const areas: Area[] = [
     centerLat: 41.8781,
     centerLng: -87.6298,
     description: "River architecture, reflective public art, lakefront light, and blue-hour canyons.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?chicago-riverwalk"
+    coverPhotoUrl: "/generated/area-chicago.png"
   },
   {
     id: "florida",
@@ -250,7 +250,7 @@ export const areas: Area[] = [
     centerLat: 25.7617,
     centerLng: -80.1918,
     description: "Pastel beach mornings, wetlands, palms, storms, and bright documentary color.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?south-beach,miami"
+    coverPhotoUrl: "/generated/area-florida.png"
   },
   {
     id: "new-orleans",
@@ -259,7 +259,7 @@ export const areas: Area[] = [
     centerLat: 29.9511,
     centerLng: -90.0715,
     description: "Balconies, music blocks, humid night glow, and layered historic streets.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?french-quarter,new-orleans"
+    coverPhotoUrl: "/generated/area-new-orleans.png"
   },
   {
     id: "boston",
@@ -268,7 +268,7 @@ export const areas: Area[] = [
     centerLat: 42.3601,
     centerLng: -71.0589,
     description: "Brick lanes, harbor weather, historic neighborhoods, and compact walking frames.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?acorn-street,boston"
+    coverPhotoUrl: "/generated/area-boston.png"
   },
   {
     id: "philly",
@@ -277,7 +277,7 @@ export const areas: Area[] = [
     centerLat: 39.9526,
     centerLng: -75.1652,
     description: "Museum steps, public art, rowhomes, and skyline edges around golden hour.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?philadelphia-museum-art"
+    coverPhotoUrl: "/generated/area-philly.png"
   },
   {
     id: "colorado",
@@ -286,7 +286,7 @@ export const areas: Area[] = [
     centerLat: 40.3428,
     centerLng: -105.6836,
     description: "Alpine lakes, peaks, thin morning clouds, and high-country reflections.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?rocky-mountain-national-park"
+    coverPhotoUrl: "/generated/area-colorado.png"
   },
   {
     id: "wyoming",
@@ -295,7 +295,7 @@ export const areas: Area[] = [
     centerLat: 44.428,
     centerLng: -110.5885,
     description: "Thermal color, mountain reflections, wildlife distance, and big western skies.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?grand-teton,yellowstone"
+    coverPhotoUrl: "/generated/area-wyoming.png"
   },
   {
     id: "portland",
@@ -304,7 +304,7 @@ export const areas: Area[] = [
     centerLat: 45.5152,
     centerLng: -122.6784,
     description: "Rain-soft gardens, forest waterfalls, bridges, and mossy long exposures.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?multnomah-falls,oregon"
+    coverPhotoUrl: "/generated/area-portland.png"
   },
   {
     id: "nashville",
@@ -313,7 +313,7 @@ export const areas: Area[] = [
     centerLat: 36.1627,
     centerLng: -86.7816,
     description: "Neon signs, music streets, warm storefronts, and blue-hour crowd motion.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?nashville-broadway,neon"
+    coverPhotoUrl: "/generated/area-nashville.png"
   },
   {
     id: "paris",
@@ -322,7 +322,7 @@ export const areas: Area[] = [
     centerLat: 48.8566,
     centerLng: 2.3522,
     description: "Landmark silhouettes, river light, museum courtyards, and soft evening stone.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?eiffel-tower,paris"
+    coverPhotoUrl: "/generated/area-paris.png"
   },
   {
     id: "london",
@@ -331,7 +331,7 @@ export const areas: Area[] = [
     centerLat: 51.5072,
     centerLng: -0.1276,
     description: "Bridges, rain reflections, historic stone, and moody river blue hour.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?tower-bridge,london"
+    coverPhotoUrl: "/generated/area-london.png"
   },
   {
     id: "rome",
@@ -340,7 +340,7 @@ export const areas: Area[] = [
     centerLat: 41.9028,
     centerLng: 12.4964,
     description: "Ancient stone, side light, piazzas, and layered travel frames.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?colosseum,rome"
+    coverPhotoUrl: "/generated/area-rome.png"
   },
   {
     id: "tokyo",
@@ -349,7 +349,7 @@ export const areas: Area[] = [
     centerLat: 35.6762,
     centerLng: 139.6503,
     description: "Crosswalk motion, neon, rainy glass, and dense night photography.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?shibuya-crossing,tokyo"
+    coverPhotoUrl: "/generated/area-tokyo.png"
   },
   {
     id: "cairo",
@@ -358,7 +358,7 @@ export const areas: Area[] = [
     centerLat: 29.9773,
     centerLng: 31.1325,
     description: "Pyramid scale, desert haze, warm stone, and long sunset shadows.",
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?pyramids-giza,egypt"
+    coverPhotoUrl: "/generated/area-cairo.png"
   }
 ];
 
@@ -377,7 +377,7 @@ export const places: Place[] = [
     recentActivityScore: 95,
     bestTimes: ["Sunrise", "Blue hour", "Foggy mornings"],
     tags: ["bridge", "fog", "landscape", "iconic"],
-    coverPhotoUrl: "/generated/golden-gate-overlook.png"
+    coverPhotoUrl: "/generated/place-golden-gate-overlook-golden-gate-bridge-overlook.png"
   },
   {
     id: "baker-beach",
@@ -697,7 +697,7 @@ export const places: Place[] = [
     recentActivityScore: 84,
     bestTimes: ["Morning", "Overcast days", "Spring bloom"],
     tags: ["garden", "architecture", "portraits", "details"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?japanese-tea-garden,san-francisco"
+    coverPhotoUrl: "/generated/japanese-tea-garden.png"
   },
   {
     id: "de-young-observation-deck",
@@ -713,7 +713,7 @@ export const places: Place[] = [
     recentActivityScore: 72,
     bestTimes: ["Daylight", "Late afternoon", "Clear afternoons"],
     tags: ["architecture", "skyline", "reflections", "museum"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?de-young-museum,san-francisco"
+    coverPhotoUrl: "/generated/de-young-observation-deck.png"
   },
   {
     id: "muir-woods",
@@ -729,7 +729,7 @@ export const places: Place[] = [
     recentActivityScore: 75,
     bestTimes: ["Morning", "Foggy mornings", "Overcast days"],
     tags: ["forest", "landscape", "trail", "moody"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?muir-woods,redwoods"
+    coverPhotoUrl: "/generated/muir-woods.png"
   },
   {
     id: "mori-point",
@@ -745,7 +745,7 @@ export const places: Place[] = [
     recentActivityScore: 70,
     bestTimes: ["Sunset", "Golden hour", "Spring bloom"],
     tags: ["coast", "trail", "landscape", "wildflowers"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?pacifica,coastal-bluffs"
+    coverPhotoUrl: "/generated/mori-point.png"
   },
   {
     id: "ferry-plaza-market",
@@ -761,7 +761,7 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Morning", "Daylight", "Rainy evenings"],
     tags: ["street", "food", "color", "waterfront"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?farmers-market,san-francisco"
+    coverPhotoUrl: "/generated/ferry-plaza-market.png"
   },
   {
     id: "16th-avenue-tiles",
@@ -777,7 +777,7 @@ export const places: Place[] = [
     recentActivityScore: 73,
     bestTimes: ["Morning", "Late afternoon", "Overcast days"],
     tags: ["stairs", "color", "portraits", "architecture"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?tiled-steps,san-francisco"
+    coverPhotoUrl: "/generated/16th-avenue-tiles.png"
   },
   {
     id: "haight-ashbury",
@@ -793,7 +793,7 @@ export const places: Place[] = [
     recentActivityScore: 78,
     bestTimes: ["Daylight", "Late afternoon", "Night"],
     tags: ["street", "color", "portraits", "night"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?haight-ashbury,san-francisco"
+    coverPhotoUrl: "/generated/haight-ashbury.png"
   },
   {
     id: "treasure-island",
@@ -809,7 +809,7 @@ export const places: Place[] = [
     recentActivityScore: 81,
     bestTimes: ["Blue hour", "Night", "Sunset"],
     tags: ["skyline", "waterfront", "night", "telephoto"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?san-francisco-skyline,night"
+    coverPhotoUrl: "/generated/treasure-island.png"
   },
   {
     id: "brooklyn-bridge",
@@ -825,7 +825,7 @@ export const places: Place[] = [
     recentActivityScore: 92,
     bestTimes: ["Sunrise", "Blue hour", "Overcast days"],
     tags: ["bridge", "skyline", "street", "architecture"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?brooklyn-bridge,sunrise"
+    coverPhotoUrl: "/generated/brooklyn-bridge.png"
   },
   {
     id: "central-park-bethesda",
@@ -841,7 +841,7 @@ export const places: Place[] = [
     recentActivityScore: 77,
     bestTimes: ["Morning", "Late afternoon", "Rainy days"],
     tags: ["architecture", "portraits", "street", "park"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?bethesda-terrace,central-park"
+    coverPhotoUrl: "/generated/central-park-bethesda.png"
   },
   {
     id: "times-square",
@@ -857,7 +857,7 @@ export const places: Place[] = [
     recentActivityScore: 90,
     bestTimes: ["Night", "Rainy evenings", "Blue hour"],
     tags: ["street", "night", "color", "neon"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?times-square,rain"
+    coverPhotoUrl: "/generated/times-square.png"
   },
   {
     id: "washington-monument",
@@ -873,7 +873,7 @@ export const places: Place[] = [
     recentActivityScore: 74,
     bestTimes: ["Sunrise", "Blue hour", "Clear afternoons"],
     tags: ["monument", "reflections", "architecture", "landmark"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?washington-monument,reflecting-pool"
+    coverPhotoUrl: "/generated/washington-monument.png"
   },
   {
     id: "lincoln-memorial",
@@ -889,7 +889,7 @@ export const places: Place[] = [
     recentActivityScore: 73,
     bestTimes: ["Morning", "Golden hour", "Night"],
     tags: ["monument", "architecture", "portraits", "night"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?lincoln-memorial,dc"
+    coverPhotoUrl: "/generated/lincoln-memorial.png"
   },
   {
     id: "monument-valley",
@@ -905,7 +905,7 @@ export const places: Place[] = [
     recentActivityScore: 68,
     bestTimes: ["Sunrise", "Sunset", "Clear nights"],
     tags: ["desert", "landscape", "landmark", "red rock"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?monument-valley,sunrise"
+    coverPhotoUrl: "/generated/monument-valley.png"
   },
   {
     id: "horseshoe-bend",
@@ -921,7 +921,7 @@ export const places: Place[] = [
     recentActivityScore: 72,
     bestTimes: ["Sunrise", "Late afternoon", "Overcast days"],
     tags: ["desert", "river", "landscape", "overlook"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?horseshoe-bend,arizona"
+    coverPhotoUrl: "/generated/horseshoe-bend.png"
   },
   {
     id: "grand-canyon-south-rim",
@@ -937,7 +937,7 @@ export const places: Place[] = [
     recentActivityScore: 79,
     bestTimes: ["Sunrise", "Sunset", "Storm light"],
     tags: ["canyon", "landscape", "overlook", "national park"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?grand-canyon,south-rim"
+    coverPhotoUrl: "/generated/grand-canyon-south-rim.png"
   },
   {
     id: "zion-canyon-overlook",
@@ -953,7 +953,7 @@ export const places: Place[] = [
     recentActivityScore: 76,
     bestTimes: ["Sunrise", "Late afternoon", "Clear days"],
     tags: ["canyon", "trail", "landscape", "red rock"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?zion-canyon-overlook"
+    coverPhotoUrl: "/generated/zion-canyon-overlook.png"
   },
   {
     id: "bryce-canyon-amphitheater",
@@ -969,7 +969,7 @@ export const places: Place[] = [
     recentActivityScore: 66,
     bestTimes: ["Sunrise", "Snowy mornings", "Golden hour"],
     tags: ["canyon", "landscape", "snow", "red rock"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?bryce-canyon,hoodoo"
+    coverPhotoUrl: "/generated/bryce-canyon-amphitheater.png"
   },
   {
     id: "joshua-tree",
@@ -985,7 +985,7 @@ export const places: Place[] = [
     recentActivityScore: 70,
     bestTimes: ["Sunset", "Blue hour", "Clear nights"],
     tags: ["desert", "landscape", "night", "national park"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?joshua-tree,national-park"
+    coverPhotoUrl: "/generated/joshua-tree.png"
   },
   {
     id: "santa-monica-pier",
@@ -1001,7 +1001,7 @@ export const places: Place[] = [
     recentActivityScore: 81,
     bestTimes: ["Sunset", "Blue hour", "Night"],
     tags: ["beach", "neon", "waterfront", "street"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?santa-monica-pier,sunset"
+    coverPhotoUrl: "/generated/santa-monica-pier.png"
   },
   {
     id: "griffith-observatory",
@@ -1017,7 +1017,7 @@ export const places: Place[] = [
     recentActivityScore: 87,
     bestTimes: ["Golden hour", "Blue hour", "Clear nights"],
     tags: ["skyline", "architecture", "night", "landmark"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?griffith-observatory,los-angeles"
+    coverPhotoUrl: "/generated/place-griffith-observatory-griffith-observatory.png"
   },
   {
     id: "kerry-park",
@@ -1033,7 +1033,7 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Sunset", "Blue hour", "Clear afternoons"],
     tags: ["skyline", "overlook", "mountains", "night"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?kerry-park,seattle"
+    coverPhotoUrl: "/generated/kerry-park.png"
   },
   {
     id: "pike-place-market",
@@ -1049,7 +1049,7 @@ export const places: Place[] = [
     recentActivityScore: 84,
     bestTimes: ["Morning", "Rainy days", "Blue hour"],
     tags: ["market", "street", "color", "waterfront"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?pike-place-market,seattle"
+    coverPhotoUrl: "/generated/pike-place-market.png"
   },
   {
     id: "chicago-riverwalk",
@@ -1065,7 +1065,7 @@ export const places: Place[] = [
     recentActivityScore: 83,
     bestTimes: ["Blue hour", "Golden hour", "Rainy evenings"],
     tags: ["architecture", "waterfront", "reflections", "cityscape"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?chicago-riverwalk,architecture"
+    coverPhotoUrl: "/generated/chicago-riverwalk.png"
   },
   {
     id: "millennium-park",
@@ -1081,7 +1081,7 @@ export const places: Place[] = [
     recentActivityScore: 76,
     bestTimes: ["Morning", "Blue hour", "Snowy days"],
     tags: ["reflections", "architecture", "street", "landmark"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?cloud-gate,chicago"
+    coverPhotoUrl: "/generated/millennium-park.png"
   },
   {
     id: "south-beach",
@@ -1097,7 +1097,7 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Morning", "Golden hour", "Night"],
     tags: ["beach", "architecture", "color", "night"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?south-beach,art-deco"
+    coverPhotoUrl: "/generated/south-beach.png"
   },
   {
     id: "everglades-anjinga",
@@ -1113,7 +1113,7 @@ export const places: Place[] = [
     recentActivityScore: 58,
     bestTimes: ["Morning", "Storm light", "Overcast days"],
     tags: ["wetland", "wildlife", "landscape", "reflections"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?everglades,boardwalk"
+    coverPhotoUrl: "/generated/everglades-anjinga.png"
   },
   {
     id: "french-quarter",
@@ -1129,7 +1129,7 @@ export const places: Place[] = [
     recentActivityScore: 80,
     bestTimes: ["Morning", "Blue hour", "Rainy evenings"],
     tags: ["street", "architecture", "color", "night"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?french-quarter,new-orleans"
+    coverPhotoUrl: "/generated/place-french-quarter-french-quarter-balconies.png"
   },
   {
     id: "acorn-street",
@@ -1145,7 +1145,7 @@ export const places: Place[] = [
     recentActivityScore: 61,
     bestTimes: ["Morning", "Overcast days", "Fall color"],
     tags: ["street", "architecture", "historic", "portraits"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?acorn-street,boston"
+    coverPhotoUrl: "/generated/place-acorn-street-acorn-street.png"
   },
   {
     id: "philadelphia-art-museum",
@@ -1161,7 +1161,7 @@ export const places: Place[] = [
     recentActivityScore: 64,
     bestTimes: ["Golden hour", "Morning", "Blue hour"],
     tags: ["architecture", "skyline", "stairs", "landmark"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?philadelphia-museum-art,steps"
+    coverPhotoUrl: "/generated/philadelphia-art-museum.png"
   },
   {
     id: "dream-lake",
@@ -1177,7 +1177,7 @@ export const places: Place[] = [
     recentActivityScore: 69,
     bestTimes: ["Sunrise", "Snowy mornings", "Clear afternoons"],
     tags: ["mountains", "lake", "landscape", "trail"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?dream-lake,rocky-mountain"
+    coverPhotoUrl: "/generated/dream-lake.png"
   },
   {
     id: "grand-prismatic",
@@ -1193,7 +1193,7 @@ export const places: Place[] = [
     recentActivityScore: 71,
     bestTimes: ["Morning", "Daylight", "Cool weather"],
     tags: ["thermal", "color", "landscape", "national park"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?grand-prismatic-spring"
+    coverPhotoUrl: "/generated/grand-prismatic.png"
   },
   {
     id: "schwabacher-landing",
@@ -1209,7 +1209,7 @@ export const places: Place[] = [
     recentActivityScore: 66,
     bestTimes: ["Sunrise", "Morning fog", "Fall color"],
     tags: ["mountains", "river", "reflections", "landscape"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?schwabacher-landing,grand-teton"
+    coverPhotoUrl: "/generated/schwabacher-landing.png"
   },
   {
     id: "portland-japanese-garden",
@@ -1225,7 +1225,7 @@ export const places: Place[] = [
     recentActivityScore: 73,
     bestTimes: ["Overcast days", "Morning", "Fall color"],
     tags: ["garden", "details", "portraits", "rain"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?portland-japanese-garden"
+    coverPhotoUrl: "/generated/portland-japanese-garden.png"
   },
   {
     id: "multnomah-falls",
@@ -1241,7 +1241,7 @@ export const places: Place[] = [
     recentActivityScore: 70,
     bestTimes: ["Morning", "Overcast days", "Rainy days"],
     tags: ["waterfall", "forest", "long exposure", "landscape"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?multnomah-falls,oregon"
+    coverPhotoUrl: "/generated/place-multnomah-falls-multnomah-falls.png"
   },
   {
     id: "nashville-broadway",
@@ -1257,7 +1257,7 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Night", "Blue hour", "Rainy evenings"],
     tags: ["street", "neon", "night", "music"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?nashville-broadway,neon"
+    coverPhotoUrl: "/generated/place-nashville-broadway-broadway-neon.png"
   },
   {
     id: "eiffel-tower-trocadero",
@@ -1273,7 +1273,7 @@ export const places: Place[] = [
     recentActivityScore: 88,
     bestTimes: ["Sunrise", "Blue hour", "Rainy evenings"],
     tags: ["landmark", "architecture", "night", "cityscape"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?eiffel-tower,trocadero"
+    coverPhotoUrl: "/generated/eiffel-tower-trocadero.png"
   },
   {
     id: "tower-bridge",
@@ -1289,7 +1289,7 @@ export const places: Place[] = [
     recentActivityScore: 83,
     bestTimes: ["Blue hour", "Rainy evenings", "Morning"],
     tags: ["bridge", "landmark", "reflections", "night"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?tower-bridge,london"
+    coverPhotoUrl: "/generated/place-tower-bridge-tower-bridge-river-walk.png"
   },
   {
     id: "colosseum",
@@ -1305,7 +1305,7 @@ export const places: Place[] = [
     recentActivityScore: 81,
     bestTimes: ["Morning", "Golden hour", "Blue hour"],
     tags: ["landmark", "architecture", "historic", "street"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?colosseum,rome"
+    coverPhotoUrl: "/generated/place-colosseum-colosseum-exterior.png"
   },
   {
     id: "shibuya-crossing",
@@ -1321,7 +1321,7 @@ export const places: Place[] = [
     recentActivityScore: 94,
     bestTimes: ["Night", "Rainy evenings", "Blue hour"],
     tags: ["street", "neon", "night", "cityscape"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?shibuya-crossing,tokyo"
+    coverPhotoUrl: "/generated/place-shibuya-crossing-shibuya-crossing.png"
   },
   {
     id: "pyramids-giza",
@@ -1337,7 +1337,7 @@ export const places: Place[] = [
     recentActivityScore: 79,
     bestTimes: ["Sunrise", "Golden hour", "Clear afternoons"],
     tags: ["landmark", "desert", "historic", "silhouette"],
-    coverPhotoUrl: "https://source.unsplash.com/1200x800/?pyramids-giza,egypt"
+    coverPhotoUrl: "/generated/place-pyramids-giza-pyramids-of-giza.png"
   }
 ];
 
@@ -1346,7 +1346,7 @@ export const photos: Photo[] = [
     id: "photo-1",
     placeId: "golden-gate-overlook",
     userId: "user-maya",
-    imageUrl: "/generated/golden-gate-overlook.png",
+    imageUrl: "/generated/post-photo-1-fog-lifted-for-maybe-six-minutes-worth-the-early-alarm.png",
     caption: "Fog lifted for maybe six minutes. Worth the early alarm.",
     locationLabel: "Golden Gate Bridge Overlook",
     metadataText: "70mm, f/5.6, soft fog",
@@ -1359,7 +1359,7 @@ export const photos: Photo[] = [
     id: "photo-2",
     placeId: "baker-beach",
     userId: "user-jules",
-    imageUrl: "/generated/baker-beach.png",
+    imageUrl: "/generated/post-photo-2-clean-sand-foreground-and-bridge-scale-for-portraits.png",
     caption: "Clean sand foreground and bridge scale for portraits.",
     locationLabel: "Baker Beach",
     metadataText: "35mm, reflector only",
@@ -1372,7 +1372,7 @@ export const photos: Photo[] = [
     id: "photo-3",
     placeId: "palace-fine-arts",
     userId: "user-nora",
-    imageUrl: "/generated/palace-fine-arts.png",
+    imageUrl: "/generated/post-photo-3-columns-make-the-framing-easy-watch-the-bright-lagoon-highlights.png",
     caption: "Columns make the framing easy. Watch the bright lagoon highlights.",
     locationLabel: "Palace of Fine Arts",
     metadataText: "50mm, shade portraits",
@@ -1385,7 +1385,7 @@ export const photos: Photo[] = [
     id: "photo-4",
     placeId: "twin-peaks",
     userId: "user-eli",
-    imageUrl: "/generated/twin-peaks.png",
+    imageUrl: "/generated/post-photo-4-the-city-lights-came-on-before-the-wind-got-too-brutal.png",
     caption: "The city lights came on before the wind got too brutal.",
     locationLabel: "Twin Peaks",
     metadataText: "Tripod, 2s exposure",
@@ -1398,7 +1398,7 @@ export const photos: Photo[] = [
     id: "photo-5",
     placeId: "lands-end",
     userId: "user-maya",
-    imageUrl: "/generated/lands-end.png",
+    imageUrl: "/generated/post-photo-5-cypress-edge-muted-water-no-crowd-in-frame.png",
     caption: "Cypress edge, muted water, no crowd in frame.",
     locationLabel: "Lands End Trail",
     metadataText: "24mm, overcast",
@@ -1411,7 +1411,7 @@ export const photos: Photo[] = [
     id: "photo-6",
     placeId: "embarcadero",
     userId: "user-eli",
-    imageUrl: "/generated/embarcadero.png",
+    imageUrl: "/generated/post-photo-6-rain-gave-every-pier-light-a-second-life.png",
     caption: "Rain gave every pier light a second life.",
     locationLabel: "Embarcadero Waterfront",
     metadataText: "35mm, wet pavement",
@@ -1450,7 +1450,7 @@ export const photos: Photo[] = [
     id: "photo-9",
     placeId: "battery-spencer",
     userId: "user-maya",
-    imageUrl: "/generated/battery-spencer-golden-hour.png",
+    imageUrl: "/generated/post-photo-9-classic-high-bridge-angle-but-the-fog-line-kept-it-from-feeling-flat.png",
     caption: "Classic high bridge angle, but the fog line kept it from feeling flat.",
     locationLabel: "Battery Spencer",
     metadataText: "70mm, handheld",
@@ -1476,7 +1476,7 @@ export const photos: Photo[] = [
     id: "photo-11",
     placeId: "marshall-beach",
     userId: "user-jules",
-    imageUrl: "/generated/marshall-beach-rocks.png",
+    imageUrl: "/generated/post-photo-11-the-rocks-make-the-foreground-do-half-the-work.png",
     caption: "The rocks make the foreground do half the work.",
     locationLabel: "Marshall's Beach",
     metadataText: "24mm, low tide",
@@ -1502,7 +1502,7 @@ export const photos: Photo[] = [
     id: "photo-13",
     placeId: "fort-point",
     userId: "user-isha",
-    imageUrl: "/generated/fort-point-arches.png",
+    imageUrl: "/generated/post-photo-13-brick-arch-shadows-under-the-bridge-are-great-for-portraits.png",
     caption: "Brick arch shadows under the bridge are great for portraits.",
     locationLabel: "Fort Point",
     metadataText: "35mm, shade",
@@ -1515,7 +1515,7 @@ export const photos: Photo[] = [
     id: "photo-14",
     placeId: "chrissy-field",
     userId: "user-nora",
-    imageUrl: "/generated/chrissy-field-waterfront.png",
+    imageUrl: "/generated/post-photo-14-easy-waterfront-frames-with-enough-room-to-wait-out-the-crowds.png",
     caption: "Easy waterfront frames with enough room to wait out the crowds.",
     locationLabel: "Chrissy Field",
     metadataText: "35mm, soft wind",
@@ -1554,7 +1554,7 @@ export const photos: Photo[] = [
     id: "photo-17",
     placeId: "dolores-park",
     userId: "user-lena",
-    imageUrl: "/generated/dolores-park-late-afternoon.png",
+    imageUrl: "/generated/post-photo-17-portrait-backdrop-without-needing-to-climb-all-the-way-up-twin-peaks.png",
     caption: "Portrait backdrop without needing to climb all the way up Twin Peaks.",
     locationLabel: "Dolores Park",
     metadataText: "50mm, late sun",
@@ -1580,7 +1580,7 @@ export const photos: Photo[] = [
     id: "photo-19",
     placeId: "coit-tower",
     userId: "user-sam",
-    imageUrl: "/generated/coit-tower-morning.png",
+    imageUrl: "/generated/post-photo-19-bay-layers-from-telegraph-hill-before-the-afternoon-glare.png",
     caption: "Bay layers from Telegraph Hill before the afternoon glare.",
     locationLabel: "Coit Tower / Telegraph Hill",
     metadataText: "70mm, clear morning",
@@ -1593,7 +1593,7 @@ export const photos: Photo[] = [
     id: "photo-20",
     placeId: "salesforce-park",
     userId: "user-maya",
-    imageUrl: "/generated/salesforce-park-reflections.png",
+    imageUrl: "/generated/post-photo-20-glass-reflections-and-garden-shade-in-one-quick-loop.png",
     caption: "Glass reflections and garden shade in one quick loop.",
     locationLabel: "Salesforce Park",
     metadataText: "35mm, reflective glass",
@@ -1606,7 +1606,7 @@ export const photos: Photo[] = [
     id: "photo-21",
     placeId: "chinatown-grant",
     userId: "user-lena",
-    imageUrl: "/generated/chinatown-grant-night.png",
+    imageUrl: "/generated/post-photo-21-lanterns-and-storefront-reds-after-the-light-went-cool.png",
     caption: "Lanterns and storefront reds after the light went cool.",
     locationLabel: "Chinatown Grant Avenue",
     metadataText: "35mm, neon spill",
@@ -1619,7 +1619,7 @@ export const photos: Photo[] = [
     id: "photo-22",
     placeId: "ocean-beach",
     userId: "user-nora",
-    imageUrl: "/generated/ocean-beach-surf.png",
+    imageUrl: "/generated/post-photo-22-muted-surf-lines-and-tiny-figures-along-the-dunes.png",
     caption: "Muted surf lines and tiny figures along the dunes.",
     locationLabel: "Ocean Beach",
     metadataText: "70mm, overcast",
@@ -1632,7 +1632,7 @@ export const photos: Photo[] = [
     id: "photo-23",
     placeId: "bernal-heights",
     userId: "user-eli",
-    imageUrl: "/generated/bernal-heights-golden-hour.png",
+    imageUrl: "/generated/post-photo-23-a-smaller-hill-with-a-softer-neighborhood-skyline-angle.png",
     caption: "A smaller hill with a softer neighborhood skyline angle.",
     locationLabel: "Bernal Heights Park",
     metadataText: "50mm, golden grass",
@@ -1645,7 +1645,7 @@ export const photos: Photo[] = [
     id: "photo-24",
     placeId: "grace-cathedral",
     userId: "user-isha",
-    imageUrl: "/generated/grace-cathedral-stairs.png",
+    imageUrl: "/generated/post-photo-24-stairs-and-stone-texture-made-a-simple-portrait-set.png",
     caption: "Stairs and stone texture made a simple portrait set.",
     locationLabel: "Grace Cathedral",
     metadataText: "50mm, open shade",
@@ -1658,7 +1658,7 @@ export const photos: Photo[] = [
     id: "photo-25",
     placeId: "mission-murals",
     userId: "user-jules",
-    imageUrl: "/generated/mission-murals-color-v2.png",
+    imageUrl: "/generated/post-photo-25-color-blocks-are-perfect-when-the-sky-is-too-flat.png",
     caption: "Color blocks are perfect when the sky is too flat.",
     locationLabel: "Mission Murals",
     metadataText: "35mm, overcast",
@@ -1671,7 +1671,7 @@ export const photos: Photo[] = [
     id: "photo-26",
     placeId: "sutro-baths",
     userId: "user-sam",
-    imageUrl: "/generated/sutro-baths.png",
+    imageUrl: "/generated/post-photo-26-water-channels-gave-just-enough-leading-line-into-the-ruins.png",
     caption: "Water channels gave just enough leading line into the ruins.",
     locationLabel: "Sutro Baths",
     metadataText: "24mm, overcast",
@@ -1710,7 +1710,7 @@ export const photos: Photo[] = [
     id: "photo-29",
     placeId: "japanese-tea-garden",
     userId: "user-zoe",
-    imageUrl: "https://source.unsplash.com/1200x900/?japanese-tea-garden,maple",
+    imageUrl: "/generated/photo-29-soft-shade-under-the-maples-made-the-bridge-color-feel-painted-in.png",
     caption: "Soft shade under the maples made the bridge color feel painted in.",
     locationLabel: "Japanese Tea Garden",
     metadataText: "50mm, open shade",
@@ -1723,7 +1723,7 @@ export const photos: Photo[] = [
     id: "photo-30",
     placeId: "japanese-tea-garden",
     userId: "user-isha",
-    imageUrl: "https://source.unsplash.com/1200x900/?japanese-garden,bridge",
+    imageUrl: "/generated/photo-30-the-paths-stack-up-nicely-if-you-wait-for-a-clean-opening.png",
     caption: "The paths stack up nicely if you wait for a clean opening.",
     locationLabel: "Japanese Tea Garden",
     metadataText: "85mm, garden shade",
@@ -1736,7 +1736,7 @@ export const photos: Photo[] = [
     id: "photo-31",
     placeId: "de-young-observation-deck",
     userId: "user-marcus",
-    imageUrl: "https://source.unsplash.com/1200x900/?museum,observation-deck",
+    imageUrl: "/generated/photo-31-glass-trees-and-city-grid-all-line-up-from-the-tower.png",
     caption: "Glass, trees, and city grid all line up from the tower.",
     locationLabel: "de Young Observation Deck",
     metadataText: "35mm, polarizer",
@@ -1749,7 +1749,7 @@ export const photos: Photo[] = [
     id: "photo-32",
     placeId: "de-young-observation-deck",
     userId: "user-zoe",
-    imageUrl: "https://source.unsplash.com/1200x900/?san-francisco,museum",
+    imageUrl: "/generated/photo-32-late-sun-turned-the-copper-skin-into-a-huge-reflector.png",
     caption: "Late sun turned the copper skin into a huge reflector.",
     locationLabel: "de Young Observation Deck",
     metadataText: "70mm, warm reflections",
@@ -1762,7 +1762,7 @@ export const photos: Photo[] = [
     id: "photo-33",
     placeId: "muir-woods",
     userId: "user-ava",
-    imageUrl: "https://source.unsplash.com/1200x900/?muir-woods,redwoods",
+    imageUrl: "/generated/photo-33-fog-sat-high-in-the-canopy-and-kept-the-boardwalk-highlights-gentle.png",
     caption: "Fog sat high in the canopy and kept the boardwalk highlights gentle.",
     locationLabel: "Muir Woods",
     metadataText: "24mm, mist",
@@ -1775,7 +1775,7 @@ export const photos: Photo[] = [
     id: "photo-34",
     placeId: "muir-woods",
     userId: "user-nora",
-    imageUrl: "https://source.unsplash.com/1200x900/?redwood-forest,path",
+    imageUrl: "/generated/photo-34-use-the-rail-as-a-leading-line-and-the-trees-do-the-rest.png",
     caption: "Use the rail as a leading line and the trees do the rest.",
     locationLabel: "Muir Woods",
     metadataText: "35mm, low contrast",
@@ -1788,7 +1788,7 @@ export const photos: Photo[] = [
     id: "photo-35",
     placeId: "mori-point",
     userId: "user-ava",
-    imageUrl: "https://source.unsplash.com/1200x900/?pacifica,coast",
+    imageUrl: "/generated/photo-35-wildflowers-in-front-pacific-haze-in-back-wind-everywhere.png",
     caption: "Wildflowers in front, Pacific haze in back, wind everywhere.",
     locationLabel: "Mori Point",
     metadataText: "35mm, coastal wind",
@@ -1801,7 +1801,7 @@ export const photos: Photo[] = [
     id: "photo-36",
     placeId: "mori-point",
     userId: "user-sam",
-    imageUrl: "https://source.unsplash.com/1200x900/?pacifica,cliffs",
+    imageUrl: "/generated/photo-36-the-trail-curve-gives-the-bluff-a-clean-sense-of-scale.png",
     caption: "The trail curve gives the bluff a clean sense of scale.",
     locationLabel: "Mori Point",
     metadataText: "70mm, sunset haze",
@@ -1814,7 +1814,7 @@ export const photos: Photo[] = [
     id: "photo-37",
     placeId: "ferry-plaza-market",
     userId: "user-marcus",
-    imageUrl: "https://source.unsplash.com/1200x900/?farmers-market,produce",
+    imageUrl: "/generated/photo-37-color-blocks-everywhere-before-the-plaza-got-crowded.png",
     caption: "Color blocks everywhere before the plaza got crowded.",
     locationLabel: "Ferry Plaza Market",
     metadataText: "35mm, morning market",
@@ -1827,7 +1827,7 @@ export const photos: Photo[] = [
     id: "photo-38",
     placeId: "ferry-plaza-market",
     userId: "user-lena",
-    imageUrl: "https://source.unsplash.com/1200x900/?ferry-building,san-francisco",
+    imageUrl: "/generated/photo-38-the-bayside-light-wraps-the-stalls-better-than-you-expect.png",
     caption: "The bayside light wraps the stalls better than you expect.",
     locationLabel: "Ferry Plaza Market",
     metadataText: "50mm, daylight",
@@ -1840,7 +1840,7 @@ export const photos: Photo[] = [
     id: "photo-39",
     placeId: "16th-avenue-tiles",
     userId: "user-zoe",
-    imageUrl: "https://source.unsplash.com/1200x900/?tiled-steps,san-francisco",
+    imageUrl: "/generated/photo-39-overcast-kept-the-mosaic-saturated-without-harsh-stair-shadows.png",
     caption: "Overcast kept the mosaic saturated without harsh stair shadows.",
     locationLabel: "16th Avenue Tiled Steps",
     metadataText: "35mm, overcast",
@@ -1853,7 +1853,7 @@ export const photos: Photo[] = [
     id: "photo-40",
     placeId: "16th-avenue-tiles",
     userId: "user-jules",
-    imageUrl: "https://source.unsplash.com/1200x900/?mosaic,stairs",
+    imageUrl: "/generated/photo-40-great-portrait-color-if-you-frame-tight-and-avoid-the-midday-shine.png",
     caption: "Great portrait color if you frame tight and avoid the midday shine.",
     locationLabel: "16th Avenue Tiled Steps",
     metadataText: "85mm, shade portrait",
@@ -1866,7 +1866,7 @@ export const photos: Photo[] = [
     id: "photo-41",
     placeId: "haight-ashbury",
     userId: "user-diego",
-    imageUrl: "https://source.unsplash.com/1200x900/?haight-ashbury,storefront",
+    imageUrl: "/generated/photo-41-every-block-has-a-different-color-temperature-after-sunset.png",
     caption: "Every block has a different color temperature after sunset.",
     locationLabel: "Haight-Ashbury Storefronts",
     metadataText: "35mm, handheld",
@@ -1879,7 +1879,7 @@ export const photos: Photo[] = [
     id: "photo-42",
     placeId: "haight-ashbury",
     userId: "user-eli",
-    imageUrl: "https://source.unsplash.com/1200x900/?haight-street,san-francisco",
+    imageUrl: "/generated/photo-42-late-afternoon-gives-the-painted-storefronts-enough-shadow-to-separate.png",
     caption: "Late afternoon gives the painted storefronts enough shadow to separate.",
     locationLabel: "Haight-Ashbury Storefronts",
     metadataText: "50mm, late sun",
@@ -1892,7 +1892,7 @@ export const photos: Photo[] = [
     id: "photo-43",
     placeId: "treasure-island",
     userId: "user-diego",
-    imageUrl: "https://source.unsplash.com/1200x900/?san-francisco-skyline,blue-hour",
+    imageUrl: "/generated/photo-43-blue-hour-held-just-long-enough-for-the-bay-reflections.png",
     caption: "Blue hour held just long enough for the bay reflections.",
     locationLabel: "Treasure Island Skyline",
     metadataText: "Tripod, 3s exposure",
@@ -1905,7 +1905,7 @@ export const photos: Photo[] = [
     id: "photo-44",
     placeId: "treasure-island",
     userId: "user-marcus",
-    imageUrl: "https://source.unsplash.com/1200x900/?san-francisco,skyline",
+    imageUrl: "/generated/photo-44-long-lens-compresses-the-towers-into-one-clean-layer.png",
     caption: "Long lens compresses the towers into one clean layer.",
     locationLabel: "Treasure Island Skyline",
     metadataText: "135mm, tripod",
@@ -1918,7 +1918,7 @@ export const photos: Photo[] = [
     id: "photo-45",
     placeId: "brooklyn-bridge",
     userId: "user-noah",
-    imageUrl: "https://source.unsplash.com/1200x900/?brooklyn-bridge,sunrise,walkway&sig=45",
+    imageUrl: "/generated/photo-45-empty-boards-soft-east-river-haze-and-cables-doing-all-the-leading-line.png",
     caption: "Empty boards, soft East River haze, and cables doing all the leading-line work.",
     locationLabel: "Brooklyn Bridge Pedestrian Walkway",
     metadataText: "35mm, sunrise haze",
@@ -1931,7 +1931,7 @@ export const photos: Photo[] = [
     id: "photo-46",
     placeId: "brooklyn-bridge",
     userId: "user-marcus",
-    imageUrl: "https://source.unsplash.com/1200x900/?brooklyn-bridge,blue-hour,skyline&sig=46",
+    imageUrl: "/generated/photo-46-blue-hour-brought-out-the-skyline-without-losing-the-cable-texture.png",
     caption: "Blue hour brought out the skyline without losing the cable texture.",
     locationLabel: "Brooklyn Bridge Pedestrian Walkway",
     metadataText: "50mm, blue hour",
@@ -1944,7 +1944,7 @@ export const photos: Photo[] = [
     id: "photo-47",
     placeId: "central-park-bethesda",
     userId: "user-zoe",
-    imageUrl: "https://source.unsplash.com/1200x900/?bethesda-terrace,central-park,morning&sig=47",
+    imageUrl: "/generated/photo-47-the-arcade-ceiling-glowed-before-the-terrace-got-busy.png",
     caption: "The arcade ceiling glowed before the terrace got busy.",
     locationLabel: "Bethesda Terrace",
     metadataText: "24mm, soft shade",
@@ -1957,7 +1957,7 @@ export const photos: Photo[] = [
     id: "photo-48",
     placeId: "central-park-bethesda",
     userId: "user-jules",
-    imageUrl: "https://source.unsplash.com/1200x900/?central-park,bethesda-fountain,rain&sig=48",
+    imageUrl: "/generated/photo-48-light-rain-cleared-the-background-and-made-the-stone-read-softer.png",
     caption: "Light rain cleared the background and made the stone read softer.",
     locationLabel: "Bethesda Terrace",
     metadataText: "85mm, rainy day",
@@ -1970,7 +1970,7 @@ export const photos: Photo[] = [
     id: "photo-49",
     placeId: "times-square",
     userId: "user-diego",
-    imageUrl: "https://source.unsplash.com/1200x900/?times-square,neon,night&sig=49",
+    imageUrl: "/generated/photo-49-neon-spill-was-so-bright-the-shadows-stayed-colorful.png",
     caption: "Neon spill was so bright the shadows stayed colorful.",
     locationLabel: "Times Square Night Corners",
     metadataText: "35mm, handheld",
@@ -1983,7 +1983,7 @@ export const photos: Photo[] = [
     id: "photo-50",
     placeId: "times-square",
     userId: "user-noah",
-    imageUrl: "https://source.unsplash.com/1200x900/?times-square,rain,umbrellas&sig=50",
+    imageUrl: "/generated/photo-50-umbrellas-gave-the-billboards-a-second-set-of-moving-reflections.png",
     caption: "Umbrellas gave the billboards a second set of moving reflections.",
     locationLabel: "Times Square Night Corners",
     metadataText: "50mm, wet pavement",
@@ -1996,7 +1996,7 @@ export const photos: Photo[] = [
     id: "photo-51",
     placeId: "washington-monument",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?washington-monument,sunrise,reflecting-pool&sig=51",
+    imageUrl: "/generated/photo-51-dawn-kept-the-reflecting-pool-almost-perfectly-still.png",
     caption: "Dawn kept the reflecting pool almost perfectly still.",
     locationLabel: "Washington Monument Reflecting Pool",
     metadataText: "70mm, calm water",
@@ -2009,7 +2009,7 @@ export const photos: Photo[] = [
     id: "photo-52",
     placeId: "washington-monument",
     userId: "user-nora",
-    imageUrl: "https://source.unsplash.com/1200x900/?national-mall,washington-monument,blue-hour&sig=52",
+    imageUrl: "/generated/photo-52-the-flags-picked-up-the-last-cool-light-before-the-mall-went-dark.png",
     caption: "The flags picked up the last cool light before the mall went dark.",
     locationLabel: "Washington Monument Reflecting Pool",
     metadataText: "35mm, blue hour",
@@ -2022,7 +2022,7 @@ export const photos: Photo[] = [
     id: "photo-53",
     placeId: "lincoln-memorial",
     userId: "user-isha",
-    imageUrl: "https://source.unsplash.com/1200x900/?lincoln-memorial,columns,morning&sig=53",
+    imageUrl: "/generated/photo-53-marble-shade-and-columns-made-a-clean-frame-without-harsh-contrast.png",
     caption: "Marble shade and columns made a clean frame without harsh contrast.",
     locationLabel: "Lincoln Memorial Steps",
     metadataText: "50mm, open shade",
@@ -2035,7 +2035,7 @@ export const photos: Photo[] = [
     id: "photo-54",
     placeId: "lincoln-memorial",
     userId: "user-noah",
-    imageUrl: "https://source.unsplash.com/1200x900/?lincoln-memorial,night,reflecting-pool&sig=54",
+    imageUrl: "/generated/photo-54-night-lights-gave-the-steps-a-calm-almost-studio-like-glow.png",
     caption: "Night lights gave the steps a calm, almost studio-like glow.",
     locationLabel: "Lincoln Memorial Steps",
     metadataText: "Tripod, 2s exposure",
@@ -2048,7 +2048,7 @@ export const photos: Photo[] = [
     id: "photo-55",
     placeId: "monument-valley",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?monument-valley,sunrise,buttes&sig=55",
+    imageUrl: "/generated/photo-55-first-light-separated-the-buttes-from-the-dusty-valley-floor.png",
     caption: "First light separated the buttes from the dusty valley floor.",
     locationLabel: "Monument Valley View",
     metadataText: "70mm, desert haze",
@@ -2061,7 +2061,7 @@ export const photos: Photo[] = [
     id: "photo-56",
     placeId: "monument-valley",
     userId: "user-sam",
-    imageUrl: "https://source.unsplash.com/1200x900/?monument-valley,sunset,desert-road&sig=56",
+    imageUrl: "/generated/photo-56-the-road-line-kept-the-sunset-frame-from-feeling-too-empty.png",
     caption: "The road line kept the sunset frame from feeling too empty.",
     locationLabel: "Monument Valley View",
     metadataText: "35mm, sunset dust",
@@ -2074,7 +2074,7 @@ export const photos: Photo[] = [
     id: "photo-57",
     placeId: "horseshoe-bend",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?horseshoe-bend,sunrise,river&sig=57",
+    imageUrl: "/generated/photo-57-sunrise-kept-the-river-dark-while-the-sandstone-warmed-up.png",
     caption: "Sunrise kept the river dark while the sandstone warmed up.",
     locationLabel: "Horseshoe Bend Overlook",
     metadataText: "16mm, rim overlook",
@@ -2087,7 +2087,7 @@ export const photos: Photo[] = [
     id: "photo-58",
     placeId: "horseshoe-bend",
     userId: "user-ava",
-    imageUrl: "https://source.unsplash.com/1200x900/?horseshoe-bend,overcast,arizona&sig=58",
+    imageUrl: "/generated/photo-58-cloud-cover-cut-the-glare-enough-to-hold-detail-in-the-canyon-walls.png",
     caption: "Cloud cover cut the glare enough to hold detail in the canyon walls.",
     locationLabel: "Horseshoe Bend Overlook",
     metadataText: "24mm, overcast",
@@ -2100,7 +2100,7 @@ export const photos: Photo[] = [
     id: "photo-59",
     placeId: "grand-canyon-south-rim",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?grand-canyon,sunrise,south-rim&sig=59",
+    imageUrl: "/generated/photo-59-the-canyon-layers-turned-purple-before-the-rim-got-warm.png",
     caption: "The canyon layers turned purple before the rim got warm.",
     locationLabel: "Grand Canyon South Rim",
     metadataText: "105mm, sunrise layers",
@@ -2113,7 +2113,7 @@ export const photos: Photo[] = [
     id: "photo-60",
     placeId: "grand-canyon-south-rim",
     userId: "user-nora",
-    imageUrl: "https://source.unsplash.com/1200x900/?grand-canyon,storm-light&sig=60",
+    imageUrl: "/generated/photo-60-storm-shadow-made-the-far-ridges-look-stacked-instead-of-flat.png",
     caption: "Storm shadow made the far ridges look stacked instead of flat.",
     locationLabel: "Grand Canyon South Rim",
     metadataText: "70mm, storm light",
@@ -2126,7 +2126,7 @@ export const photos: Photo[] = [
     id: "photo-61",
     placeId: "zion-canyon-overlook",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?zion-canyon,overlook,sunrise&sig=61",
+    imageUrl: "/generated/photo-61-soft-sunrise-caught-the-canyon-walls-before-the-trail-got-hot.png",
     caption: "Soft sunrise caught the canyon walls before the trail got hot.",
     locationLabel: "Zion Canyon Overlook Trail",
     metadataText: "24mm, dawn hike",
@@ -2139,7 +2139,7 @@ export const photos: Photo[] = [
     id: "photo-62",
     placeId: "zion-canyon-overlook",
     userId: "user-ava",
-    imageUrl: "https://source.unsplash.com/1200x900/?zion-national-park,late-afternoon&sig=62",
+    imageUrl: "/generated/photo-62-late-light-skimmed-the-sandstone-and-made-the-switchbacks-readable.png",
     caption: "Late light skimmed the sandstone and made the switchbacks readable.",
     locationLabel: "Zion Canyon Overlook Trail",
     metadataText: "35mm, late sun",
@@ -2152,7 +2152,7 @@ export const photos: Photo[] = [
     id: "photo-63",
     placeId: "bryce-canyon-amphitheater",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?bryce-canyon,sunrise,hoodoos&sig=63",
+    imageUrl: "/generated/photo-63-cold-dawn-made-the-hoodoos-glow-from-the-top-down.png",
     caption: "Cold dawn made the hoodoos glow from the top down.",
     locationLabel: "Bryce Canyon Amphitheater",
     metadataText: "50mm, sunrise",
@@ -2165,7 +2165,7 @@ export const photos: Photo[] = [
     id: "photo-64",
     placeId: "bryce-canyon-amphitheater",
     userId: "user-nora",
-    imageUrl: "https://source.unsplash.com/1200x900/?bryce-canyon,snow,hoodoos&sig=64",
+    imageUrl: "/generated/photo-64-snow-gave-the-red-rock-enough-contrast-to-feel-almost-graphic.png",
     caption: "Snow gave the red rock enough contrast to feel almost graphic.",
     locationLabel: "Bryce Canyon Amphitheater",
     metadataText: "70mm, snow contrast",
@@ -2178,7 +2178,7 @@ export const photos: Photo[] = [
     id: "photo-65",
     placeId: "joshua-tree",
     userId: "user-ava",
-    imageUrl: "https://source.unsplash.com/1200x900/?joshua-tree,sunset,boulders&sig=65",
+    imageUrl: "/generated/photo-65-the-boulders-held-the-last-warmth-after-the-sky-went-pastel.png",
     caption: "The boulders held the last warmth after the sky went pastel.",
     locationLabel: "Joshua Tree Rock Formations",
     metadataText: "35mm, sunset",
@@ -2191,7 +2191,7 @@ export const photos: Photo[] = [
     id: "photo-66",
     placeId: "joshua-tree",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?joshua-tree,night,milky-way&sig=66",
+    imageUrl: "/generated/photo-66-clear-night-skies-made-the-tree-silhouettes-feel-almost-cut-out.png",
     caption: "Clear night skies made the tree silhouettes feel almost cut out.",
     locationLabel: "Joshua Tree Rock Formations",
     metadataText: "Tripod, 15s exposure",
@@ -2204,7 +2204,7 @@ export const photos: Photo[] = [
     id: "photo-67",
     placeId: "santa-monica-pier",
     userId: "user-camila",
-    imageUrl: "https://source.unsplash.com/1200x900/?santa-monica-pier,sunset,ocean&sig=67",
+    imageUrl: "/generated/photo-67-the-pier-lights-clicked-on-just-as-the-marine-layer-started-moving-in.png",
     caption: "The pier lights clicked on just as the marine layer started moving in.",
     locationLabel: "Santa Monica Pier",
     metadataText: "50mm, sunset haze",
@@ -2217,7 +2217,7 @@ export const photos: Photo[] = [
     id: "photo-68",
     placeId: "santa-monica-pier",
     userId: "user-diego",
-    imageUrl: "https://source.unsplash.com/1200x900/?santa-monica-pier,neon,night&sig=68",
+    imageUrl: "/generated/photo-68-neon-and-boardwalk-motion-worked-better-after-the-beach-went-dark.png",
     caption: "Neon and boardwalk motion worked better after the beach went dark.",
     locationLabel: "Santa Monica Pier",
     metadataText: "35mm, handheld night",
@@ -2230,7 +2230,7 @@ export const photos: Photo[] = [
     id: "photo-69",
     placeId: "griffith-observatory",
     userId: "user-noah",
-    imageUrl: "https://source.unsplash.com/1200x900/?griffith-observatory,golden-hour&sig=69",
+    imageUrl: "/generated/photo-69-hazy-gold-turned-the-observatory-walls-into-a-giant-reflector.png",
     caption: "Hazy gold turned the observatory walls into a giant reflector.",
     locationLabel: "Griffith Observatory",
     metadataText: "70mm, LA haze",
@@ -2243,7 +2243,7 @@ export const photos: Photo[] = [
     id: "photo-70",
     placeId: "griffith-observatory",
     userId: "user-sam",
-    imageUrl: "https://source.unsplash.com/1200x900/?los-angeles,griffith-observatory,night&sig=70",
+    imageUrl: "/generated/photo-70-city-lights-came-up-under-a-thin-layer-of-june-haze.png",
     caption: "City lights came up under a thin layer of June haze.",
     locationLabel: "Griffith Observatory",
     metadataText: "Tripod, 3s exposure",
@@ -2256,7 +2256,7 @@ export const photos: Photo[] = [
     id: "photo-71",
     placeId: "kerry-park",
     userId: "user-marcus",
-    imageUrl: "https://source.unsplash.com/1200x900/?kerry-park,seattle,sunset&sig=71",
+    imageUrl: "/generated/photo-71-the-mountain-showed-up-for-about-five-minutes-behind-the-space-needle.png",
     caption: "The mountain showed up for about five minutes behind the Space Needle.",
     locationLabel: "Kerry Park Skyline",
     metadataText: "85mm, clear sunset",
@@ -2269,7 +2269,7 @@ export const photos: Photo[] = [
     id: "photo-72",
     placeId: "kerry-park",
     userId: "user-noah",
-    imageUrl: "https://source.unsplash.com/1200x900/?seattle-skyline,blue-hour,kerry-park&sig=72",
+    imageUrl: "/generated/photo-72-blue-hour-balanced-the-skyline-lights-with-the-cloud-deck.png",
     caption: "Blue hour balanced the skyline lights with the cloud deck.",
     locationLabel: "Kerry Park Skyline",
     metadataText: "135mm, blue hour",
@@ -2282,7 +2282,7 @@ export const photos: Photo[] = [
     id: "photo-73",
     placeId: "pike-place-market",
     userId: "user-lena",
-    imageUrl: "https://source.unsplash.com/1200x900/?pike-place-market,morning,vendors&sig=73",
+    imageUrl: "/generated/photo-73-morning-setup-gave-the-market-color-without-shoulder-to-shoulder-crowds.png",
     caption: "Morning setup gave the market color without shoulder-to-shoulder crowds.",
     locationLabel: "Pike Place Market",
     metadataText: "35mm, market light",
@@ -2295,7 +2295,7 @@ export const photos: Photo[] = [
     id: "photo-74",
     placeId: "pike-place-market",
     userId: "user-diego",
-    imageUrl: "https://source.unsplash.com/1200x900/?pike-place-market,rain,neon&sig=74",
+    imageUrl: "/generated/photo-74-rain-made-every-sign-and-awning-pull-double-duty.png",
     caption: "Rain made every sign and awning pull double duty.",
     locationLabel: "Pike Place Market",
     metadataText: "50mm, rainy day",
@@ -2308,7 +2308,7 @@ export const photos: Photo[] = [
     id: "photo-75",
     placeId: "chicago-riverwalk",
     userId: "user-marcus",
-    imageUrl: "https://source.unsplash.com/1200x900/?chicago-riverwalk,architecture,blue-hour&sig=75",
+    imageUrl: "/generated/photo-75-the-river-turned-into-a-mirror-right-before-the-office-lights-peaked.png",
     caption: "The river turned into a mirror right before the office lights peaked.",
     locationLabel: "Chicago Riverwalk",
     metadataText: "24mm, blue hour",
@@ -2321,7 +2321,7 @@ export const photos: Photo[] = [
     id: "photo-76",
     placeId: "chicago-riverwalk",
     userId: "user-noah",
-    imageUrl: "https://source.unsplash.com/1200x900/?chicago-riverwalk,rain,bridge&sig=76",
+    imageUrl: "/generated/photo-76-rain-darkened-the-bridges-and-made-the-tower-lights-stretch-across-the-.png",
     caption: "Rain darkened the bridges and made the tower lights stretch across the water.",
     locationLabel: "Chicago Riverwalk",
     metadataText: "35mm, rainy evening",
@@ -2334,7 +2334,7 @@ export const photos: Photo[] = [
     id: "photo-77",
     placeId: "millennium-park",
     userId: "user-isha",
-    imageUrl: "https://source.unsplash.com/1200x900/?cloud-gate,chicago,morning&sig=77",
+    imageUrl: "/generated/photo-77-early-morning-kept-the-reflections-readable-before-the-plaza-filled-up.png",
     caption: "Early morning kept the reflections readable before the plaza filled up.",
     locationLabel: "Millennium Park Cloud Gate",
     metadataText: "24mm, clean plaza",
@@ -2347,7 +2347,7 @@ export const photos: Photo[] = [
     id: "photo-78",
     placeId: "millennium-park",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?cloud-gate,chicago,snow&sig=78",
+    imageUrl: "/generated/photo-78-fresh-snow-simplified-the-plaza-and-made-the-skyline-reflection-pop.png",
     caption: "Fresh snow simplified the plaza and made the skyline reflection pop.",
     locationLabel: "Millennium Park Cloud Gate",
     metadataText: "35mm, snowy day",
@@ -2360,7 +2360,7 @@ export const photos: Photo[] = [
     id: "photo-79",
     placeId: "south-beach",
     userId: "user-camila",
-    imageUrl: "https://source.unsplash.com/1200x900/?south-beach,miami,morning&sig=79",
+    imageUrl: "/generated/photo-79-pastel-walls-looked-best-before-the-midday-glare-kicked-in.png",
     caption: "Pastel walls looked best before the midday glare kicked in.",
     locationLabel: "South Beach Art Deco",
     metadataText: "35mm, morning sun",
@@ -2373,7 +2373,7 @@ export const photos: Photo[] = [
     id: "photo-80",
     placeId: "south-beach",
     userId: "user-diego",
-    imageUrl: "https://source.unsplash.com/1200x900/?ocean-drive,miami,neon,night&sig=80",
+    imageUrl: "/generated/photo-80-ocean-drive-neon-works-best-once-the-sky-still-has-a-little-blue-left.png",
     caption: "Ocean Drive neon works best once the sky still has a little blue left.",
     locationLabel: "South Beach Art Deco",
     metadataText: "50mm, neon glow",
@@ -2386,7 +2386,7 @@ export const photos: Photo[] = [
     id: "photo-81",
     placeId: "everglades-anjinga",
     userId: "user-camila",
-    imageUrl: "https://source.unsplash.com/1200x900/?everglades,boardwalk,morning&sig=81",
+    imageUrl: "/generated/photo-81-morning-humidity-turned-the-sawgrass-into-layered-silhouettes.png",
     caption: "Morning humidity turned the sawgrass into layered silhouettes.",
     locationLabel: "Everglades Anhinga Trail",
     metadataText: "70mm, humid morning",
@@ -2399,7 +2399,7 @@ export const photos: Photo[] = [
     id: "photo-82",
     placeId: "everglades-anjinga",
     userId: "user-nora",
-    imageUrl: "https://source.unsplash.com/1200x900/?everglades,storm,wetland&sig=82",
+    imageUrl: "/generated/photo-82-storm-clouds-made-the-boardwalk-reflections-feel-much-deeper.png",
     caption: "Storm clouds made the boardwalk reflections feel much deeper.",
     locationLabel: "Everglades Anhinga Trail",
     metadataText: "35mm, storm light",
@@ -2412,7 +2412,7 @@ export const photos: Photo[] = [
     id: "photo-83",
     placeId: "french-quarter",
     userId: "user-diego",
-    imageUrl: "https://source.unsplash.com/1200x900/?french-quarter,new-orleans,balcony&sig=83",
+    imageUrl: "/generated/photo-83-balcony-shadows-and-painted-shutters-kept-the-block-feeling-layered.png",
     caption: "Balcony shadows and painted shutters kept the block feeling layered.",
     locationLabel: "French Quarter Balconies",
     metadataText: "35mm, humid morning",
@@ -2425,7 +2425,7 @@ export const photos: Photo[] = [
     id: "photo-84",
     placeId: "french-quarter",
     userId: "user-lena",
-    imageUrl: "https://source.unsplash.com/1200x900/?new-orleans,french-quarter,rain,night&sig=84",
+    imageUrl: "/generated/photo-84-rainy-blue-hour-gave-the-ironwork-a-clean-edge-against-the-signs.png",
     caption: "Rainy blue hour gave the ironwork a clean edge against the signs.",
     locationLabel: "French Quarter Balconies",
     metadataText: "50mm, rainy evening",
@@ -2438,7 +2438,7 @@ export const photos: Photo[] = [
     id: "photo-85",
     placeId: "acorn-street",
     userId: "user-zoe",
-    imageUrl: "https://source.unsplash.com/1200x900/?acorn-street,boston,morning&sig=85",
+    imageUrl: "/generated/photo-85-soft-morning-light-kept-the-brick-texture-from-going-too-contrasty.png",
     caption: "Soft morning light kept the brick texture from going too contrasty.",
     locationLabel: "Acorn Street",
     metadataText: "50mm, cobblestones",
@@ -2451,7 +2451,7 @@ export const photos: Photo[] = [
     id: "photo-86",
     placeId: "acorn-street",
     userId: "user-jules",
-    imageUrl: "https://source.unsplash.com/1200x900/?beacon-hill,boston,fall&sig=86",
+    imageUrl: "/generated/photo-86-fall-color-made-the-narrow-lane-feel-warmer-without-adding-clutter.png",
     caption: "Fall color made the narrow lane feel warmer without adding clutter.",
     locationLabel: "Acorn Street",
     metadataText: "85mm, fall color",
@@ -2464,7 +2464,7 @@ export const photos: Photo[] = [
     id: "photo-87",
     placeId: "philadelphia-art-museum",
     userId: "user-marcus",
-    imageUrl: "https://source.unsplash.com/1200x900/?philadelphia-museum-art,steps,golden-hour&sig=87",
+    imageUrl: "/generated/photo-87-long-stair-shadows-pointed-straight-back-toward-the-skyline.png",
     caption: "Long stair shadows pointed straight back toward the skyline.",
     locationLabel: "Philadelphia Museum Steps",
     metadataText: "35mm, golden hour",
@@ -2477,7 +2477,7 @@ export const photos: Photo[] = [
     id: "photo-88",
     placeId: "philadelphia-art-museum",
     userId: "user-noah",
-    imageUrl: "https://source.unsplash.com/1200x900/?philadelphia-art-museum,blue-hour&sig=88",
+    imageUrl: "/generated/photo-88-blue-hour-softened-the-museum-stone-and-kept-the-plaza-readable.png",
     caption: "Blue hour softened the museum stone and kept the plaza readable.",
     locationLabel: "Philadelphia Museum Steps",
     metadataText: "70mm, blue hour",
@@ -2490,7 +2490,7 @@ export const photos: Photo[] = [
     id: "photo-89",
     placeId: "dream-lake",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?dream-lake,rocky-mountain,sunrise&sig=89",
+    imageUrl: "/generated/photo-89-the-wind-paused-just-long-enough-for-a-real-mountain-reflection.png",
     caption: "The wind paused just long enough for a real mountain reflection.",
     locationLabel: "Dream Lake",
     metadataText: "24mm, alpine sunrise",
@@ -2503,7 +2503,7 @@ export const photos: Photo[] = [
     id: "photo-90",
     placeId: "dream-lake",
     userId: "user-ava",
-    imageUrl: "https://source.unsplash.com/1200x900/?rocky-mountain-national-park,snow,lake&sig=90",
+    imageUrl: "/generated/photo-90-patchy-snow-made-the-lake-edge-easy-to-read-from-a-low-angle.png",
     caption: "Patchy snow made the lake edge easy to read from a low angle.",
     locationLabel: "Dream Lake",
     metadataText: "35mm, snowy morning",
@@ -2516,7 +2516,7 @@ export const photos: Photo[] = [
     id: "photo-91",
     placeId: "grand-prismatic",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?grand-prismatic-spring,yellowstone,steam&sig=91",
+    imageUrl: "/generated/photo-91-cool-morning-air-made-the-steam-drift-low-across-the-boardwalk.png",
     caption: "Cool morning air made the steam drift low across the boardwalk.",
     locationLabel: "Grand Prismatic Spring",
     metadataText: "70mm, steam layers",
@@ -2529,7 +2529,7 @@ export const photos: Photo[] = [
     id: "photo-92",
     placeId: "grand-prismatic",
     userId: "user-nora",
-    imageUrl: "https://source.unsplash.com/1200x900/?yellowstone,grand-prismatic,colors&sig=92",
+    imageUrl: "/generated/photo-92-midday-light-finally-revealed-the-orange-mats-without-too-much-haze.png",
     caption: "Midday light finally revealed the orange mats without too much haze.",
     locationLabel: "Grand Prismatic Spring",
     metadataText: "50mm, daylight",
@@ -2542,7 +2542,7 @@ export const photos: Photo[] = [
     id: "photo-93",
     placeId: "schwabacher-landing",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?schwabacher-landing,grand-teton,sunrise&sig=93",
+    imageUrl: "/generated/photo-93-the-tetons-doubled-in-the-river-before-the-breeze-picked-up.png",
     caption: "The Tetons doubled in the river before the breeze picked up.",
     locationLabel: "Schwabacher Landing",
     metadataText: "35mm, calm water",
@@ -2555,7 +2555,7 @@ export const photos: Photo[] = [
     id: "photo-94",
     placeId: "schwabacher-landing",
     userId: "user-ava",
-    imageUrl: "https://source.unsplash.com/1200x900/?grand-teton,fall,color,river&sig=94",
+    imageUrl: "/generated/photo-94-fall-color-gave-the-riverbank-a-warmer-line-under-the-peaks.png",
     caption: "Fall color gave the riverbank a warmer line under the peaks.",
     locationLabel: "Schwabacher Landing",
     metadataText: "85mm, fall color",
@@ -2568,7 +2568,7 @@ export const photos: Photo[] = [
     id: "photo-95",
     placeId: "portland-japanese-garden",
     userId: "user-zoe",
-    imageUrl: "https://source.unsplash.com/1200x900/?portland-japanese-garden,rain&sig=95",
+    imageUrl: "/generated/photo-95-rain-made-the-stones-and-maples-feel-freshly-polished.png",
     caption: "Rain made the stones and maples feel freshly polished.",
     locationLabel: "Portland Japanese Garden",
     metadataText: "50mm, light rain",
@@ -2581,7 +2581,7 @@ export const photos: Photo[] = [
     id: "photo-96",
     placeId: "portland-japanese-garden",
     userId: "user-isha",
-    imageUrl: "https://source.unsplash.com/1200x900/?portland-japanese-garden,fall,maple&sig=96",
+    imageUrl: "/generated/photo-96-maple-color-framed-the-path-without-needing-a-portrait-subject.png",
     caption: "Maple color framed the path without needing a portrait subject.",
     locationLabel: "Portland Japanese Garden",
     metadataText: "85mm, fall color",
@@ -2594,7 +2594,7 @@ export const photos: Photo[] = [
     id: "photo-97",
     placeId: "multnomah-falls",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?multnomah-falls,morning,mist&sig=97",
+    imageUrl: "/generated/photo-97-morning-mist-kept-the-bridge-from-getting-lost-against-the-cliff.png",
     caption: "Morning mist kept the bridge from getting lost against the cliff.",
     locationLabel: "Multnomah Falls",
     metadataText: "24mm, mist",
@@ -2607,7 +2607,7 @@ export const photos: Photo[] = [
     id: "photo-98",
     placeId: "multnomah-falls",
     userId: "user-nora",
-    imageUrl: "https://source.unsplash.com/1200x900/?multnomah-falls,long-exposure,rain&sig=98",
+    imageUrl: "/generated/photo-98-overcast-rain-let-me-slow-the-falls-without-blowing-the-highlights.png",
     caption: "Overcast rain let me slow the falls without blowing the highlights.",
     locationLabel: "Multnomah Falls",
     metadataText: "Tripod, long exposure",
@@ -2620,7 +2620,7 @@ export const photos: Photo[] = [
     id: "photo-99",
     placeId: "nashville-broadway",
     userId: "user-diego",
-    imageUrl: "https://source.unsplash.com/1200x900/?nashville-broadway,neon,night&sig=99",
+    imageUrl: "/generated/photo-99-the-signs-were-bright-enough-to-shoot-handheld-at-the-curb.png",
     caption: "The signs were bright enough to shoot handheld at the curb.",
     locationLabel: "Broadway Neon",
     metadataText: "35mm, handheld",
@@ -2633,7 +2633,7 @@ export const photos: Photo[] = [
     id: "photo-100",
     placeId: "nashville-broadway",
     userId: "user-noah",
-    imageUrl: "https://source.unsplash.com/1200x900/?nashville-broadway,rain,blue-hour&sig=100",
+    imageUrl: "/generated/photo-100-wet-pavement-turned-broadway-into-a-strip-of-reflected-signs.png",
     caption: "Wet pavement turned Broadway into a strip of reflected signs.",
     locationLabel: "Broadway Neon",
     metadataText: "50mm, rainy blue hour",
@@ -2646,7 +2646,7 @@ export const photos: Photo[] = [
     id: "photo-101",
     placeId: "eiffel-tower-trocadero",
     userId: "user-kenji",
-    imageUrl: "https://source.unsplash.com/1200x900/?eiffel-tower,trocadero,sunrise&sig=101",
+    imageUrl: "/generated/photo-101-sunrise-kept-the-plaza-quiet-and-the-tower-edges-clean.png",
     caption: "Sunrise kept the plaza quiet and the tower edges clean.",
     locationLabel: "Eiffel Tower from Trocadero",
     metadataText: "70mm, pale sunrise",
@@ -2659,7 +2659,7 @@ export const photos: Photo[] = [
     id: "photo-102",
     placeId: "eiffel-tower-trocadero",
     userId: "user-maya",
-    imageUrl: "https://source.unsplash.com/1200x900/?eiffel-tower,blue-hour,rain&sig=102",
+    imageUrl: "/generated/photo-102-rainy-blue-hour-made-the-stone-plaza-reflect-just-enough-sparkle.png",
     caption: "Rainy blue hour made the stone plaza reflect just enough sparkle.",
     locationLabel: "Eiffel Tower from Trocadero",
     metadataText: "50mm, rainy blue hour",
@@ -2672,7 +2672,7 @@ export const photos: Photo[] = [
     id: "photo-103",
     placeId: "tower-bridge",
     userId: "user-kenji",
-    imageUrl: "https://source.unsplash.com/1200x900/?tower-bridge,london,blue-hour&sig=103",
+    imageUrl: "/generated/photo-103-the-thames-was-calm-enough-to-hold-the-bridge-lights-between-boat-wake.png",
     caption: "The Thames was calm enough to hold the bridge lights between boat wakes.",
     locationLabel: "Tower Bridge River Walk",
     metadataText: "35mm, blue hour",
@@ -2685,7 +2685,7 @@ export const photos: Photo[] = [
     id: "photo-104",
     placeId: "tower-bridge",
     userId: "user-noah",
-    imageUrl: "https://source.unsplash.com/1200x900/?tower-bridge,london,rain&sig=104",
+    imageUrl: "/generated/photo-104-classic-london-rain-gave-the-river-walk-a-stronger-mood-than-clear-ski.png",
     caption: "Classic London rain gave the river walk a stronger mood than clear skies.",
     locationLabel: "Tower Bridge River Walk",
     metadataText: "50mm, rainy evening",
@@ -2698,7 +2698,7 @@ export const photos: Photo[] = [
     id: "photo-105",
     placeId: "colosseum",
     userId: "user-kenji",
-    imageUrl: "https://source.unsplash.com/1200x900/?colosseum,rome,morning&sig=105",
+    imageUrl: "/generated/photo-105-morning-side-light-made-the-arches-feel-layered-instead-of-flat.png",
     caption: "Morning side light made the arches feel layered instead of flat.",
     locationLabel: "Colosseum Exterior",
     metadataText: "70mm, warm stone",
@@ -2711,7 +2711,7 @@ export const photos: Photo[] = [
     id: "photo-106",
     placeId: "colosseum",
     userId: "user-isha",
-    imageUrl: "https://source.unsplash.com/1200x900/?colosseum,rome,blue-hour&sig=106",
+    imageUrl: "/generated/photo-106-blue-hour-balanced-the-warm-arch-lights-with-a-cooler-sky.png",
     caption: "Blue hour balanced the warm arch lights with a cooler sky.",
     locationLabel: "Colosseum Exterior",
     metadataText: "35mm, blue hour",
@@ -2724,7 +2724,7 @@ export const photos: Photo[] = [
     id: "photo-107",
     placeId: "shibuya-crossing",
     userId: "user-kenji",
-    imageUrl: "https://source.unsplash.com/1200x900/?shibuya-crossing,tokyo,night&sig=107",
+    imageUrl: "/generated/photo-107-the-crossing-works-best-when-the-crowd-becomes-texture-not-the-subject.png",
     caption: "The crossing works best when the crowd becomes texture, not the subject.",
     locationLabel: "Shibuya Crossing",
     metadataText: "35mm, handheld",
@@ -2737,7 +2737,7 @@ export const photos: Photo[] = [
     id: "photo-108",
     placeId: "shibuya-crossing",
     userId: "user-diego",
-    imageUrl: "https://source.unsplash.com/1200x900/?shibuya-crossing,rain,neon&sig=108",
+    imageUrl: "/generated/photo-108-umbrellas-turned-the-crosswalk-into-a-moving-pattern.png",
     caption: "Umbrellas turned the crosswalk into a moving pattern.",
     locationLabel: "Shibuya Crossing",
     metadataText: "50mm, rainy neon",
@@ -2750,7 +2750,7 @@ export const photos: Photo[] = [
     id: "photo-109",
     placeId: "pyramids-giza",
     userId: "user-kenji",
-    imageUrl: "https://source.unsplash.com/1200x900/?pyramids-giza,sunrise,desert&sig=109",
+    imageUrl: "/generated/photo-109-low-sun-gave-the-pyramid-faces-enough-separation-from-the-desert-haze.png",
     caption: "Low sun gave the pyramid faces enough separation from the desert haze.",
     locationLabel: "Pyramids of Giza",
     metadataText: "85mm, desert sunrise",
@@ -2763,7 +2763,7 @@ export const photos: Photo[] = [
     id: "photo-110",
     placeId: "pyramids-giza",
     userId: "user-hannah",
-    imageUrl: "https://source.unsplash.com/1200x900/?pyramids-giza,sunset,silhouette&sig=110",
+    imageUrl: "/generated/photo-110-sunset-silhouettes-made-the-scale-read-better-than-a-clean-midday-shot.png",
     caption: "Sunset silhouettes made the scale read better than a clean midday shot.",
     locationLabel: "Pyramids of Giza",
     metadataText: "135mm, sunset haze",
