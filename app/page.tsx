@@ -9,7 +9,8 @@ import { useRouter } from "next/navigation";
 
 export default function HomePage() {
   const router = useRouter();
-  const { photos, state, toggleSavedPlace } = useDemoState();
+  const demo = useDemoState();
+  const { photos, state, toggleSavedPlace } = demo;
   const placesById = Object.fromEntries(places.map((place) => [place.id, place]));
   const usersById = Object.fromEntries(users.map((user) => [user.id, user]));
 
@@ -19,7 +20,10 @@ export default function HomePage() {
         <DiscoverSearch
           places={places}
           users={users.filter((user) => user.id !== "user-tim")}
-          onOpenPlace={(placeId) => router.push(`/places/${placeId}`)}
+          onOpenPlace={(placeId) => {
+            demo.recordPlaceView(placeId);
+            router.push(`/places/${placeId}`);
+          }}
           onOpenProfile={(userId) => router.push(`/profile/${userId}`)}
           onOpenMap={() => router.push("/map")}
         />
@@ -28,8 +32,16 @@ export default function HomePage() {
           placesById={placesById}
           usersById={usersById}
           savedPlaceIds={state.savedPlaceIds}
+          followedUserIds={state.followedUserIds}
+          resumePlaceId={state.lastDiscoveryPlaceId}
+          resumeIndex={state.discoveryActiveIndex}
+          canResume={demo.hasLoadedRemoteState}
+          onViewPlace={demo.recordPlaceView}
           onToggleSaved={toggleSavedPlace}
-          onOpenPlace={(placeId) => router.push(`/places/${placeId}`)}
+          onOpenPlace={(placeId) => {
+            demo.recordPlaceView(placeId);
+            router.push(`/places/${placeId}`);
+          }}
           onOpenProfile={(userId) => router.push(`/profile/${userId}`)}
         />
       </div>
