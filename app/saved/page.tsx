@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { BackButton } from "@/components/back-button";
 import { SavedPanel } from "@/components/saved-panel";
 import { places } from "@/lib/data";
 import { useDemoState } from "@/lib/demo-state";
@@ -14,12 +15,15 @@ export default function SavedPage() {
 
   return (
     <AppShell activeItem="saved">
-      <SavedPanel
-        savedPlaces={savedPlaces}
-        savedPhotos={savedPhotos}
-        onOpenPlace={(placeId) => router.push(`/places/${placeId}`)}
-        onToggleSaved={toggleSavedPlace}
-      />
+      <div className="space-y-5">
+        <BackButton label="Back" fallbackHref="/" />
+        <SavedPanel
+          savedPlaces={savedPlaces}
+          savedPhotos={savedPhotos}
+          onOpenPlace={(placeId) => router.push(`/places/${placeId}`)}
+          onToggleSaved={toggleSavedPlace}
+        />
+      </div>
     </AppShell>
   );
 }

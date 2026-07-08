@@ -1,6 +1,7 @@
 "use client";
 
-import { Camera, MapPin, UserPlus, Users } from "lucide-react";
+import { useState } from "react";
+import { Bookmark, FileText, Grid2X2, MapPin } from "lucide-react";
 import type { Photo, Place, User } from "../lib/types";
 
 type ProfileSummaryProps = {
@@ -26,87 +27,131 @@ export function ProfileSummary({
   onToggleFollow,
   onOpenPlace,
 }: ProfileSummaryProps) {
+  const [activeTab, setActiveTab] = useState<"Photos" | "Saved" | "Field notes">("Photos");
+  const [status, setStatus] = useState("");
+
   return (
-    <section className="overflow-hidden rounded-md border border-zinc-200 bg-white shadow-sm">
-      <div className="h-24 bg-[linear-gradient(135deg,#18181b,#52525b)]" />
-      <div className="space-y-5 p-4 sm:p-5">
-        <div className="-mt-14 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex items-end gap-4">
+    <section className="space-y-8">
+      <div className="rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] p-8 shadow-[0_16px_42px_rgba(39,34,27,0.08)]">
+        <div className="grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)_170px]">
+          <div className="space-y-6">
             <img
               src={user.avatarUrl}
               alt=""
-              className="size-24 rounded-md border-4 border-white bg-zinc-200 object-cover shadow-sm"
+              className="size-52 rounded-full bg-zinc-200 object-cover shadow-sm max-sm:size-32"
             />
-            <div className="pb-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-zinc-950">{user.name}</h1>
-              <p className="text-sm font-medium text-zinc-500">{user.username}</p>
+            <FavoriteTags />
+          </div>
+          <div className="space-y-5">
+            <div>
+              <h1 className="text-5xl font-semibold tracking-tight text-[var(--ink)] max-sm:text-3xl">{user.name}</h1>
+              <p className="mt-2 text-lg text-[var(--muted)]">{user.username}</p>
+            </div>
+            <p className="max-w-xl text-lg leading-7 text-[var(--ink)]/78">{user.bio}</p>
+            <p className="flex items-center gap-2 text-base text-[var(--ink)]/75"><MapPin className="size-5" />{user.homeArea}</p>
+            <div className="grid max-w-sm grid-cols-2 divide-x divide-[var(--line)]">
+              <div>
+                <p className="text-2xl font-semibold">{user.followerCount.toLocaleString()}</p>
+                <p className="text-[var(--muted)]">followers</p>
+              </div>
+              <div className="pl-12">
+                <p className="text-2xl font-semibold">{user.followingCount.toLocaleString()}</p>
+                <p className="text-[var(--muted)]">following</p>
+              </div>
             </div>
           </div>
-          {!isCurrentUser ? (
-            <button
-              type="button"
-              className={cx(
-                "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2",
-                isFollowed ? "bg-zinc-950 text-white" : "border border-zinc-200 text-zinc-700 hover:bg-zinc-50",
-              )}
-              onClick={() => onToggleFollow?.(user.id)}
-            >
-              <UserPlus className="size-4" aria-hidden="true" />
-              {isFollowed ? "Following" : "Follow"}
+          <div className="space-y-3">
+            {!isCurrentUser ? (
+              <button
+                type="button"
+                className={cx(
+                  "inline-flex h-12 w-full items-center justify-center rounded-lg text-base outline-none transition",
+                  isFollowed ? "bg-[var(--moss)] text-white" : "bg-[var(--moss)] text-white",
+                )}
+                onClick={() => onToggleFollow?.(user.id)}
+              >
+                {isFollowed ? "Following" : "Follow"}
+              </button>
+            ) : null}
+            <button type="button" className="inline-flex h-12 w-full items-center justify-center rounded-lg border border-[var(--line)] bg-white text-base" onClick={() => setStatus(isCurrentUser ? "Profile editing is mocked for the local demo." : "Profile shared to your demo clipboard.")}>
+              {isCurrentUser ? "Edit profile" : "Share profile"}
             </button>
-          ) : null}
-        </div>
-
-        <p className="max-w-3xl text-sm leading-6 text-zinc-700">{user.bio}</p>
-
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-md bg-zinc-50 p-3">
-            <p className="text-lg font-semibold text-zinc-950">{photos.length}</p>
-            <p className="flex items-center gap-1 text-xs text-zinc-500">
-              <Camera className="size-3.5" aria-hidden="true" />
-              uploads
-            </p>
-          </div>
-          <div className="rounded-md bg-zinc-50 p-3">
-            <p className="text-lg font-semibold text-zinc-950">{savedPlaces.length}</p>
-            <p className="flex items-center gap-1 text-xs text-zinc-500">
-              <MapPin className="size-3.5" aria-hidden="true" />
-              saved
-            </p>
-          </div>
-          <div className="rounded-md bg-zinc-50 p-3">
-            <p className="text-lg font-semibold text-zinc-950">{user.followerCount}</p>
-            <p className="flex items-center gap-1 text-xs text-zinc-500">
-              <Users className="size-3.5" aria-hidden="true" />
-              followers
-            </p>
-          </div>
-          <div className="rounded-md bg-zinc-50 p-3">
-            <p className="text-lg font-semibold text-zinc-950">{user.followingCount}</p>
-            <p className="text-xs text-zinc-500">following</p>
+            {status ? <p className="text-sm text-[var(--moss)]">{status}</p> : null}
           </div>
         </div>
-
-        {savedPlaces.length ? (
-          <div>
-            <h2 className="mb-2 text-sm font-semibold text-zinc-950">Saved shoot list</h2>
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {savedPlaces.slice(0, 6).map((place) => (
-                <button
-                  key={place.id}
-                  type="button"
-                  className="min-w-40 rounded-md border border-zinc-200 bg-white p-2 text-left outline-none transition hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-                  onClick={() => onOpenPlace?.(place.id)}
-                >
-                  <img src={place.coverPhotoUrl} alt="" className="mb-2 aspect-[4/3] w-full rounded object-cover" />
-                  <p className="truncate text-xs font-semibold text-zinc-950">{place.name}</p>
-                  <p className="truncate text-[11px] text-zinc-500">{place.fuzzyLocationLabel}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : null}
       </div>
+
+      <div className="flex gap-16 border-b border-[var(--line)] px-1">
+        {[[Grid2X2, "Photos"], [Bookmark, "Saved"], [FileText, "Field notes"]].map(([Icon, label]) => {
+          const TypedIcon = Icon as typeof Grid2X2;
+          return (
+            <button
+              key={label as string}
+              type="button"
+              onClick={() => setActiveTab(label as typeof activeTab)}
+              className={`flex items-center gap-3 border-b-2 px-6 py-4 text-base ${activeTab === label ? "border-[var(--moss)] text-[var(--moss)]" : "border-transparent text-[var(--ink)]"}`}
+            >
+              <TypedIcon className="size-5" />{label as string}
+            </button>
+          );
+        })}
+      </div>
+
+      {activeTab === "Photos" ? (
+        <div className="grid grid-cols-3 gap-4 max-sm:grid-cols-2">
+          {photos.slice(0, 6).map((photo) => (
+            <button key={photo.id} type="button" className="overflow-hidden rounded-lg" onClick={() => onOpenPlace?.(photo.placeId)}>
+              <img src={photo.imageUrl} alt={photo.caption} className="aspect-[16/10] w-full object-cover max-sm:aspect-square" />
+            </button>
+          ))}
+          {!photos.length ? <p className="col-span-full rounded-lg border border-dashed border-[var(--line)] p-6 text-[var(--muted)]">No uploaded photos yet.</p> : null}
+        </div>
+      ) : null}
+
+      {activeTab === "Saved" && savedPlaces.length ? (
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold">Saved places</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {savedPlaces.slice(0, 4).map((place) => (
+              <button key={place.id} type="button" className="grid grid-cols-[72px_minmax(0,1fr)_32px] items-center gap-4 rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] p-3 text-left" onClick={() => onOpenPlace?.(place.id)}>
+                <img src={place.coverPhotoUrl} alt="" className="aspect-[4/3] rounded object-cover" />
+                <span className="min-w-0">
+                  <span className="block truncate text-base text-[var(--ink)]">{place.name}</span>
+                  <span className="block truncate text-sm text-[var(--muted)]">San Francisco, CA</span>
+                </span>
+                <Bookmark className="size-5 fill-[var(--gold)] text-[var(--gold)]" />
+              </button>
+            ))}
+          </div>
+        </section>
+      ) : null}
+      {activeTab === "Saved" && !savedPlaces.length ? (
+        <p className="rounded-lg border border-dashed border-[var(--line)] p-6 text-[var(--muted)]">No public saved places to show yet.</p>
+      ) : null}
+      {activeTab === "Field notes" ? (
+        <div className="space-y-3">
+          {photos.slice(0, 4).map((photo) => (
+            <button key={photo.id} type="button" className="block w-full rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] p-4 text-left" onClick={() => onOpenPlace?.(photo.placeId)}>
+              <p className="font-semibold text-[var(--ink)]">{photo.locationLabel}</p>
+              <p className="mt-1 text-[var(--muted)]">{photo.caption}</p>
+            </button>
+          ))}
+          {!photos.length ? <p className="rounded-lg border border-dashed border-[var(--line)] p-6 text-[var(--muted)]">No field notes yet.</p> : null}
+        </div>
+      ) : null}
     </section>
+  );
+}
+
+function FavoriteTags() {
+  return (
+    <div>
+      <p className="mb-3 text-base font-semibold">Favorite tags</p>
+      <div className="flex flex-wrap gap-3">
+        {["Fog", "Bridge", "Portraits", "Golden hour"].map((tag) => (
+          <span key={tag} className="rounded-full bg-[var(--chip)] px-5 py-2 text-sm text-[var(--ink)]/80">{tag}</span>
+        ))}
+      </div>
+    </div>
   );
 }

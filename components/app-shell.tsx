@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Bookmark, Grid2X2, Map, PlusCircle, UserRound } from "lucide-react";
+import { Bookmark, Compass, Map, PlusCircle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { places } from "@/lib/data";
 import { useDemoState } from "@/lib/demo-state";
@@ -56,7 +56,7 @@ export function AppShell({
   const handleOpenSaved = onOpenSaved ?? (() => router.push("/saved"));
   const handleOpenProfile = onOpenProfile ?? ((userId: string) => router.push(`/profile/${userId}`));
   const mobileItems = [
-    { id: "discover", label: "Discover", icon: Grid2X2, href: "/" },
+    { id: "discover", label: "Discover", icon: Compass, href: "/" },
     { id: "map", label: "Map", icon: Map, href: "/map" },
     { id: "add", label: "Add", icon: PlusCircle },
     { id: "saved", label: "Saved", icon: Bookmark, href: "/saved" },
@@ -64,7 +64,7 @@ export function AppShell({
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-950">
+    <div className="min-h-screen text-[var(--ink)]">
       <TopNav
         areaLabel={areaLabel}
         activeItem={activeItem}
@@ -79,7 +79,7 @@ export function AppShell({
 
       <main
         className={cx(
-          "mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-4 py-5 pb-24 sm:px-6 lg:pb-8",
+          "mx-auto grid w-full max-w-[1320px] grid-cols-1 gap-5 px-5 py-6 pb-28 sm:px-8 lg:pb-8",
           Boolean(rightRail) && "lg:grid-cols-[minmax(0,1fr)_360px]",
         )}
       >
@@ -94,7 +94,7 @@ export function AppShell({
       </main>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-zinc-200 bg-white/95 px-2 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-8px_24px_rgba(24,24,27,0.06)] backdrop-blur md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--line)] bg-[rgba(255,253,248,0.94)] px-3 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-10px_30px_rgba(39,34,27,0.08)] backdrop-blur-xl md:hidden"
         aria-label="Mobile navigation"
       >
         <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
@@ -106,8 +106,8 @@ export function AppShell({
                 key={item.id}
                 type="button"
                 className={cx(
-                  "flex flex-col items-center gap-1 rounded-md px-2 py-2 text-[11px] font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2",
-                  isActive ? "bg-zinc-950 text-white" : "text-zinc-600 hover:bg-zinc-100",
+                  "flex flex-col items-center gap-1 rounded-md px-2 py-2 text-[11px] outline-none transition",
+                  isActive ? "text-[var(--moss)]" : "text-[var(--ink)]/70 hover:bg-[var(--chip)]",
                 )}
                 aria-current={isActive ? "page" : undefined}
                 onClick={() => {
@@ -133,9 +133,10 @@ export function AppShell({
           demo.addPhoto({
             placeId: input.placeId,
             imageUrl: input.previewUrl,
+            file: input.file,
             caption: input.caption,
             metadataText: input.metadataText,
-            shotAtTimeOfDay: input.usedCurrentLocation ? "Current location" : "Demo upload",
+            shotAtTimeOfDay: input.bestLight,
             tags: input.tags,
             locationLabel: place?.name ?? input.approximateLocationLabel ?? "Selected Oculi place"
           });

@@ -1,28 +1,19 @@
 "use client";
 
 import { Bookmark, Heart, MapPin, MoreHorizontal, UserPlus } from "lucide-react";
-import type { Comment, Photo, Place, User } from "../lib/types";
-import { CommentThread } from "./comment-thread";
+import type { Photo, Place, User } from "../lib/types";
 
 type PhotoCardProps = {
   photo: Photo;
   place: Place;
   photographer: User;
-  comments?: Comment[];
-  usersById?: Record<string, User | undefined>;
   isSaved?: boolean;
   isFollowed?: boolean;
+  isCurrentUser?: boolean;
   isLiked?: boolean;
-  likedCommentIds?: string[];
-  likedReplyIds?: string[];
-  showComments?: boolean;
   onToggleSaved?: (placeId: string) => void;
   onToggleFollow?: (userId: string) => void;
   onTogglePhotoLike?: (photoId: string) => void;
-  onAddComment?: (photoId: string, body: string) => void;
-  onToggleCommentLike?: (commentId: string) => void;
-  onAddReply?: (commentId: string, body: string) => void;
-  onToggleReplyLike?: (replyId: string) => void;
   onOpenPlace?: (placeId: string) => void;
   onOpenProfile?: (userId: string) => void;
   className?: string;
@@ -36,21 +27,13 @@ export function PhotoCard({
   photo,
   place,
   photographer,
-  comments = [],
-  usersById = {},
   isSaved = false,
   isFollowed = false,
+  isCurrentUser = false,
   isLiked = false,
-  likedCommentIds = [],
-  likedReplyIds = [],
-  showComments = false,
   onToggleSaved,
   onToggleFollow,
   onTogglePhotoLike,
-  onAddComment,
-  onToggleCommentLike,
-  onAddReply,
-  onToggleReplyLike,
   onOpenPlace,
   onOpenProfile,
   className,
@@ -85,7 +68,7 @@ export function PhotoCard({
             </span>
           </button>
         </div>
-        {!isFollowed ? (
+        {!isFollowed && !isCurrentUser ? (
           <button
             type="button"
             className="hidden items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 outline-none transition hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 sm:inline-flex"
@@ -119,25 +102,18 @@ export function PhotoCard({
 
       <div className="space-y-4 px-4 py-4">
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className={cx(
-                "inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2",
-                isLiked ? "bg-rose-50 text-rose-600" : "bg-zinc-50 text-zinc-700 hover:bg-zinc-100",
-              )}
-              aria-label={isLiked ? "Unlike photo" : "Like photo"}
-              onClick={() => onTogglePhotoLike?.(photo.id)}
-            >
-              <Heart className={cx("size-4", isLiked && "fill-current")} aria-hidden="true" />
-              {photo.likeCount + (isLiked ? 1 : 0)}
-            </button>
-            {showComments ? (
-              <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2.5 py-2 text-sm font-semibold text-zinc-700">
-                {comments.length} notes
-              </span>
-            ) : null}
-          </div>
+          <button
+            type="button"
+            className={cx(
+              "inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2",
+              isLiked ? "bg-rose-50 text-rose-600" : "bg-zinc-50 text-zinc-700 hover:bg-zinc-100",
+            )}
+            aria-label={isLiked ? "Unlike photo" : "Like photo"}
+            onClick={() => onTogglePhotoLike?.(photo.id)}
+          >
+            <Heart className={cx("size-4", isLiked && "fill-current")} aria-hidden="true" />
+            {photo.likeCount + (isLiked ? 1 : 0)}
+          </button>
           <button
             type="button"
             className={cx(
@@ -170,21 +146,6 @@ export function PhotoCard({
             ) : null}
           </div>
         </div>
-
-        {showComments ? (
-          <CommentThread
-            photoId={photo.id}
-            comments={comments}
-            usersById={usersById}
-            likedCommentIds={likedCommentIds}
-            likedReplyIds={likedReplyIds}
-            onAddComment={onAddComment}
-            onToggleCommentLike={onToggleCommentLike}
-            onAddReply={onAddReply}
-            onToggleReplyLike={onToggleReplyLike}
-            compact
-          />
-        ) : null}
       </div>
     </article>
   );

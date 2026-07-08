@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
-import { Camera, ImagePlus, LocateFixed, MapPin, Navigation, X } from "lucide-react";
+import { Camera, ImagePlus, LocateFixed, MapPin, Search, Sun, X } from "lucide-react";
 import type { Place } from "../lib/types";
 
 export type UploadPhotoInput = {
@@ -10,6 +10,7 @@ export type UploadPhotoInput = {
   placeId: string;
   caption: string;
   metadataText?: string;
+  bestLight: string;
   tags: string[];
   usedCurrentLocation: boolean;
   approximateLocationLabel?: string;
@@ -33,6 +34,7 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
   const [placeId, setPlaceId] = useState(initialPlaceId || places[0]?.id || "");
   const [caption, setCaption] = useState("");
   const [metadataText, setMetadataText] = useState("");
+  const [bestLight, setBestLight] = useState("Golden hour");
   const [tagsText, setTagsText] = useState("");
   const [locationStatus, setLocationStatus] = useState("Select a place or use an approximate SF location.");
   const [usedCurrentLocation, setUsedCurrentLocation] = useState(false);
@@ -43,19 +45,17 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
     if (initialPlaceId) setPlaceId(initialPlaceId);
   }, [initialPlaceId]);
 
-  useEffect(() => {
-    return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-    };
-  }, [previewUrl]);
-
   if (!open) return null;
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const nextFile = event.target.files?.[0] || null;
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
     setFile(nextFile);
-    setPreviewUrl(nextFile ? URL.createObjectURL(nextFile) : "");
+    setPreviewUrl("");
+    if (!nextFile) return;
+
+    const reader = new FileReader();
+    reader.onload = () => setPreviewUrl(typeof reader.result === "string" ? reader.result : "");
+    reader.readAsDataURL(nextFile);
   }
 
   function handleSimulatedLocation() {
@@ -90,6 +90,7 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
       placeId,
       caption: caption.trim(),
       metadataText: metadataText.trim() || undefined,
+      bestLight,
       tags: tagsText
         .split(",")
         .map((tag) => tag.trim().replace(/^#/, ""))
@@ -101,21 +102,22 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
     setPreviewUrl("");
     setCaption("");
     setMetadataText("");
+    setBestLight("Golden hour");
     setTagsText("");
     onClose();
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-950/45 p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="upload-title">
-      <form onSubmit={submit} className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-md bg-white shadow-2xl sm:rounded-md">
-        <div className="flex items-center justify-between gap-4 border-b border-zinc-200 px-4 py-3">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/42 p-0 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="upload-title">
+      <form onSubmit={submit} className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-[24px] bg-[var(--paper-strong)] shadow-2xl sm:rounded-[12px]">
+        <div className="flex items-center justify-between gap-4 px-7 pb-2 pt-7">
           <div>
-            <h2 id="upload-title" className="text-base font-semibold text-zinc-950">Add photo</h2>
-            <p className="text-sm text-zinc-500">Attach the place first, camera details optional.</p>
+            <h2 id="upload-title" className="text-3xl font-semibold text-[var(--ink)]">Add Photo</h2>
+            <p className="mt-1 text-lg text-[var(--muted)]">Upload field note</p>
           </div>
           <button
             type="button"
-            className="rounded-md p-2 text-zinc-500 outline-none transition hover:bg-zinc-100 hover:text-zinc-950 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+            className="rounded-full p-2 text-[var(--ink)] outline-none transition hover:bg-[var(--chip)]"
             aria-label="Close upload modal"
             onClick={onClose}
           >
@@ -123,106 +125,115 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
           </button>
         </div>
 
-        <div className="grid gap-4 p-4 md:grid-cols-[minmax(0,1fr)_260px]">
-          <div className="space-y-4">
+        <div className="space-y-5 p-7 pt-3">
             <label className="block">
-              <span className="mb-2 block text-sm font-medium text-zinc-900">Photo file</span>
-              <span className={cx("flex min-h-72 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-dashed border-zinc-300 bg-zinc-50 outline-none transition hover:border-zinc-400", previewUrl && "border-solid bg-zinc-100")}>
+              <span className="mb-2 block text-base text-[var(--ink)]">Photo preview</span>
+              <span className={cx("relative flex min-h-72 cursor-pointer items-center justify-center overflow-hidden rounded-[12px] border border-dashed border-[var(--line)] bg-[var(--chip)] outline-none transition hover:border-[var(--moss)]", previewUrl && "border-solid bg-zinc-100")}>
                 {previewUrl ? (
                   <img src={previewUrl} alt="Selected upload preview" className="h-full max-h-[460px] w-full object-cover" />
                 ) : (
-                  <span className="flex flex-col items-center gap-2 text-sm text-zinc-500">
+                  <span className="flex flex-col items-center gap-2 text-sm text-[var(--muted)]">
                     <ImagePlus className="size-8" aria-hidden="true" />
                     Choose an image to preview
                   </span>
                 )}
+                {previewUrl ? <span className="absolute right-4 top-4 grid size-9 place-items-center rounded-full bg-white text-[var(--ink)]"><X className="size-5" /></span> : null}
               </span>
               <input type="file" accept="image/*" className="sr-only" onChange={handleFileChange} required />
             </label>
 
             <label className="block">
-              <span className="mb-2 block text-sm font-medium text-zinc-900">Caption</span>
-              <textarea
-                value={caption}
-                onChange={(event) => setCaption(event.target.value)}
-                className="min-h-24 w-full rounded-md border border-zinc-200 px-3 py-2 text-sm outline-none transition placeholder:text-zinc-400 focus:border-zinc-400 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-                placeholder="What should someone know before shooting here?"
-                required
-              />
-            </label>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="upload-place" className="mb-2 block text-sm font-medium text-zinc-900">Place</label>
-              <select
-                id="upload-place"
-                value={placeId}
-                onChange={(event) => setPlaceId(event.target.value)}
-                className="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-zinc-400 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-                required
-              >
-                {places.map((place) => (
-                  <option key={place.id} value={place.id}>{place.name}</option>
-                ))}
-              </select>
+              <span className="mb-2 block text-base text-[var(--ink)]">Choose a place</span>
+              <span className="relative block">
+                <Search className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--ink)]/65" />
+                <select
+                  id="upload-place"
+                  value={placeId}
+                  onChange={(event) => setPlaceId(event.target.value)}
+                  className="h-12 w-full appearance-none rounded-lg border border-[var(--line)] bg-white pl-12 pr-10 text-base outline-none"
+                  required
+                >
+                  {places.map((place) => (
+                    <option key={place.id} value={place.id}>{place.name}</option>
+                  ))}
+                </select>
+              </span>
               {selectedPlace ? (
-                <p className="mt-2 flex items-center gap-1 text-xs text-zinc-500">
+                <p className="mt-2 flex items-center gap-1 text-xs text-[var(--muted)]">
                   <MapPin className="size-3.5" aria-hidden="true" />
                   {selectedPlace.fuzzyLocationLabel}
                 </p>
               ) : null}
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center gap-2 rounded-md border border-zinc-200 px-3 py-2 text-sm font-semibold text-zinc-700 outline-none transition hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-                onClick={useCurrentLocation}
-              >
-                <LocateFixed className="size-4" aria-hidden="true" />
-                Current
-              </button>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center gap-2 rounded-md border border-zinc-200 px-3 py-2 text-sm font-semibold text-zinc-700 outline-none transition hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-                onClick={handleSimulatedLocation}
-              >
-                <Navigation className="size-4" aria-hidden="true" />
-                Simulate
-              </button>
-            </div>
-            <p className="rounded-md bg-zinc-50 p-3 text-xs leading-5 text-zinc-600">{locationStatus}</p>
+            </label>
 
             <label className="block">
-              <span className="mb-2 block text-sm font-medium text-zinc-900">Tags</span>
+              <span className="mb-2 block text-base text-[var(--ink)]">Caption</span>
+              <input
+                value={caption}
+                onChange={(event) => setCaption(event.target.value)}
+                className="h-14 w-full rounded-lg border border-[var(--line)] bg-white px-4 text-base outline-none placeholder:text-[var(--muted)]"
+                placeholder="Fog lifted for six minutes"
+                required
+              />
+            </label>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block">
+                <span className="mb-2 block text-base text-[var(--ink)]">Best light</span>
+                <span className="relative block">
+                  <Sun className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--gold)]" />
+                  <select
+                    value={bestLight}
+                    onChange={(event) => setBestLight(event.target.value)}
+                    className="h-12 w-full appearance-none rounded-lg border border-[var(--line)] bg-white pl-12 pr-10 text-base outline-none"
+                  >
+                    {["Golden hour", "Sunrise", "Sunset", "Blue hour", "Fog", "Night", "Daylight"].map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">⌄</span>
+                </span>
+              </label>
+              <label className="block">
+                <span className="mb-2 block text-base text-[var(--ink)]">Lens / notes</span>
+                <input
+                  value={metadataText}
+                  onChange={(event) => setMetadataText(event.target.value)}
+                  className="h-12 w-full rounded-lg border border-[var(--line)] bg-white px-4 text-base outline-none placeholder:text-[var(--muted)]"
+                  placeholder="70mm, f/5.6"
+                />
+              </label>
+            </div>
+
+            <label className="block">
+              <span className="mb-2 block text-base text-[var(--ink)]">Tags</span>
               <input
                 value={tagsText}
                 onChange={(event) => setTagsText(event.target.value)}
-                className="w-full rounded-md border border-zinc-200 px-3 py-2 text-sm outline-none transition placeholder:text-zinc-400 focus:border-zinc-400 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-                placeholder="golden hour, skyline, portrait"
+                className="h-12 w-full rounded-lg border border-[var(--line)] bg-white px-4 text-base outline-none placeholder:text-[var(--muted)]"
+                placeholder="Fog, Bridge, Golden hour"
               />
             </label>
 
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-zinc-900">Camera notes</span>
-              <textarea
-                value={metadataText}
-                onChange={(event) => setMetadataText(event.target.value)}
-                className="min-h-20 w-full rounded-md border border-zinc-200 px-3 py-2 text-sm outline-none transition placeholder:text-zinc-400 focus:border-zinc-400 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-                placeholder="Optional lens, camera, settings, edit notes"
-              />
-            </label>
+            <button type="button" className="flex h-12 w-full items-center justify-between rounded-lg border border-[var(--line)] bg-white px-4 text-base" onClick={useCurrentLocation}>
+              <span className="flex items-center gap-2"><LocateFixed className="size-5" />Use current location</span>
+              <span className={cx("h-6 w-10 rounded-full p-0.5 transition", usedCurrentLocation ? "bg-[var(--moss)]" : "bg-[var(--chip)]")}>
+                <span className={cx("block size-5 rounded-full bg-white transition", usedCurrentLocation && "translate-x-4")} />
+              </span>
+            </button>
+            <p className="text-xs leading-5 text-[var(--muted)]">{locationStatus}</p>
 
+            <div className="grid gap-3 sm:grid-cols-[160px_minmax(0,1fr)]">
+              <button type="button" className="h-12 rounded-lg border border-[var(--line)] bg-white text-base" onClick={onClose}>Cancel</button>
             <button
               type="submit"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-zinc-950 px-4 py-3 text-sm font-semibold text-white outline-none transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-300 focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[var(--moss)] px-4 text-base text-white outline-none transition hover:bg-[var(--moss-dark)] disabled:cursor-not-allowed disabled:bg-zinc-300"
               disabled={!file || !caption.trim() || !placeId}
             >
               <Camera className="size-4" aria-hidden="true" />
-              Add to feed
+              Publish field note
             </button>
-          </div>
+            </div>
         </div>
       </form>
     </div>

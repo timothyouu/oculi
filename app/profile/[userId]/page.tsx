@@ -3,6 +3,7 @@
 import { notFound } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
+import { BackButton } from "@/components/back-button";
 import { ProfileSummary } from "@/components/profile-summary";
 import { places, users } from "@/lib/data";
 import { useDemoState } from "@/lib/demo-state";
@@ -16,15 +17,18 @@ export default function ProfilePage({ params }: { params: { userId: string } }) 
 
   return (
     <AppShell>
-      <ProfileSummary
-        user={user}
-        photos={photos.filter((photo) => photo.userId === user.id)}
-        savedPlaces={savedPlaces}
-        isCurrentUser={user.id === currentUserId}
-        isFollowed={followedUserIds.includes(user.id)}
-        onToggleFollow={toggleFollowUser}
-        onOpenPlace={(placeId) => router.push(`/places/${placeId}`)}
-      />
+      <div className="space-y-5">
+        <BackButton label="Back" fallbackHref="/" />
+        <ProfileSummary
+          user={user}
+          photos={photos.filter((photo) => photo.userId === user.id)}
+          savedPlaces={savedPlaces}
+          isCurrentUser={user.id === currentUserId}
+          isFollowed={followedUserIds.includes(user.id)}
+          onToggleFollow={toggleFollowUser}
+          onOpenPlace={(placeId) => router.push(`/places/${placeId}`)}
+        />
+      </div>
     </AppShell>
   );
 }

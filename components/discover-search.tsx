@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Map, MapPin, Search, UserRound } from "lucide-react";
+import { MapPin, Search, UserRound } from "lucide-react";
 import type { Place, User } from "../lib/types";
 
 type DiscoverSearchProps = {
@@ -59,50 +59,43 @@ export function DiscoverSearch({ places, users, onOpenPlace, onOpenProfile, onOp
   };
 
   return (
-    <section className="mx-auto w-full max-w-4xl" aria-label="Search places and profiles">
-      <div className="rounded-md border border-line bg-white p-3 shadow-soft sm:p-4">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+    <section className="mx-auto w-full max-w-[760px]" aria-label="Search places and profiles">
+      <div className="space-y-4">
+        <div className="flex flex-col gap-3">
           <div className="relative min-w-0 flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink/40" aria-hidden="true" />
+            <Search className="pointer-events-none absolute left-5 top-1/2 size-5 -translate-y-1/2 text-[var(--ink)]/70" aria-hidden="true" />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter") submitFirstResult();
               }}
-              className="h-12 w-full rounded-md border border-line bg-paper pl-10 pr-3 text-sm font-medium text-ink outline-none transition placeholder:text-ink/42 focus:border-ink focus:bg-white"
+              className="h-[58px] w-full rounded-[22px] border border-[var(--line)] bg-[rgba(255,253,248,0.9)] pl-14 pr-5 text-lg text-[var(--ink)] shadow-[0_10px_28px_rgba(39,34,27,0.05)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--moss)] focus:bg-white"
               placeholder="Search places or profiles"
               aria-label="Search places or profiles"
             />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-2 rounded-[18px] border border-[var(--line)] bg-[rgba(255,253,248,0.72)] p-1">
             {(["places", "profiles"] as SearchMode[]).map((item) => (
               <button
                 key={item}
                 type="button"
                 className={cx(
-                  "h-10 rounded-md px-3 text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2",
-                  mode === item ? "bg-ink text-white" : "border border-line bg-white text-ink/62 hover:bg-paper hover:text-ink",
+                  "inline-flex h-12 items-center justify-center gap-3 rounded-[14px] px-4 text-lg outline-none transition",
+                  mode === item ? "bg-[var(--chip)] text-[var(--moss)] shadow-sm" : "text-[var(--ink)] hover:bg-white/60",
                 )}
                 onClick={() => setMode(item)}
               >
+                {item === "places" ? <MapPin className="size-5" /> : <UserRound className="size-5" />}
                 {item === "places" ? "Places" : "Profiles"}
               </button>
             ))}
-            <button
-              type="button"
-              className="ml-auto inline-flex h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-sm font-semibold text-ink/70 outline-none transition hover:bg-paper hover:text-ink focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 lg:ml-0"
-              onClick={onOpenMap}
-            >
-              <Map className="size-4" aria-hidden="true" />
-              Map
-            </button>
           </div>
         </div>
 
         {hasQuery ? (
-          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-2 sm:grid-cols-2">
             {activeResults.map((item) => {
               if (mode === "places") {
                 const place = item as Place;
@@ -110,13 +103,13 @@ export function DiscoverSearch({ places, users, onOpenPlace, onOpenProfile, onOp
                   <button
                     key={place.id}
                     type="button"
-                    className="flex min-w-0 items-center gap-3 rounded-md bg-paper p-2 text-left outline-none transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+                    className="flex min-w-0 items-center gap-3 rounded-xl border border-[var(--line)] bg-[var(--paper-strong)] p-2 text-left outline-none transition hover:bg-white"
                     onClick={() => onOpenPlace(place.id)}
                   >
-                    <img src={place.coverPhotoUrl} alt="" className="size-11 rounded-md object-cover" />
+                    <img src={place.coverPhotoUrl} alt="" className="size-12 rounded-lg object-cover" />
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-semibold text-ink">{place.name}</span>
-                      <span className="flex items-center gap-1 truncate text-xs text-ink/54">
+                      <span className="block truncate text-sm font-semibold text-[var(--ink)]">{place.name}</span>
+                      <span className="flex items-center gap-1 truncate text-xs text-[var(--muted)]">
                         <MapPin className="size-3 shrink-0" aria-hidden="true" />
                         {place.fuzzyLocationLabel}
                       </span>
@@ -130,13 +123,13 @@ export function DiscoverSearch({ places, users, onOpenPlace, onOpenProfile, onOp
                 <button
                   key={user.id}
                   type="button"
-                  className="flex min-w-0 items-center gap-3 rounded-md bg-paper p-2 text-left outline-none transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+                  className="flex min-w-0 items-center gap-3 rounded-xl border border-[var(--line)] bg-[var(--paper-strong)] p-2 text-left outline-none transition hover:bg-white"
                   onClick={() => onOpenProfile(user.id)}
                 >
                   <img src={user.avatarUrl} alt="" className="size-11 rounded-full object-cover" />
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-semibold text-ink">{user.name}</span>
-                    <span className="flex items-center gap-1 truncate text-xs text-ink/54">
+                    <span className="block truncate text-sm font-semibold text-[var(--ink)]">{user.name}</span>
+                    <span className="flex items-center gap-1 truncate text-xs text-[var(--muted)]">
                       <UserRound className="size-3 shrink-0" aria-hidden="true" />
                       {user.username}
                     </span>
@@ -148,7 +141,7 @@ export function DiscoverSearch({ places, users, onOpenPlace, onOpenProfile, onOp
         ) : null}
 
         {hasQuery && !activeResults.length ? (
-          <p className="mt-3 rounded-md bg-paper px-3 py-2 text-sm text-ink/58">No {mode} found for {query.trim()}.</p>
+          <p className="rounded-xl border border-[var(--line)] bg-[var(--paper-strong)] px-3 py-2 text-sm text-[var(--muted)]">No {mode} found for {query.trim()}.</p>
         ) : null}
       </div>
     </section>

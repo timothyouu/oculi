@@ -1,15 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bookmark,
-  Camera,
   ChevronRight,
-  Clock,
   Compass,
+  Heart,
   MapPin,
   RotateCcw,
-  Sparkles,
   X
 } from "lucide-react";
 import type { Photo, Place, User } from "../lib/types";
@@ -19,6 +17,11 @@ type DiscoverDeckProps = {
   placesById: Record<string, Place | undefined>;
   usersById: Record<string, User | undefined>;
   savedPlaceIds: string[];
+  followedUserIds: string[];
+  resumePlaceId?: string;
+  resumeIndex?: number;
+  canResume?: boolean;
+  onViewPlace?: (placeId: string, activeIndex: number) => void;
   onToggleSaved: (placeId: string) => void;
   onOpenPlace: (placeId: string) => void;
   onOpenProfile: (userId: string) => void;
@@ -39,6 +42,11 @@ export function DiscoverDeck({
   placesById,
   usersById,
   savedPlaceIds,
+  followedUserIds,
+  resumePlaceId,
+  resumeIndex = 0,
+  canResume = true,
+  onViewPlace,
   onToggleSaved,
   onOpenPlace,
   onOpenProfile,
@@ -54,14 +62,39 @@ export function DiscoverDeck({
         .filter(Boolean) as Array<{ photo: Photo; place: Place; photographer: User }>,
     [photos, placesById, usersById],
   );
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(() => Math.max(0, resumeIndex));
   const [drag, setDrag] = useState<DragState>({ startX: 0, currentX: 0, dragging: false });
+  const appliedResumeRef = useRef(false);
+  const lastRecordedViewRef = useRef("");
 
   const active = cards[activeIndex % Math.max(cards.length, 1)];
   const nextCards = cards.slice(activeIndex + 1, activeIndex + 3);
   const offset = drag.dragging ? drag.currentX - drag.startX : 0;
   const rotation = Math.max(-10, Math.min(10, offset / 28));
   const intent = offset > 48 ? "save" : offset < -48 ? "skip" : null;
+
+  useEffect(() => {
+    if (!canResume || !cards.length || appliedResumeRef.current) return;
+
+    const resumePlaceIndex = resumePlaceId
+      ? cards.findIndex((card) => card.place.id === resumePlaceId)
+      : -1;
+    const nextIndex =
+      resumePlaceIndex >= 0 ? resumePlaceIndex : Math.min(Math.max(0, resumeIndex), cards.length - 1);
+
+    setActiveIndex(nextIndex);
+    appliedResumeRef.current = true;
+  }, [canResume, cards, resumeIndex, resumePlaceId]);
+
+  useEffect(() => {
+    if (!active) return;
+
+    const viewKey = `${active.place.id}:${activeIndex}`;
+    if (lastRecordedViewRef.current === viewKey) return;
+
+    lastRecordedViewRef.current = viewKey;
+    onViewPlace?.(active.place.id, activeIndex);
+  }, [active, activeIndex, onViewPlace]);
 
   const advance = () => {
     if (!cards.length) return;
@@ -105,38 +138,26 @@ export function DiscoverDeck({
   }
 
   const isSaved = savedPlaceIds.includes(active.place.id);
+  const isSuggested = !followedUserIds.includes(active.photographer.id);
 
   return (
-    <section className="mx-auto w-full max-w-4xl" aria-label="Swipe discovery">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-moss">
-            <Sparkles className="size-4" aria-hidden="true" />
-            Discover
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-ink">Swipe through places worth shooting.</h1>
-        </div>
-        <div className="rounded-md border border-line bg-white px-3 py-2 text-sm text-ink/65 shadow-soft">
-          <span className="font-semibold text-ink">{activeIndex + 1}</span> / {cards.length} in San Francisco
-        </div>
-      </div>
-
-      <div className="relative mx-auto min-h-[620px] max-w-2xl sm:min-h-[700px]">
+    <section className="mx-auto w-full max-w-[980px]" aria-label="Swipe discovery">
+      <div className="relative mx-auto max-w-[830px] pb-3">
         {nextCards.reverse().map((item, index) => (
           <div
             key={`${item.photo.id}-stack`}
             className={cx(
-              "absolute inset-x-4 top-7 overflow-hidden rounded-md border border-line bg-white shadow-soft",
-              index === 0 ? "translate-y-6 scale-[0.94] opacity-45" : "translate-y-3 scale-[0.97] opacity-70",
+              "pointer-events-none absolute inset-y-7 overflow-hidden rounded-[26px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_24px_60px_rgba(39,34,27,0.09)]",
+              index === 0 ? "-inset-x-5 scale-[0.98] opacity-35" : "-inset-x-3 scale-[0.99] opacity-55",
             )}
             aria-hidden="true"
           >
-            <img src={item.photo.imageUrl} alt="" className="aspect-[4/5] w-full object-cover" />
+            <img src={item.photo.imageUrl} alt="" className="h-full w-full object-cover" />
           </div>
         ))}
 
         <article
-          className="absolute inset-x-0 top-0 overflow-hidden rounded-md border border-line bg-white shadow-soft touch-none"
+          className="relative z-10 overflow-hidden rounded-[28px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_28px_70px_rgba(39,34,27,0.14)] touch-none"
           style={{
             transform: `translateX(${offset}px) rotate(${rotation}deg)`,
             transition: drag.dragging ? "none" : "transform 180ms ease",
@@ -155,38 +176,61 @@ export function DiscoverDeck({
           <div className="relative">
             <button
               type="button"
-              className="group block w-full bg-zinc-100 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ink"
+              className="group block w-full bg-zinc-100 text-left outline-none"
               onClick={() => onOpenPlace(active.place.id)}
               aria-label={`Open ${active.place.name}`}
             >
               <img
                 src={active.photo.imageUrl}
                 alt={active.photo.caption || `${active.place.name} preview`}
-                className="aspect-[4/5] w-full object-cover transition duration-500 group-hover:scale-[1.01]"
+                className="aspect-[5/4] w-full object-cover transition duration-500 group-hover:scale-[1.01] max-sm:aspect-square"
               />
             </button>
 
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink via-ink/68 to-transparent px-5 pb-5 pt-28 text-white">
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="rounded-full bg-white/16 px-3 py-1 text-xs font-semibold backdrop-blur">
-                    {active.photo.shotAtTimeOfDay || active.place.bestTimes[0] || "Anytime"}
-                  </span>
-                  {active.place.timCurated ? (
-                    <span className="rounded-full bg-amber-300 px-3 py-1 text-xs font-semibold text-ink">Tim-curated</span>
-                  ) : null}
-                </div>
-                <h2 className="max-w-xl text-3xl font-semibold tracking-tight sm:text-4xl">{active.place.name}</h2>
-                <p className="mt-2 flex items-center gap-1.5 text-sm text-white/78">
+              <div className="absolute left-5 top-5 flex items-center gap-2 rounded-md bg-black/42 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white shadow-soft backdrop-blur sm:left-7 sm:top-7">
+                {isSuggested ? "Suggested" : "Following"}
+              </div>
+
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/86 via-black/46 to-transparent px-5 pb-5 pt-24 text-white sm:px-7 sm:pb-8 sm:pt-32">
+                <h2 className="max-w-xl text-3xl font-semibold leading-tight tracking-tight sm:text-5xl">{active.place.name}</h2>
+                <p className="mt-2 flex items-center gap-1.5 text-sm text-white/90 sm:mt-3 sm:text-base">
                   <MapPin className="size-4 shrink-0" aria-hidden="true" />
-                  {active.place.fuzzyLocationLabel}
+                  San Francisco, CA
                 </p>
+                <p className="mt-1 text-base italic text-white/86 sm:mt-2 sm:text-lg">{active.place.fuzzyLocationLabel}</p>
+                <div className="mt-3 flex flex-wrap gap-2 sm:mt-4">
+                  <button
+                    type="button"
+                    className="flex max-w-full items-center gap-2 rounded-full border border-white/28 bg-white/18 px-2.5 py-1.5 text-left text-xs text-white shadow-[0_10px_28px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition hover:bg-white/24 focus-visible:ring-2 focus-visible:ring-white/80 sm:max-w-fit sm:px-3 sm:py-2"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onOpenProfile(active.photographer.id);
+                    }}
+                  >
+                    <img
+                      src={active.photographer.avatarUrl}
+                      alt=""
+                      className="size-6 rounded-full border border-white/60 object-cover shadow-sm"
+                    />
+                    <span className="truncate">
+                      <span className="text-white/72">from</span>{" "}
+                      <span className="font-semibold text-white">{active.photographer.name}</span>{" "}
+                      <span className="text-white/78">{active.photographer.username}</span>
+                    </span>
+                  </button>
+                </div>
+                <div className="mx-auto mt-3 flex w-fit gap-2 sm:mt-5">
+                  {[0, 1, 2, 3].map((dot) => (
+                    <span key={dot} className={cx("size-2 rounded-full", dot === 0 ? "bg-white" : "bg-white/45")} />
+                  ))}
+                </div>
               </div>
 
               <button
                 type="button"
                 className={cx(
-                  "absolute right-0 top-5 flex min-h-16 w-14 translate-x-1 items-center justify-center rounded-l-md border-y border-l border-white/40 shadow-soft outline-none transition focus-visible:ring-2 focus-visible:ring-white",
-                  isSaved ? "bg-amber-300 text-ink" : "bg-white/92 text-ink hover:bg-white",
+                  "absolute right-10 top-0 flex h-20 w-14 items-center justify-center rounded-b-[8px] shadow-soft outline-none transition",
+                  isSaved ? "bg-[var(--gold)] text-white" : "bg-[var(--gold)] text-white",
                 )}
                 aria-label={isSaved ? `Remove ${active.place.name} from bookmarks` : `Bookmark ${active.place.name}`}
                 onClick={(event) => {
@@ -211,53 +255,13 @@ export function DiscoverDeck({
               ) : null}
             </div>
 
-            <div className="grid gap-4 p-5 sm:grid-cols-[minmax(0,1fr)_180px]">
-              <div className="min-w-0">
-                <button
-                  type="button"
-                  className="flex items-center gap-2 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-                  onClick={() => onOpenProfile(active.photographer.id)}
-                >
-                  <img src={active.photographer.avatarUrl} alt="" className="size-9 rounded-full object-cover" />
-                  <span>
-                    <span className="block text-sm font-semibold text-ink">{active.photographer.name}</span>
-                    <span className="block text-xs text-ink/55">{active.photographer.username}</span>
-                  </span>
-                </button>
-                <p className="mt-4 text-sm leading-6 text-ink/72">{active.photo.caption}</p>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {active.photo.tags.map((tag) => (
-                    <span key={tag} className="rounded-full bg-paper px-2.5 py-1 text-xs font-medium text-ink/64">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs text-ink/62 sm:grid-cols-1">
-                <div className="rounded-md bg-paper p-3">
-                  <span className="flex items-center gap-1.5 font-semibold text-ink">
-                    <Clock className="size-3.5" aria-hidden="true" />
-                    {active.place.bestTimes[0] || "Anytime"}
-                  </span>
-                  best light
-                </div>
-                <div className="rounded-md bg-paper p-3">
-                  <span className="flex items-center gap-1.5 font-semibold text-ink">
-                    <Camera className="size-3.5" aria-hidden="true" />
-                    {active.photo.metadataText || "Photo notes"}
-                  </span>
-                  field note
-                </div>
-              </div>
-            </div>
         </article>
       </div>
 
-      <div className="relative z-20 mx-auto mt-4 flex max-w-md items-center justify-center gap-3">
+      <div className="relative z-20 mx-auto mt-6 flex max-w-md items-center justify-center gap-3 rounded-full bg-[rgba(248,245,239,0.72)] px-4 py-2 backdrop-blur-sm sm:mt-10 sm:py-3">
           <button
             type="button"
-            className="flex size-12 items-center justify-center rounded-full border border-line bg-white text-ink shadow-soft outline-none transition hover:bg-paper focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+            className="flex size-12 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--paper-strong)] text-[var(--ink)] shadow-[0_12px_28px_rgba(39,34,27,0.08)] outline-none transition hover:bg-white"
             onClick={rewind}
             aria-label="Go back one card"
           >
@@ -265,7 +269,7 @@ export function DiscoverDeck({
           </button>
           <button
             type="button"
-            className="flex size-14 items-center justify-center rounded-full border border-line bg-white text-ink shadow-soft outline-none transition hover:bg-paper focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+            className="flex size-12 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--paper-strong)] text-[var(--ink)] shadow-[0_12px_28px_rgba(39,34,27,0.08)] outline-none transition hover:bg-white sm:size-16"
             onClick={advance}
             aria-label={`Pass on ${active.place.name}`}
           >
@@ -274,25 +278,25 @@ export function DiscoverDeck({
           <button
             type="button"
             className={cx(
-              "flex size-16 items-center justify-center rounded-full text-ink shadow-soft outline-none transition focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2",
-              isSaved ? "bg-amber-300" : "bg-moss text-white hover:bg-moss/90",
+              "flex size-14 items-center justify-center rounded-full shadow-[0_14px_34px_rgba(39,34,27,0.16)] outline-none transition sm:size-20",
+              isSaved ? "bg-[var(--gold)] text-white" : "bg-[var(--moss)] text-white hover:bg-[var(--moss-dark)]",
             )}
             onClick={saveAndAdvance}
             aria-label={`Bookmark ${active.place.name} and show next`}
           >
-            <Bookmark className={cx("size-7", isSaved && "fill-current")} aria-hidden="true" />
+            <Heart className={cx("size-6 sm:size-8", isSaved && "fill-current")} aria-hidden="true" />
           </button>
           <button
             type="button"
-            className="flex size-14 items-center justify-center rounded-full border border-line bg-white text-ink shadow-soft outline-none transition hover:bg-paper focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+            className="flex size-12 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--paper-strong)] text-[var(--gold)] shadow-[0_12px_28px_rgba(39,34,27,0.08)] outline-none transition hover:bg-white sm:size-16"
             onClick={() => onOpenPlace(active.place.id)}
             aria-label={`View details for ${active.place.name}`}
           >
             <ChevronRight className="size-6" aria-hidden="true" />
           </button>
       </div>
-      <p className="mx-auto mt-3 max-w-md text-center text-xs font-medium text-ink/48">
-        Drag left to pass, right to bookmark, or search above when you know what you want.
+      <p className="mx-auto mt-2 max-w-md text-center text-base text-[var(--muted)]">
+        <span className="font-semibold text-[var(--ink)]">{Math.max(cards.length - activeIndex - 1, 0)}</span> places left in your queue
       </p>
     </section>
   );
