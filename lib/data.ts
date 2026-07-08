@@ -377,7 +377,7 @@ export const places: Place[] = [
     recentActivityScore: 95,
     bestTimes: ["Sunrise", "Blue hour", "Foggy mornings"],
     tags: ["bridge", "fog", "landscape", "iconic"],
-    coverPhotoUrl: "/generated/place-golden-gate-overlook-golden-gate-bridge-overlook.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/GoldenGateBridge-001.jpg/960px-GoldenGateBridge-001.jpg"
   },
   {
     id: "baker-beach",
@@ -393,7 +393,7 @@ export const places: Place[] = [
     recentActivityScore: 88,
     bestTimes: ["Sunset", "Low tide"],
     tags: ["beach", "bridge", "portraits", "sunset"],
-    coverPhotoUrl: "/generated/baker-beach.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Baker_Beach_2.jpg/960px-Baker_Beach_2.jpg"
   },
   {
     id: "palace-fine-arts",
@@ -409,7 +409,7 @@ export const places: Place[] = [
     recentActivityScore: 74,
     bestTimes: ["Morning", "Late afternoon"],
     tags: ["architecture", "portraits", "reflections"],
-    coverPhotoUrl: "/generated/palace-fine-arts.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/San_Francisco_-_Palace_of_Fine_Arts.jpg/960px-San_Francisco_-_Palace_of_Fine_Arts.jpg"
   },
   {
     id: "twin-peaks",
@@ -425,7 +425,7 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Sunrise", "Night"],
     tags: ["skyline", "night", "wide-angle"],
-    coverPhotoUrl: "/generated/twin-peaks.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Twin_Peaks-San_Francisco.jpg/960px-Twin_Peaks-San_Francisco.jpg"
   },
   {
     id: "lands-end",
@@ -441,7 +441,7 @@ export const places: Place[] = [
     recentActivityScore: 67,
     bestTimes: ["Morning fog", "Sunset"],
     tags: ["trail", "coast", "moody", "landscape"],
-    coverPhotoUrl: "/generated/lands-end.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Lands_End_-_San_Francisco_zum_Meer.JPG/960px-Lands_End_-_San_Francisco_zum_Meer.JPG"
   },
   {
     id: "sutro-baths",
@@ -457,7 +457,7 @@ export const places: Place[] = [
     recentActivityScore: 71,
     bestTimes: ["Sunset", "Overcast days"],
     tags: ["ruins", "coast", "long exposure"],
-    coverPhotoUrl: "/generated/sutro-baths.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/San_Francisco_%28CA%2C_USA%29%2C_Sutro_Baths_--_2022_--_3045.jpg/960px-San_Francisco_%28CA%2C_USA%29%2C_Sutro_Baths_--_2022_--_3045.jpg"
   },
   {
     id: "embarcadero",
@@ -473,7 +473,7 @@ export const places: Place[] = [
     recentActivityScore: 78,
     bestTimes: ["Blue hour", "Rainy evenings"],
     tags: ["waterfront", "street", "reflections"],
-    coverPhotoUrl: "/generated/embarcadero.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Ferry_Building_%28San_Francisco%29.jpg/960px-Ferry_Building_%28San_Francisco%29.jpg"
   },
   {
     id: "dolores-park",
@@ -489,7 +489,7 @@ export const places: Place[] = [
     recentActivityScore: 69,
     bestTimes: ["Late afternoon", "Clear weekends"],
     tags: ["portraits", "skyline", "social"],
-    coverPhotoUrl: "/generated/dolores-park-late-afternoon.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Mission_Dolores_Park%2C_San_Francisco.jpg/960px-Mission_Dolores_Park%2C_San_Francisco.jpg"
   },
   {
     id: "painted-ladies",
@@ -505,7 +505,7 @@ export const places: Place[] = [
     recentActivityScore: 56,
     bestTimes: ["Morning", "Clear afternoons"],
     tags: ["architecture", "color", "skyline"],
-    coverPhotoUrl: "/generated/painted-ladies.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Painted_ladies_san_francisco.jpg/960px-Painted_ladies_san_francisco.jpg"
   },
   {
     id: "battery-spencer",
@@ -521,7 +521,7 @@ export const places: Place[] = [
     recentActivityScore: 90,
     bestTimes: ["Sunrise", "Golden hour"],
     tags: ["bridge", "overlook", "telephoto"],
-    coverPhotoUrl: "/generated/battery-spencer-golden-hour.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/17-31-086-spencer.jpg/960px-17-31-086-spencer.jpg"
   },
   {
     id: "marshall-beach",
@@ -537,7 +537,7 @@ export const places: Place[] = [
     recentActivityScore: 86,
     bestTimes: ["Sunset", "Low tide", "Golden hour"],
     tags: ["beach", "bridge", "coast", "landscape"],
-    coverPhotoUrl: "/generated/marshall-beach-rocks.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Marshall%27s_Beach%2C_San_Francisco%2C_United_States_%28Unsplash%29.jpg/960px-Marshall%27s_Beach%2C_San_Francisco%2C_United_States_%28Unsplash%29.jpg"
   },
   {
     id: "fort-point",
@@ -553,7 +553,7 @@ export const places: Place[] = [
     recentActivityScore: 83,
     bestTimes: ["Morning", "Blue hour", "Foggy mornings"],
     tags: ["bridge", "architecture", "street", "waterfront"],
-    coverPhotoUrl: "/generated/fort-point-arches.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Fort_Point_Courtyard.jpg/960px-Fort_Point_Courtyard.jpg"
   },
   {
     id: "chrissy-field",
@@ -569,7 +569,7 @@ export const places: Place[] = [
     recentActivityScore: 80,
     bestTimes: ["Sunrise", "Golden hour", "Daylight"],
     tags: ["waterfront", "bridge", "portraits", "landscape"],
-    coverPhotoUrl: "/generated/chrissy-field-waterfront.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Prsf_crissy_arial_1921.jpg/960px-Prsf_crissy_arial_1921.jpg"
   },
   {
     id: "coit-tower",
@@ -585,7 +585,7 @@ export const places: Place[] = [
     recentActivityScore: 73,
     bestTimes: ["Morning", "Clear afternoons", "Blue hour"],
     tags: ["skyline", "architecture", "street", "bay"],
-    coverPhotoUrl: "/generated/coit-tower-morning.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Coit_Tower_2021.jpg/960px-Coit_Tower_2021.jpg"
   },
   {
     id: "salesforce-park",
@@ -601,7 +601,7 @@ export const places: Place[] = [
     recentActivityScore: 76,
     bestTimes: ["Daylight", "Late afternoon", "Blue hour"],
     tags: ["architecture", "portraits", "reflections", "skyline"],
-    coverPhotoUrl: "/generated/salesforce-park-reflections.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Salesforce_Park%2C_San_Francisco_2023-07-18.jpg/960px-Salesforce_Park%2C_San_Francisco_2023-07-18.jpg"
   },
   {
     id: "chinatown-grant",
@@ -617,7 +617,7 @@ export const places: Place[] = [
     recentActivityScore: 77,
     bestTimes: ["Daylight", "Night", "Rainy evenings"],
     tags: ["street", "color", "architecture", "night"],
-    coverPhotoUrl: "/generated/chinatown-grant-night.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/1_chinatown_san_francisco_arch_gateway.JPG/960px-1_chinatown_san_francisco_arch_gateway.JPG"
   },
   {
     id: "ocean-beach",
@@ -633,7 +633,7 @@ export const places: Place[] = [
     recentActivityScore: 65,
     bestTimes: ["Sunset", "Overcast days", "Morning fog"],
     tags: ["beach", "coast", "landscape", "surfers"],
-    coverPhotoUrl: "/generated/ocean-beach-surf.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Oceanbeachsf.jpg/960px-Oceanbeachsf.jpg"
   },
   {
     id: "bernal-heights",
@@ -649,7 +649,7 @@ export const places: Place[] = [
     recentActivityScore: 68,
     bestTimes: ["Sunrise", "Sunset", "Golden hour"],
     tags: ["skyline", "landscape", "portraits", "trail"],
-    coverPhotoUrl: "/generated/bernal-heights-golden-hour.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/San_Francisco-Bernal_Heights.jpg/960px-San_Francisco-Bernal_Heights.jpg"
   },
   {
     id: "grace-cathedral",
@@ -665,7 +665,7 @@ export const places: Place[] = [
     recentActivityScore: 61,
     bestTimes: ["Morning", "Late afternoon", "Daylight"],
     tags: ["architecture", "portraits", "stairs", "stone"],
-    coverPhotoUrl: "/generated/grace-cathedral-stairs.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Grace_Cathedral_%285%29.JPG/960px-Grace_Cathedral_%285%29.JPG"
   },
   {
     id: "mission-murals",
@@ -681,7 +681,7 @@ export const places: Place[] = [
     recentActivityScore: 79,
     bestTimes: ["Daylight", "Late afternoon", "Overcast days"],
     tags: ["street", "color", "portraits", "murals"],
-    coverPhotoUrl: "/generated/mission-murals-color-v2.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Carnaval_San_Francisco_2014_Parade_Gamo%27s_Rhythm_Riders_115_%2814318836823%29.jpg/960px-Carnaval_San_Francisco_2014_Parade_Gamo%27s_Rhythm_Riders_115_%2814318836823%29.jpg"
   },
   {
     id: "japanese-tea-garden",
@@ -697,7 +697,7 @@ export const places: Place[] = [
     recentActivityScore: 84,
     bestTimes: ["Morning", "Overcast days", "Spring bloom"],
     tags: ["garden", "architecture", "portraits", "details"],
-    coverPhotoUrl: "/generated/japanese-tea-garden.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Japaneseteagarden.JPG/960px-Japaneseteagarden.JPG"
   },
   {
     id: "de-young-observation-deck",
@@ -713,7 +713,7 @@ export const places: Place[] = [
     recentActivityScore: 72,
     bestTimes: ["Daylight", "Late afternoon", "Clear afternoons"],
     tags: ["architecture", "skyline", "reflections", "museum"],
-    coverPhotoUrl: "/generated/de-young-observation-deck.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/M._H._de_Young_Memorial_Museum.jpg/960px-M._H._de_Young_Memorial_Museum.jpg"
   },
   {
     id: "muir-woods",
@@ -729,7 +729,7 @@ export const places: Place[] = [
     recentActivityScore: 75,
     bestTimes: ["Morning", "Foggy mornings", "Overcast days"],
     tags: ["forest", "landscape", "trail", "moody"],
-    coverPhotoUrl: "/generated/muir-woods.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Muir_Wood11.JPG/960px-Muir_Wood11.JPG"
   },
   {
     id: "mori-point",
@@ -745,7 +745,7 @@ export const places: Place[] = [
     recentActivityScore: 70,
     bestTimes: ["Sunset", "Golden hour", "Spring bloom"],
     tags: ["coast", "trail", "landscape", "wildflowers"],
-    coverPhotoUrl: "/generated/mori-point.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Pacifica_Pano_2.jpg/960px-Pacifica_Pano_2.jpg"
   },
   {
     id: "ferry-plaza-market",
@@ -761,7 +761,7 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Morning", "Daylight", "Rainy evenings"],
     tags: ["street", "food", "color", "waterfront"],
-    coverPhotoUrl: "/generated/ferry-plaza-market.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Ferry_Building_Marketplace%2C_San_Francisco.jpg/960px-Ferry_Building_Marketplace%2C_San_Francisco.jpg"
   },
   {
     id: "16th-avenue-tiles",
@@ -777,7 +777,7 @@ export const places: Place[] = [
     recentActivityScore: 73,
     bestTimes: ["Morning", "Late afternoon", "Overcast days"],
     tags: ["stairs", "color", "portraits", "architecture"],
-    coverPhotoUrl: "/generated/16th-avenue-tiles.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Inner_Sunset%2C_San_Francisco%2C_CA%2C_USA_-_panoramio_%28cropped%29.jpg/960px-Inner_Sunset%2C_San_Francisco%2C_CA%2C_USA_-_panoramio_%28cropped%29.jpg"
   },
   {
     id: "haight-ashbury",
@@ -793,7 +793,7 @@ export const places: Place[] = [
     recentActivityScore: 78,
     bestTimes: ["Daylight", "Late afternoon", "Night"],
     tags: ["street", "color", "portraits", "night"],
-    coverPhotoUrl: "/generated/haight-ashbury.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Haight_Ashbury11.JPG/960px-Haight_Ashbury11.JPG"
   },
   {
     id: "treasure-island",
@@ -809,7 +809,7 @@ export const places: Place[] = [
     recentActivityScore: 81,
     bestTimes: ["Blue hour", "Night", "Sunset"],
     tags: ["skyline", "waterfront", "night", "telephoto"],
-    coverPhotoUrl: "/generated/treasure-island.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/11-bay-bridge_treasure-island_east-bay.jpg/960px-11-bay-bridge_treasure-island_east-bay.jpg"
   },
   {
     id: "brooklyn-bridge",
@@ -825,7 +825,7 @@ export const places: Place[] = [
     recentActivityScore: 92,
     bestTimes: ["Sunrise", "Blue hour", "Overcast days"],
     tags: ["bridge", "skyline", "street", "architecture"],
-    coverPhotoUrl: "/generated/brooklyn-bridge.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Brooklyn_Bridge_and_the_Lower_Manhattan_skyline_from_Pebble_Beach%2C_New_York.jpg/960px-Brooklyn_Bridge_and_the_Lower_Manhattan_skyline_from_Pebble_Beach%2C_New_York.jpg"
   },
   {
     id: "central-park-bethesda",
@@ -841,7 +841,7 @@ export const places: Place[] = [
     recentActivityScore: 77,
     bestTimes: ["Morning", "Late afternoon", "Rainy days"],
     tags: ["architecture", "portraits", "street", "park"],
-    coverPhotoUrl: "/generated/central-park-bethesda.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/NYC-CentralPark_%281869%29_p061_Stairs_leading_to_the_Lake-Terrace.jpg/960px-NYC-CentralPark_%281869%29_p061_Stairs_leading_to_the_Lake-Terrace.jpg"
   },
   {
     id: "times-square",
@@ -857,7 +857,7 @@ export const places: Place[] = [
     recentActivityScore: 90,
     bestTimes: ["Night", "Rainy evenings", "Blue hour"],
     tags: ["street", "night", "color", "neon"],
-    coverPhotoUrl: "/generated/times-square.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/New_york_times_square-terabass.jpg/960px-New_york_times_square-terabass.jpg"
   },
   {
     id: "washington-monument",
@@ -873,7 +873,7 @@ export const places: Place[] = [
     recentActivityScore: 74,
     bestTimes: ["Sunrise", "Blue hour", "Clear afternoons"],
     tags: ["monument", "reflections", "architecture", "landmark"],
-    coverPhotoUrl: "/generated/washington-monument.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Washington_250424_Washington_Monument_01.jpg/960px-Washington_250424_Washington_Monument_01.jpg"
   },
   {
     id: "lincoln-memorial",
@@ -889,7 +889,7 @@ export const places: Place[] = [
     recentActivityScore: 73,
     bestTimes: ["Morning", "Golden hour", "Night"],
     tags: ["monument", "architecture", "portraits", "night"],
-    coverPhotoUrl: "/generated/lincoln-memorial.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Aerial_view_of_Lincoln_Memorial_-_east_side_EDIT.jpeg/960px-Aerial_view_of_Lincoln_Memorial_-_east_side_EDIT.jpeg"
   },
   {
     id: "monument-valley",
@@ -905,7 +905,7 @@ export const places: Place[] = [
     recentActivityScore: 68,
     bestTimes: ["Sunrise", "Sunset", "Clear nights"],
     tags: ["desert", "landscape", "landmark", "red rock"],
-    coverPhotoUrl: "/generated/monument-valley.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Monumentvalleyviewfromnorth.jpg/960px-Monumentvalleyviewfromnorth.jpg"
   },
   {
     id: "horseshoe-bend",
@@ -921,7 +921,7 @@ export const places: Place[] = [
     recentActivityScore: 72,
     bestTimes: ["Sunrise", "Late afternoon", "Overcast days"],
     tags: ["desert", "river", "landscape", "overlook"],
-    coverPhotoUrl: "/generated/horseshoe-bend.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Grand_Canyon_Horseshoe_Bend_%28crop_2%29.jpg/960px-Grand_Canyon_Horseshoe_Bend_%28crop_2%29.jpg"
   },
   {
     id: "grand-canyon-south-rim",
@@ -937,7 +937,7 @@ export const places: Place[] = [
     recentActivityScore: 79,
     bestTimes: ["Sunrise", "Sunset", "Storm light"],
     tags: ["canyon", "landscape", "overlook", "national park"],
-    coverPhotoUrl: "/generated/grand-canyon-south-rim.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/10_Grand_Canyon_Navajo_Point_viewpoint_terrace%2C_Grand_Canyon_National_Park%2C_USA_-_American_nature.jpg/960px-10_Grand_Canyon_Navajo_Point_viewpoint_terrace%2C_Grand_Canyon_National_Park%2C_USA_-_American_nature.jpg"
   },
   {
     id: "zion-canyon-overlook",
@@ -953,7 +953,7 @@ export const places: Place[] = [
     recentActivityScore: 76,
     bestTimes: ["Sunrise", "Late afternoon", "Clear days"],
     tags: ["canyon", "trail", "landscape", "red rock"],
-    coverPhotoUrl: "/generated/zion-canyon-overlook.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Zion_angels_landing_view.jpg/960px-Zion_angels_landing_view.jpg"
   },
   {
     id: "bryce-canyon-amphitheater",
@@ -969,7 +969,7 @@ export const places: Place[] = [
     recentActivityScore: 66,
     bestTimes: ["Sunrise", "Snowy mornings", "Golden hour"],
     tags: ["canyon", "landscape", "snow", "red rock"],
-    coverPhotoUrl: "/generated/bryce-canyon-amphitheater.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/USA_10654_Bryce_Canyon_Luca_Galuzzi_2007.jpg/960px-USA_10654_Bryce_Canyon_Luca_Galuzzi_2007.jpg"
   },
   {
     id: "joshua-tree",
@@ -985,7 +985,7 @@ export const places: Place[] = [
     recentActivityScore: 70,
     bestTimes: ["Sunset", "Blue hour", "Clear nights"],
     tags: ["desert", "landscape", "night", "national park"],
-    coverPhotoUrl: "/generated/joshua-tree.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Joshua_Tree_National_Park_2025.jpg/960px-Joshua_Tree_National_Park_2025.jpg"
   },
   {
     id: "santa-monica-pier",
@@ -1017,7 +1017,7 @@ export const places: Place[] = [
     recentActivityScore: 87,
     bestTimes: ["Golden hour", "Blue hour", "Clear nights"],
     tags: ["skyline", "architecture", "night", "landmark"],
-    coverPhotoUrl: "/generated/place-griffith-observatory-griffith-observatory.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Griffith_Observatory%2C_Los_Angeles%2C_California.jpg/960px-Griffith_Observatory%2C_Los_Angeles%2C_California.jpg"
   },
   {
     id: "kerry-park",
@@ -1033,7 +1033,7 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Sunset", "Blue hour", "Clear afternoons"],
     tags: ["skyline", "overlook", "mountains", "night"],
-    coverPhotoUrl: "/generated/kerry-park.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Seattle_Kerry_Park_Skyline.jpg/960px-Seattle_Kerry_Park_Skyline.jpg"
   },
   {
     id: "pike-place-market",
@@ -1049,7 +1049,7 @@ export const places: Place[] = [
     recentActivityScore: 84,
     bestTimes: ["Morning", "Rainy days", "Blue hour"],
     tags: ["market", "street", "color", "waterfront"],
-    coverPhotoUrl: "/generated/pike-place-market.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Pike-place-market.jpg/960px-Pike-place-market.jpg"
   },
   {
     id: "chicago-riverwalk",
@@ -1065,7 +1065,7 @@ export const places: Place[] = [
     recentActivityScore: 83,
     bestTimes: ["Blue hour", "Golden hour", "Rainy evenings"],
     tags: ["architecture", "waterfront", "reflections", "cityscape"],
-    coverPhotoUrl: "/generated/chicago-riverwalk.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Chicago_River_in_Chicago_2012-0241.jpg/960px-Chicago_River_in_Chicago_2012-0241.jpg"
   },
   {
     id: "millennium-park",
@@ -1081,7 +1081,7 @@ export const places: Place[] = [
     recentActivityScore: 76,
     bestTimes: ["Morning", "Blue hour", "Snowy days"],
     tags: ["reflections", "architecture", "street", "landmark"],
-    coverPhotoUrl: "/generated/millennium-park.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Cloud_gate_construction.jpg/960px-Cloud_gate_construction.jpg"
   },
   {
     id: "south-beach",
@@ -1097,7 +1097,7 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Morning", "Golden hour", "Night"],
     tags: ["beach", "architecture", "color", "night"],
-    coverPhotoUrl: "/generated/south-beach.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Ocean_Drive_in_the_Miami_Beach_Art_Deco_Historic_District.jpg/960px-Ocean_Drive_in_the_Miami_Beach_Art_Deco_Historic_District.jpg"
   },
   {
     id: "everglades-anjinga",
@@ -1113,7 +1113,7 @@ export const places: Place[] = [
     recentActivityScore: 58,
     bestTimes: ["Morning", "Storm light", "Overcast days"],
     tags: ["wetland", "wildlife", "landscape", "reflections"],
-    coverPhotoUrl: "/generated/everglades-anjinga.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Anhingatrail.jpg/960px-Anhingatrail.jpg"
   },
   {
     id: "french-quarter",
@@ -1129,7 +1129,7 @@ export const places: Place[] = [
     recentActivityScore: 80,
     bestTimes: ["Morning", "Blue hour", "Rainy evenings"],
     tags: ["street", "architecture", "color", "night"],
-    coverPhotoUrl: "/generated/place-french-quarter-french-quarter-balconies.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/French_Quarter03_New_Orleans.JPG/960px-French_Quarter03_New_Orleans.JPG"
   },
   {
     id: "acorn-street",
@@ -1145,7 +1145,7 @@ export const places: Place[] = [
     recentActivityScore: 61,
     bestTimes: ["Morning", "Overcast days", "Fall color"],
     tags: ["street", "architecture", "historic", "portraits"],
-    coverPhotoUrl: "/generated/place-acorn-street-acorn-street.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/1890_AcornSt_Boston.png/960px-1890_AcornSt_Boston.png"
   },
   {
     id: "philadelphia-art-museum",
@@ -1161,7 +1161,7 @@ export const places: Place[] = [
     recentActivityScore: 64,
     bestTimes: ["Golden hour", "Morning", "Blue hour"],
     tags: ["architecture", "skyline", "stairs", "landmark"],
-    coverPhotoUrl: "/generated/philadelphia-art-museum.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Philadelphia_Museum_of_Art.JPG/960px-Philadelphia_Museum_of_Art.JPG"
   },
   {
     id: "dream-lake",
@@ -1177,7 +1177,7 @@ export const places: Place[] = [
     recentActivityScore: 69,
     bestTimes: ["Sunrise", "Snowy mornings", "Clear afternoons"],
     tags: ["mountains", "lake", "landscape", "trail"],
-    coverPhotoUrl: "/generated/dream-lake.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Dream_Lake.jpg/960px-Dream_Lake.jpg"
   },
   {
     id: "grand-prismatic",
@@ -1193,7 +1193,7 @@ export const places: Place[] = [
     recentActivityScore: 71,
     bestTimes: ["Morning", "Daylight", "Cool weather"],
     tags: ["thermal", "color", "landscape", "national park"],
-    coverPhotoUrl: "/generated/grand-prismatic.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Yellowstone_National_Park_%28WY%2C_USA%29%2C_Grand_Prismatic_Spring_--_2022_--_2514.jpg/960px-Yellowstone_National_Park_%28WY%2C_USA%29%2C_Grand_Prismatic_Spring_--_2022_--_2514.jpg"
   },
   {
     id: "schwabacher-landing",
@@ -1209,7 +1209,7 @@ export const places: Place[] = [
     recentActivityScore: 66,
     bestTimes: ["Sunrise", "Morning fog", "Fall color"],
     tags: ["mountains", "river", "reflections", "landscape"],
-    coverPhotoUrl: "/generated/schwabacher-landing.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/2025-05-30-184307_USA_Wyoming_Moose_1987.8.jpg/960px-2025-05-30-184307_USA_Wyoming_Moose_1987.8.jpg"
   },
   {
     id: "portland-japanese-garden",
@@ -1225,7 +1225,7 @@ export const places: Place[] = [
     recentActivityScore: 73,
     bestTimes: ["Overcast days", "Morning", "Fall color"],
     tags: ["garden", "details", "portraits", "rain"],
-    coverPhotoUrl: "/generated/portland-japanese-garden.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Japanese_Garden_-1.jpg/960px-Japanese_Garden_-1.jpg"
   },
   {
     id: "multnomah-falls",
@@ -1241,7 +1241,7 @@ export const places: Place[] = [
     recentActivityScore: 70,
     bestTimes: ["Morning", "Overcast days", "Rainy days"],
     tags: ["waterfall", "forest", "long exposure", "landscape"],
-    coverPhotoUrl: "/generated/place-multnomah-falls-multnomah-falls.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Multnomah_Falls_on_2_August_2012.jpg/960px-Multnomah_Falls_on_2_August_2012.jpg"
   },
   {
     id: "nashville-broadway",
@@ -1257,7 +1257,7 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Night", "Blue hour", "Rainy evenings"],
     tags: ["street", "neon", "night", "music"],
-    coverPhotoUrl: "/generated/place-nashville-broadway-broadway-neon.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/WTN_PeepHoles_167.JPG/960px-WTN_PeepHoles_167.JPG"
   },
   {
     id: "eiffel-tower-trocadero",
@@ -1273,7 +1273,7 @@ export const places: Place[] = [
     recentActivityScore: 88,
     bestTimes: ["Sunrise", "Blue hour", "Rainy evenings"],
     tags: ["landmark", "architecture", "night", "cityscape"],
-    coverPhotoUrl: "/generated/eiffel-tower-trocadero.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Tour_Eiffel_Wikimedia_Commons.jpg/960px-Tour_Eiffel_Wikimedia_Commons.jpg"
   },
   {
     id: "tower-bridge",
@@ -1289,7 +1289,7 @@ export const places: Place[] = [
     recentActivityScore: 83,
     bestTimes: ["Blue hour", "Rainy evenings", "Morning"],
     tags: ["bridge", "landmark", "reflections", "night"],
-    coverPhotoUrl: "/generated/place-tower-bridge-tower-bridge-river-walk.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/London_-_London_Tower_Bridge_-_140806_171049.jpg/960px-London_-_London_Tower_Bridge_-_140806_171049.jpg"
   },
   {
     id: "colosseum",
@@ -1305,7 +1305,7 @@ export const places: Place[] = [
     recentActivityScore: 81,
     bestTimes: ["Morning", "Golden hour", "Blue hour"],
     tags: ["landmark", "architecture", "historic", "street"],
-    coverPhotoUrl: "/generated/place-colosseum-colosseum-exterior.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Colosseo_2020.jpg/960px-Colosseo_2020.jpg"
   },
   {
     id: "shibuya-crossing",
@@ -1321,7 +1321,7 @@ export const places: Place[] = [
     recentActivityScore: 94,
     bestTimes: ["Night", "Rainy evenings", "Blue hour"],
     tags: ["street", "neon", "night", "cityscape"],
-    coverPhotoUrl: "/generated/place-shibuya-crossing-shibuya-crossing.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Shibuya_scramble_crossing_during_Halloween_2023%2C_actually_less_crowded_than_usual%2C_high_police_presence_2.jpg/960px-Shibuya_scramble_crossing_during_Halloween_2023%2C_actually_less_crowded_than_usual%2C_high_police_presence_2.jpg"
   },
   {
     id: "pyramids-giza",
@@ -1337,7 +1337,7 @@ export const places: Place[] = [
     recentActivityScore: 79,
     bestTimes: ["Sunrise", "Golden hour", "Clear afternoons"],
     tags: ["landmark", "desert", "historic", "silhouette"],
-    coverPhotoUrl: "/generated/place-pyramids-giza-pyramids-of-giza.png"
+    coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Pyramids_of_the_Giza_Necropolis.jpg/960px-Pyramids_of_the_Giza_Necropolis.jpg"
   }
 ];
 
@@ -1346,7 +1346,7 @@ export const photos: Photo[] = [
     id: "photo-1",
     placeId: "golden-gate-overlook",
     userId: "user-maya",
-    imageUrl: "/generated/post-photo-1-fog-lifted-for-maybe-six-minutes-worth-the-early-alarm.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Golden_Gate_Bridge_by_night.jpg/960px-Golden_Gate_Bridge_by_night.jpg",
     caption: "Fog lifted for maybe six minutes. Worth the early alarm.",
     locationLabel: "Golden Gate Bridge Overlook",
     metadataText: "70mm, f/5.6, soft fog",
@@ -1359,7 +1359,7 @@ export const photos: Photo[] = [
     id: "photo-2",
     placeId: "baker-beach",
     userId: "user-jules",
-    imageUrl: "/generated/post-photo-2-clean-sand-foreground-and-bridge-scale-for-portraits.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/LandsEnd_599.JPG/960px-LandsEnd_599.JPG",
     caption: "Clean sand foreground and bridge scale for portraits.",
     locationLabel: "Baker Beach",
     metadataText: "35mm, reflector only",
@@ -1372,7 +1372,7 @@ export const photos: Photo[] = [
     id: "photo-3",
     placeId: "palace-fine-arts",
     userId: "user-nora",
-    imageUrl: "/generated/post-photo-3-columns-make-the-framing-easy-watch-the-bright-lagoon-highlights.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Palace_of_Fine_Arts_SF_CA.jpg/960px-Palace_of_Fine_Arts_SF_CA.jpg",
     caption: "Columns make the framing easy. Watch the bright lagoon highlights.",
     locationLabel: "Palace of Fine Arts",
     metadataText: "50mm, shade portraits",
@@ -1385,7 +1385,7 @@ export const photos: Photo[] = [
     id: "photo-4",
     placeId: "twin-peaks",
     userId: "user-eli",
-    imageUrl: "/generated/post-photo-4-the-city-lights-came-on-before-the-wind-got-too-brutal.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/A_crow_and_a_telescope_%28368794571%29.jpg/960px-A_crow_and_a_telescope_%28368794571%29.jpg",
     caption: "The city lights came on before the wind got too brutal.",
     locationLabel: "Twin Peaks",
     metadataText: "Tripod, 2s exposure",
@@ -1398,7 +1398,7 @@ export const photos: Photo[] = [
     id: "photo-5",
     placeId: "lands-end",
     userId: "user-maya",
-    imageUrl: "/generated/post-photo-5-cypress-edge-muted-water-no-crowd-in-frame.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Bermuda_Buttercup_near_Sutro_Baths.jpg/960px-Bermuda_Buttercup_near_Sutro_Baths.jpg",
     caption: "Cypress edge, muted water, no crowd in frame.",
     locationLabel: "Lands End Trail",
     metadataText: "24mm, overcast",
@@ -1411,7 +1411,7 @@ export const photos: Photo[] = [
     id: "photo-6",
     placeId: "embarcadero",
     userId: "user-eli",
-    imageUrl: "/generated/post-photo-6-rain-gave-every-pier-light-a-second-life.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/SF_Ferry_Building_at_night.JPG/960px-SF_Ferry_Building_at_night.JPG",
     caption: "Rain gave every pier light a second life.",
     locationLabel: "Embarcadero Waterfront",
     metadataText: "35mm, wet pavement",
@@ -1424,7 +1424,7 @@ export const photos: Photo[] = [
     id: "photo-7",
     placeId: "golden-gate-overlook",
     userId: "user-sam",
-    imageUrl: "/generated/golden-gate-overlook-fog-break.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Aerial_view_of_Golden_Gate_Bridge_from_southwest_dllu.jpg/960px-Aerial_view_of_Golden_Gate_Bridge_from_southwest_dllu.jpg",
     caption: "Bridge tower vanished, then came back with a clean orange edge.",
     locationLabel: "Golden Gate Bridge Overlook",
     metadataText: "135mm, fog break",
@@ -1437,7 +1437,7 @@ export const photos: Photo[] = [
     id: "photo-8",
     placeId: "golden-gate-overlook",
     userId: "user-nora",
-    imageUrl: "/generated/golden-gate-overlook-headlands.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Golden_Gate_Bridge_tower_views_02.jpg/960px-Golden_Gate_Bridge_tower_views_02.jpg",
     caption: "Layered headlands behind the south tower.",
     locationLabel: "Golden Gate Bridge Overlook",
     metadataText: "85mm, haze",
@@ -1450,7 +1450,7 @@ export const photos: Photo[] = [
     id: "photo-9",
     placeId: "battery-spencer",
     userId: "user-maya",
-    imageUrl: "/generated/post-photo-9-classic-high-bridge-angle-but-the-fog-line-kept-it-from-feeling-flat.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Battery_Spencer_Near_Golden_Gate_Bridge_%289313671924%29.jpg/960px-Battery_Spencer_Near_Golden_Gate_Bridge_%289313671924%29.jpg",
     caption: "Classic high bridge angle, but the fog line kept it from feeling flat.",
     locationLabel: "Battery Spencer",
     metadataText: "70mm, handheld",
@@ -1463,7 +1463,7 @@ export const photos: Photo[] = [
     id: "photo-10",
     placeId: "battery-spencer",
     userId: "user-sam",
-    imageUrl: "/generated/battery-spencer-night.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Battery_Spencer%2C_Fort_Baker%2C_California.jpg/960px-Battery_Spencer%2C_Fort_Baker%2C_California.jpg",
     caption: "Traffic trails under the tower from the overlook rail.",
     locationLabel: "Battery Spencer",
     metadataText: "Tripod, 4s exposure",
@@ -1476,7 +1476,7 @@ export const photos: Photo[] = [
     id: "photo-11",
     placeId: "marshall-beach",
     userId: "user-jules",
-    imageUrl: "/generated/post-photo-11-the-rocks-make-the-foreground-do-half-the-work.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Marshall%C2%B4s_Beach.JPG/960px-Marshall%C2%B4s_Beach.JPG",
     caption: "The rocks make the foreground do half the work.",
     locationLabel: "Marshall's Beach",
     metadataText: "24mm, low tide",
@@ -1489,7 +1489,7 @@ export const photos: Photo[] = [
     id: "photo-12",
     placeId: "marshall-beach",
     userId: "user-lena",
-    imageUrl: "/generated/marshall-beach-silhouettes.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Felsentreppe_zu_Marshall%C2%B4s_Beach.JPG/960px-Felsentreppe_zu_Marshall%C2%B4s_Beach.JPG",
     caption: "Small silhouettes below the bridge made the scale click.",
     locationLabel: "Marshall's Beach",
     metadataText: "50mm, sunset haze",
@@ -1502,7 +1502,7 @@ export const photos: Photo[] = [
     id: "photo-13",
     placeId: "fort-point",
     userId: "user-isha",
-    imageUrl: "/generated/post-photo-13-brick-arch-shadows-under-the-bridge-are-great-for-portraits.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Fort_Point_National_Historical_Site.jpg/960px-Fort_Point_National_Historical_Site.jpg",
     caption: "Brick arch shadows under the bridge are great for portraits.",
     locationLabel: "Fort Point",
     metadataText: "35mm, shade",
@@ -1515,7 +1515,7 @@ export const photos: Photo[] = [
     id: "photo-14",
     placeId: "chrissy-field",
     userId: "user-nora",
-    imageUrl: "/generated/post-photo-14-easy-waterfront-frames-with-enough-room-to-wait-out-the-crowds.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Crissy_Field%2C_The_Presido_and_San_Francisco_Skyline_%2812984103253%29.jpg/960px-Crissy_Field%2C_The_Presido_and_San_Francisco_Skyline_%2812984103253%29.jpg",
     caption: "Easy waterfront frames with enough room to wait out the crowds.",
     locationLabel: "Chrissy Field",
     metadataText: "35mm, soft wind",
@@ -1528,7 +1528,7 @@ export const photos: Photo[] = [
     id: "photo-15",
     placeId: "palace-fine-arts",
     userId: "user-isha",
-    imageUrl: "/generated/palace-fine-arts-morning.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Palace_of_Fine_Arts_-_Evening_with_reflection.jpg/960px-Palace_of_Fine_Arts_-_Evening_with_reflection.jpg",
     caption: "Soft shade by the columns, clean enough for headshots.",
     locationLabel: "Palace of Fine Arts",
     metadataText: "85mm, open shade",
@@ -1541,7 +1541,7 @@ export const photos: Photo[] = [
     id: "photo-16",
     placeId: "twin-peaks",
     userId: "user-sam",
-    imageUrl: "/generated/twin-peaks-daylight.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Boy_standing_on_a_rock_at_Twin_Peaks.JPG/960px-Boy_standing_on_a_rock_at_Twin_Peaks.JPG",
     caption: "Windy, but the skyline depth is unmatched when the haze is light.",
     locationLabel: "Twin Peaks",
     metadataText: "105mm, clear afternoon",
@@ -1554,7 +1554,7 @@ export const photos: Photo[] = [
     id: "photo-17",
     placeId: "dolores-park",
     userId: "user-lena",
-    imageUrl: "/generated/post-photo-17-portrait-backdrop-without-needing-to-climb-all-the-way-up-twin-peaks.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Mission_Dolores_Park%2C_San_Francisco_%28cropped%29.jpg/960px-Mission_Dolores_Park%2C_San_Francisco_%28cropped%29.jpg",
     caption: "Portrait backdrop without needing to climb all the way up Twin Peaks.",
     locationLabel: "Dolores Park",
     metadataText: "50mm, late sun",
@@ -1567,7 +1567,7 @@ export const photos: Photo[] = [
     id: "photo-18",
     placeId: "painted-ladies",
     userId: "user-isha",
-    imageUrl: "/generated/painted-ladies-cloud-cover.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Painted_Ladies.jpg/960px-Painted_Ladies.jpg",
     caption: "Cloud cover kept the pastel facades from clipping.",
     locationLabel: "Painted Ladies / Alamo Square",
     metadataText: "35mm, overcast",
@@ -1580,7 +1580,7 @@ export const photos: Photo[] = [
     id: "photo-19",
     placeId: "coit-tower",
     userId: "user-sam",
-    imageUrl: "/generated/post-photo-19-bay-layers-from-telegraph-hill-before-the-afternoon-glare.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Coit_Tower_at_Night.JPG/960px-Coit_Tower_at_Night.JPG",
     caption: "Bay layers from Telegraph Hill before the afternoon glare.",
     locationLabel: "Coit Tower / Telegraph Hill",
     metadataText: "70mm, clear morning",
@@ -1593,7 +1593,7 @@ export const photos: Photo[] = [
     id: "photo-20",
     placeId: "salesforce-park",
     userId: "user-maya",
-    imageUrl: "/generated/post-photo-20-glass-reflections-and-garden-shade-in-one-quick-loop.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Salesforce_Park_and_bus_bridge%2C_seen_from_Salesforce_Tower.jpg/960px-Salesforce_Park_and_bus_bridge%2C_seen_from_Salesforce_Tower.jpg",
     caption: "Glass reflections and garden shade in one quick loop.",
     locationLabel: "Salesforce Park",
     metadataText: "35mm, reflective glass",
@@ -1606,7 +1606,7 @@ export const photos: Photo[] = [
     id: "photo-21",
     placeId: "chinatown-grant",
     userId: "user-lena",
-    imageUrl: "/generated/post-photo-21-lanterns-and-storefront-reds-after-the-light-went-cool.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Chinatown_%283463913124%29.jpg/960px-Chinatown_%283463913124%29.jpg",
     caption: "Lanterns and storefront reds after the light went cool.",
     locationLabel: "Chinatown Grant Avenue",
     metadataText: "35mm, neon spill",
@@ -1619,7 +1619,7 @@ export const photos: Photo[] = [
     id: "photo-22",
     placeId: "ocean-beach",
     userId: "user-nora",
-    imageUrl: "/generated/post-photo-22-muted-surf-lines-and-tiny-figures-along-the-dunes.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/17_31_152_beach.jpg/960px-17_31_152_beach.jpg",
     caption: "Muted surf lines and tiny figures along the dunes.",
     locationLabel: "Ocean Beach",
     metadataText: "70mm, overcast",
@@ -1632,7 +1632,7 @@ export const photos: Photo[] = [
     id: "photo-23",
     placeId: "bernal-heights",
     userId: "user-eli",
-    imageUrl: "/generated/post-photo-23-a-smaller-hill-with-a-softer-neighborhood-skyline-angle.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Antonius_%22Toad%22_Dintcho%2C_Skateboarding%2C_Bernal_Heights%2C_San_Francisco%2C_CA_%28July_2012%29_-_Fuji_Superia_X-Tra_800_35mm_-_Shawn_Whisenant.jpg/960px-Antonius_%22Toad%22_Dintcho%2C_Skateboarding%2C_Bernal_Heights%2C_San_Francisco%2C_CA_%28July_2012%29_-_Fuji_Superia_X-Tra_800_35mm_-_Shawn_Whisenant.jpg",
     caption: "A smaller hill with a softer neighborhood skyline angle.",
     locationLabel: "Bernal Heights Park",
     metadataText: "50mm, golden grass",
@@ -1645,7 +1645,7 @@ export const photos: Photo[] = [
     id: "photo-24",
     placeId: "grace-cathedral",
     userId: "user-isha",
-    imageUrl: "/generated/post-photo-24-stairs-and-stone-texture-made-a-simple-portrait-set.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Interior_of_Grace_Cathedral_-_San_Francisco%2C_CA_-_DSC02417.JPG/960px-Interior_of_Grace_Cathedral_-_San_Francisco%2C_CA_-_DSC02417.JPG",
     caption: "Stairs and stone texture made a simple portrait set.",
     locationLabel: "Grace Cathedral",
     metadataText: "50mm, open shade",
@@ -1658,7 +1658,7 @@ export const photos: Photo[] = [
     id: "photo-25",
     placeId: "mission-murals",
     userId: "user-jules",
-    imageUrl: "/generated/post-photo-25-color-blocks-are-perfect-when-the-sky-is-too-flat.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Gui_2143.jpg/960px-Gui_2143.jpg",
     caption: "Color blocks are perfect when the sky is too flat.",
     locationLabel: "Mission Murals",
     metadataText: "35mm, overcast",
@@ -1671,7 +1671,7 @@ export const photos: Photo[] = [
     id: "photo-26",
     placeId: "sutro-baths",
     userId: "user-sam",
-    imageUrl: "/generated/post-photo-26-water-channels-gave-just-enough-leading-line-into-the-ruins.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Interior_-_Sutro_Baths_-_DSC03479.JPG/960px-Interior_-_Sutro_Baths_-_DSC03479.JPG",
     caption: "Water channels gave just enough leading line into the ruins.",
     locationLabel: "Sutro Baths",
     metadataText: "24mm, overcast",
@@ -1684,7 +1684,7 @@ export const photos: Photo[] = [
     id: "photo-27",
     placeId: "baker-beach",
     userId: "user-maya",
-    imageUrl: "/generated/baker-beach-sunset-fog.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/BakeBeachAtMidday.jpg/960px-BakeBeachAtMidday.jpg",
     caption: "The bridge tucked into the fog right as the sand warmed up.",
     locationLabel: "Baker Beach",
     metadataText: "50mm, sunset fog",
@@ -1697,7 +1697,7 @@ export const photos: Photo[] = [
     id: "photo-28",
     placeId: "embarcadero",
     userId: "user-lena",
-    imageUrl: "/generated/embarcadero-blue-hour.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/View_of_the_Ferry_Building_from_Pier_1%2C_San_Francisco_dllu.jpg/960px-View_of_the_Ferry_Building_from_Pier_1%2C_San_Francisco_dllu.jpg",
     caption: "Blue-hour glass and ferry lights lined up for one block.",
     locationLabel: "Embarcadero Waterfront",
     metadataText: "35mm, handheld",
@@ -1710,7 +1710,7 @@ export const photos: Photo[] = [
     id: "photo-29",
     placeId: "japanese-tea-garden",
     userId: "user-zoe",
-    imageUrl: "/generated/photo-29-soft-shade-under-the-maples-made-the-bridge-color-feel-painted-in.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Bamboo_in_Japanese_Tea_Garden_%28San_Francisco%29_%28TK%29.JPG/960px-Bamboo_in_Japanese_Tea_Garden_%28San_Francisco%29_%28TK%29.JPG",
     caption: "Soft shade under the maples made the bridge color feel painted in.",
     locationLabel: "Japanese Tea Garden",
     metadataText: "50mm, open shade",
@@ -1723,7 +1723,7 @@ export const photos: Photo[] = [
     id: "photo-30",
     placeId: "japanese-tea-garden",
     userId: "user-isha",
-    imageUrl: "/generated/photo-30-the-paths-stack-up-nicely-if-you-wait-for-a-clean-opening.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/California-06250_-_Japanese_Tea_Garden_%2820015357774%29.jpg/960px-California-06250_-_Japanese_Tea_Garden_%2820015357774%29.jpg",
     caption: "The paths stack up nicely if you wait for a clean opening.",
     locationLabel: "Japanese Tea Garden",
     metadataText: "85mm, garden shade",
@@ -1736,7 +1736,7 @@ export const photos: Photo[] = [
     id: "photo-31",
     placeId: "de-young-observation-deck",
     userId: "user-marcus",
-    imageUrl: "/generated/photo-31-glass-trees-and-city-grid-all-line-up-from-the-tower.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/De_Young_Museum_02.jpg/960px-De_Young_Museum_02.jpg",
     caption: "Glass, trees, and city grid all line up from the tower.",
     locationLabel: "de Young Observation Deck",
     metadataText: "35mm, polarizer",
@@ -1749,7 +1749,7 @@ export const photos: Photo[] = [
     id: "photo-32",
     placeId: "de-young-observation-deck",
     userId: "user-zoe",
-    imageUrl: "/generated/photo-32-late-sun-turned-the-copper-skin-into-a-huge-reflector.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/De_Young_Museum_-_Building_-_January_2022_-_Sarah_Stierch.jpg/960px-De_Young_Museum_-_Building_-_January_2022_-_Sarah_Stierch.jpg",
     caption: "Late sun turned the copper skin into a huge reflector.",
     locationLabel: "de Young Observation Deck",
     metadataText: "70mm, warm reflections",
@@ -1762,7 +1762,7 @@ export const photos: Photo[] = [
     id: "photo-33",
     placeId: "muir-woods",
     userId: "user-ava",
-    imageUrl: "/generated/photo-33-fog-sat-high-in-the-canopy-and-kept-the-boardwalk-highlights-gentle.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/2008-10-08_Stinson_Beach_and_Muirwoods_10.jpg/960px-2008-10-08_Stinson_Beach_and_Muirwoods_10.jpg",
     caption: "Fog sat high in the canopy and kept the boardwalk highlights gentle.",
     locationLabel: "Muir Woods",
     metadataText: "24mm, mist",
@@ -1775,7 +1775,7 @@ export const photos: Photo[] = [
     id: "photo-34",
     placeId: "muir-woods",
     userId: "user-nora",
-    imageUrl: "/generated/photo-34-use-the-rail-as-a-leading-line-and-the-trees-do-the-rest.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/A_Lesson_on_the_Trail_from_John_Muir.jpg/960px-A_Lesson_on_the_Trail_from_John_Muir.jpg",
     caption: "Use the rail as a leading line and the trees do the rest.",
     locationLabel: "Muir Woods",
     metadataText: "35mm, low contrast",
@@ -1788,7 +1788,7 @@ export const photos: Photo[] = [
     id: "photo-35",
     placeId: "mori-point",
     userId: "user-ava",
-    imageUrl: "/generated/photo-35-wildflowers-in-front-pacific-haze-in-back-wind-everywhere.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/13814_Mori_Point_%286940209337%29.jpg/960px-13814_Mori_Point_%286940209337%29.jpg",
     caption: "Wildflowers in front, Pacific haze in back, wind everywhere.",
     locationLabel: "Mori Point",
     metadataText: "35mm, coastal wind",
@@ -1801,7 +1801,7 @@ export const photos: Photo[] = [
     id: "photo-36",
     placeId: "mori-point",
     userId: "user-sam",
-    imageUrl: "/generated/photo-36-the-trail-curve-gives-the-bluff-a-clean-sense-of-scale.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/13820_Mori_Point_%286942279731%29.jpg/960px-13820_Mori_Point_%286942279731%29.jpg",
     caption: "The trail curve gives the bluff a clean sense of scale.",
     locationLabel: "Mori Point",
     metadataText: "70mm, sunset haze",
@@ -1814,7 +1814,7 @@ export const photos: Photo[] = [
     id: "photo-37",
     placeId: "ferry-plaza-market",
     userId: "user-marcus",
-    imageUrl: "/generated/photo-37-color-blocks-everywhere-before-the-plaza-got-crowded.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/SF_Ferry_Building_interior_3.JPG/960px-SF_Ferry_Building_interior_3.JPG",
     caption: "Color blocks everywhere before the plaza got crowded.",
     locationLabel: "Ferry Plaza Market",
     metadataText: "35mm, morning market",
@@ -1827,7 +1827,7 @@ export const photos: Photo[] = [
     id: "photo-38",
     placeId: "ferry-plaza-market",
     userId: "user-lena",
-    imageUrl: "/generated/photo-38-the-bayside-light-wraps-the-stalls-better-than-you-expect.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Ferry_Building_%28San_Francisco%29.jpg/960px-Ferry_Building_%28San_Francisco%29.jpg",
     caption: "The bayside light wraps the stalls better than you expect.",
     locationLabel: "Ferry Plaza Market",
     metadataText: "50mm, daylight",
@@ -1840,7 +1840,7 @@ export const photos: Photo[] = [
     id: "photo-39",
     placeId: "16th-avenue-tiles",
     userId: "user-zoe",
-    imageUrl: "/generated/photo-39-overcast-kept-the-mosaic-saturated-without-harsh-stair-shadows.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/16th_Avenue_Tiled_Steps.jpg/960px-16th_Avenue_Tiled_Steps.jpg",
     caption: "Overcast kept the mosaic saturated without harsh stair shadows.",
     locationLabel: "16th Avenue Tiled Steps",
     metadataText: "35mm, overcast",
@@ -1853,7 +1853,7 @@ export const photos: Photo[] = [
     id: "photo-40",
     placeId: "16th-avenue-tiles",
     userId: "user-jules",
-    imageUrl: "/generated/photo-40-great-portrait-color-if-you-frame-tight-and-avoid-the-midday-shine.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Golden_Gate_Heights%2C_San_Francisco%2C_CA%2C_USA_-_panoramio_%281%29.jpg/960px-Golden_Gate_Heights%2C_San_Francisco%2C_CA%2C_USA_-_panoramio_%281%29.jpg",
     caption: "Great portrait color if you frame tight and avoid the midday shine.",
     locationLabel: "16th Avenue Tiled Steps",
     metadataText: "85mm, shade portrait",
@@ -1866,7 +1866,7 @@ export const photos: Photo[] = [
     id: "photo-41",
     placeId: "haight-ashbury",
     userId: "user-diego",
-    imageUrl: "/generated/photo-41-every-block-has-a-different-color-temperature-after-sunset.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/1550_Page_St.%2C_San_Francisco%2C_CA_3-4-2012_4-13-37_PM.JPG/960px-1550_Page_St.%2C_San_Francisco%2C_CA_3-4-2012_4-13-37_PM.JPG",
     caption: "Every block has a different color temperature after sunset.",
     locationLabel: "Haight-Ashbury Storefronts",
     metadataText: "35mm, handheld",
@@ -1879,7 +1879,7 @@ export const photos: Photo[] = [
     id: "photo-42",
     placeId: "haight-ashbury",
     userId: "user-eli",
-    imageUrl: "/generated/photo-42-late-afternoon-gives-the-painted-storefronts-enough-shadow-to-separate.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/1550_Page_St.%2C_San_Francisco%2C_CA_3-4-2012_4-14-43_PM.JPG/960px-1550_Page_St.%2C_San_Francisco%2C_CA_3-4-2012_4-14-43_PM.JPG",
     caption: "Late afternoon gives the painted storefronts enough shadow to separate.",
     locationLabel: "Haight-Ashbury Storefronts",
     metadataText: "50mm, late sun",
@@ -1892,7 +1892,7 @@ export const photos: Photo[] = [
     id: "photo-43",
     placeId: "treasure-island",
     userId: "user-diego",
-    imageUrl: "/generated/photo-43-blue-hour-held-just-long-enough-for-the-bay-reflections.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/12-bay-bridge_richmond.jpg/960px-12-bay-bridge_richmond.jpg",
     caption: "Blue hour held just long enough for the bay reflections.",
     locationLabel: "Treasure Island Skyline",
     metadataText: "Tripod, 3s exposure",
@@ -1905,7 +1905,7 @@ export const photos: Photo[] = [
     id: "photo-44",
     placeId: "treasure-island",
     userId: "user-marcus",
-    imageUrl: "/generated/photo-44-long-lens-compresses-the-towers-into-one-clean-layer.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/2013%2C_Finishing_New_East_Span_Bay_Bridge_Construction_-_panoramio.jpg/960px-2013%2C_Finishing_New_East_Span_Bay_Bridge_Construction_-_panoramio.jpg",
     caption: "Long lens compresses the towers into one clean layer.",
     locationLabel: "Treasure Island Skyline",
     metadataText: "135mm, tripod",
@@ -1918,7 +1918,7 @@ export const photos: Photo[] = [
     id: "photo-45",
     placeId: "brooklyn-bridge",
     userId: "user-noah",
-    imageUrl: "/generated/photo-45-empty-boards-soft-east-river-haze-and-cables-doing-all-the-leading-line.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/New_York_City_03.jpg/960px-New_York_City_03.jpg",
     caption: "Empty boards, soft East River haze, and cables doing all the leading-line work.",
     locationLabel: "Brooklyn Bridge Pedestrian Walkway",
     metadataText: "35mm, sunrise haze",
@@ -1931,7 +1931,7 @@ export const photos: Photo[] = [
     id: "photo-46",
     placeId: "brooklyn-bridge",
     userId: "user-marcus",
-    imageUrl: "/generated/photo-46-blue-hour-brought-out-the-skyline-without-losing-the-cable-texture.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Pont_de_Brooklyn_de_nuit_-_Octobre_2008_edit.jpg/960px-Pont_de_Brooklyn_de_nuit_-_Octobre_2008_edit.jpg",
     caption: "Blue hour brought out the skyline without losing the cable texture.",
     locationLabel: "Brooklyn Bridge Pedestrian Walkway",
     metadataText: "50mm, blue hour",
@@ -1944,7 +1944,7 @@ export const photos: Photo[] = [
     id: "photo-47",
     placeId: "central-park-bethesda",
     userId: "user-zoe",
-    imageUrl: "/generated/photo-47-the-arcade-ceiling-glowed-before-the-terrace-got-busy.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/NYC-CentralPark_%281869%29_p066_Stone_Screen_dividing_Plaza_from_Carriage_Road.jpg/960px-NYC-CentralPark_%281869%29_p066_Stone_Screen_dividing_Plaza_from_Carriage_Road.jpg",
     caption: "The arcade ceiling glowed before the terrace got busy.",
     locationLabel: "Bethesda Terrace",
     metadataText: "24mm, soft shade",
@@ -1957,7 +1957,7 @@ export const photos: Photo[] = [
     id: "photo-48",
     placeId: "central-park-bethesda",
     userId: "user-jules",
-    imageUrl: "/generated/photo-48-light-rain-cleared-the-background-and-made-the-stone-read-softer.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/NYC-CentralPark_%281869%29_p068_Stairs_from_Carriage_Road_to_Lower_Terrace.jpg/960px-NYC-CentralPark_%281869%29_p068_Stairs_from_Carriage_Road_to_Lower_Terrace.jpg",
     caption: "Light rain cleared the background and made the stone read softer.",
     locationLabel: "Bethesda Terrace",
     metadataText: "85mm, rainy day",
@@ -1970,7 +1970,7 @@ export const photos: Photo[] = [
     id: "photo-49",
     placeId: "times-square",
     userId: "user-diego",
-    imageUrl: "/generated/photo-49-neon-spill-was-so-bright-the-shadows-stayed-colorful.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Situation_Times_Square.png/960px-Situation_Times_Square.png",
     caption: "Neon spill was so bright the shadows stayed colorful.",
     locationLabel: "Times Square Night Corners",
     metadataText: "35mm, handheld",
@@ -1983,7 +1983,7 @@ export const photos: Photo[] = [
     id: "photo-50",
     placeId: "times-square",
     userId: "user-noah",
-    imageUrl: "/generated/photo-50-umbrellas-gave-the-billboards-a-second-set-of-moving-reflections.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/%22Two_Trouser_Suits%2C%22_Times_Square_--_about_1948_%2851194305966%29.jpg/960px-%22Two_Trouser_Suits%2C%22_Times_Square_--_about_1948_%2851194305966%29.jpg",
     caption: "Umbrellas gave the billboards a second set of moving reflections.",
     locationLabel: "Times Square Night Corners",
     metadataText: "50mm, wet pavement",
@@ -1996,7 +1996,7 @@ export const photos: Photo[] = [
     id: "photo-51",
     placeId: "washington-monument",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-51-dawn-kept-the-reflecting-pool-almost-perfectly-still.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Washington_Monument_Dusk_Jan_2006.jpg/960px-Washington_Monument_Dusk_Jan_2006.jpg",
     caption: "Dawn kept the reflecting pool almost perfectly still.",
     locationLabel: "Washington Monument Reflecting Pool",
     metadataText: "70mm, calm water",
@@ -2009,7 +2009,7 @@ export const photos: Photo[] = [
     id: "photo-52",
     placeId: "washington-monument",
     userId: "user-nora",
-    imageUrl: "/generated/photo-52-the-flags-picked-up-the-last-cool-light-before-the-mall-went-dark.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Washington_Monument_in_a_Snow_Storm.JPG/960px-Washington_Monument_in_a_Snow_Storm.JPG",
     caption: "The flags picked up the last cool light before the mall went dark.",
     locationLabel: "Washington Monument Reflecting Pool",
     metadataText: "35mm, blue hour",
@@ -2022,7 +2022,7 @@ export const photos: Photo[] = [
     id: "photo-53",
     placeId: "lincoln-memorial",
     userId: "user-isha",
-    imageUrl: "/generated/photo-53-marble-shade-and-columns-made-a-clean-frame-without-harsh-contrast.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Lincoln_Memorial_July_4th_1.jpg/960px-Lincoln_Memorial_July_4th_1.jpg",
     caption: "Marble shade and columns made a clean frame without harsh contrast.",
     locationLabel: "Lincoln Memorial Steps",
     metadataText: "50mm, open shade",
@@ -2035,7 +2035,7 @@ export const photos: Photo[] = [
     id: "photo-54",
     placeId: "lincoln-memorial",
     userId: "user-noah",
-    imageUrl: "/generated/photo-54-night-lights-gave-the-steps-a-calm-almost-studio-like-glow.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Lincoln_memorial_as_seen_during_January_2016_blizzard.jpg/960px-Lincoln_memorial_as_seen_during_January_2016_blizzard.jpg",
     caption: "Night lights gave the steps a calm, almost studio-like glow.",
     locationLabel: "Lincoln Memorial Steps",
     metadataText: "Tripod, 2s exposure",
@@ -2048,7 +2048,7 @@ export const photos: Photo[] = [
     id: "photo-55",
     placeId: "monument-valley",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-55-first-light-separated-the-buttes-from-the-dusty-valley-floor.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/0_Monument_Valley_2011_Trek.JPG/960px-0_Monument_Valley_2011_Trek.JPG",
     caption: "First light separated the buttes from the dusty valley floor.",
     locationLabel: "Monument Valley View",
     metadataText: "70mm, desert haze",
@@ -2061,7 +2061,7 @@ export const photos: Photo[] = [
     id: "photo-56",
     placeId: "monument-valley",
     userId: "user-sam",
-    imageUrl: "/generated/photo-56-the-road-line-kept-the-sunset-frame-from-feeling-too-empty.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/00_5891_Monument_Valley._-_Navajo_Indian_Reservation.jpg/960px-00_5891_Monument_Valley._-_Navajo_Indian_Reservation.jpg",
     caption: "The road line kept the sunset frame from feeling too empty.",
     locationLabel: "Monument Valley View",
     metadataText: "35mm, sunset dust",
@@ -2074,7 +2074,7 @@ export const photos: Photo[] = [
     id: "photo-57",
     placeId: "horseshoe-bend",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-57-sunrise-kept-the-river-dark-while-the-sandstone-warmed-up.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/500px_photo_%2828952187%29.jpeg/960px-500px_photo_%2828952187%29.jpeg",
     caption: "Sunrise kept the river dark while the sandstone warmed up.",
     locationLabel: "Horseshoe Bend Overlook",
     metadataText: "16mm, rim overlook",
@@ -2087,7 +2087,7 @@ export const photos: Photo[] = [
     id: "photo-58",
     placeId: "horseshoe-bend",
     userId: "user-ava",
-    imageUrl: "/generated/photo-58-cloud-cover-cut-the-glare-enough-to-hold-detail-in-the-canyon-walls.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/500px_photo_%2828952195%29.jpeg/960px-500px_photo_%2828952195%29.jpeg",
     caption: "Cloud cover cut the glare enough to hold detail in the canyon walls.",
     locationLabel: "Horseshoe Bend Overlook",
     metadataText: "24mm, overcast",
@@ -2100,7 +2100,7 @@ export const photos: Photo[] = [
     id: "photo-59",
     placeId: "grand-canyon-south-rim",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-59-the-canyon-layers-turned-purple-before-the-rim-got-warm.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Hazy_blue_hour_in_Grand_Canyon.JPG/960px-Hazy_blue_hour_in_Grand_Canyon.JPG",
     caption: "The canyon layers turned purple before the rim got warm.",
     locationLabel: "Grand Canyon South Rim",
     metadataText: "105mm, sunrise layers",
@@ -2113,7 +2113,7 @@ export const photos: Photo[] = [
     id: "photo-60",
     placeId: "grand-canyon-south-rim",
     userId: "user-nora",
-    imageUrl: "/generated/photo-60-storm-shadow-made-the-far-ridges-look-stacked-instead-of-flat.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/01554_Grand_Canyon_Naturalist_Collection_%284739033309%29.jpg/960px-01554_Grand_Canyon_Naturalist_Collection_%284739033309%29.jpg",
     caption: "Storm shadow made the far ridges look stacked instead of flat.",
     locationLabel: "Grand Canyon South Rim",
     metadataText: "70mm, storm light",
@@ -2126,7 +2126,7 @@ export const photos: Photo[] = [
     id: "photo-61",
     placeId: "zion-canyon-overlook",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-61-soft-sunrise-caught-the-canyon-walls-before-the-trail-got-hot.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Zion_National_Park%2C_United_States_%28Unsplash_R2HlismuruI%29.jpg/960px-Zion_National_Park%2C_United_States_%28Unsplash_R2HlismuruI%29.jpg",
     caption: "Soft sunrise caught the canyon walls before the trail got hot.",
     locationLabel: "Zion Canyon Overlook Trail",
     metadataText: "24mm, dawn hike",
@@ -2139,7 +2139,7 @@ export const photos: Photo[] = [
     id: "photo-62",
     placeId: "zion-canyon-overlook",
     userId: "user-ava",
-    imageUrl: "/generated/photo-62-late-light-skimmed-the-sandstone-and-made-the-switchbacks-readable.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Zion_national_park_relief.png/960px-Zion_national_park_relief.png",
     caption: "Late light skimmed the sandstone and made the switchbacks readable.",
     locationLabel: "Zion Canyon Overlook Trail",
     metadataText: "35mm, late sun",
@@ -2152,7 +2152,7 @@ export const photos: Photo[] = [
     id: "photo-63",
     placeId: "bryce-canyon-amphitheater",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-63-cold-dawn-made-the-hoodoos-glow-from-the-top-down.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Bryce_at_night_%283582882456%29.jpg/960px-Bryce_at_night_%283582882456%29.jpg",
     caption: "Cold dawn made the hoodoos glow from the top down.",
     locationLabel: "Bryce Canyon Amphitheater",
     metadataText: "50mm, sunrise",
@@ -2165,7 +2165,7 @@ export const photos: Photo[] = [
     id: "photo-64",
     placeId: "bryce-canyon-amphitheater",
     userId: "user-nora",
-    imageUrl: "/generated/photo-64-snow-gave-the-red-rock-enough-contrast-to-feel-almost-graphic.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/BRCA_2011_Hughes_Christopher_Photo2_%2830874341003%29.jpg/960px-BRCA_2011_Hughes_Christopher_Photo2_%2830874341003%29.jpg",
     caption: "Snow gave the red rock enough contrast to feel almost graphic.",
     locationLabel: "Bryce Canyon Amphitheater",
     metadataText: "70mm, snow contrast",
@@ -2178,7 +2178,7 @@ export const photos: Photo[] = [
     id: "photo-65",
     placeId: "joshua-tree",
     userId: "user-ava",
-    imageUrl: "/generated/photo-65-the-boulders-held-the-last-warmth-after-the-sky-went-pastel.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/20050915joshuatree10pano.jpg/960px-20050915joshuatree10pano.jpg",
     caption: "The boulders held the last warmth after the sky went pastel.",
     locationLabel: "Joshua Tree Rock Formations",
     metadataText: "35mm, sunset",
@@ -2191,7 +2191,7 @@ export const photos: Photo[] = [
     id: "photo-66",
     placeId: "joshua-tree",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-66-clear-night-skies-made-the-tree-silhouettes-feel-almost-cut-out.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/%22The_Old_Woman%22_Rock_%2851749626968%29.jpg/960px-%22The_Old_Woman%22_Rock_%2851749626968%29.jpg",
     caption: "Clear night skies made the tree silhouettes feel almost cut out.",
     locationLabel: "Joshua Tree Rock Formations",
     metadataText: "Tripod, 15s exposure",
@@ -2230,7 +2230,7 @@ export const photos: Photo[] = [
     id: "photo-69",
     placeId: "griffith-observatory",
     userId: "user-noah",
-    imageUrl: "/generated/photo-69-hazy-gold-turned-the-observatory-walls-into-a-giant-reflector.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/The_Griffith_Observatory_at_night%2C_Mt._Hollywood%2C_Los_Angeles%2C_California%2C_U.S.jpg/960px-The_Griffith_Observatory_at_night%2C_Mt._Hollywood%2C_Los_Angeles%2C_California%2C_U.S.jpg",
     caption: "Hazy gold turned the observatory walls into a giant reflector.",
     locationLabel: "Griffith Observatory",
     metadataText: "70mm, LA haze",
@@ -2243,7 +2243,7 @@ export const photos: Photo[] = [
     id: "photo-70",
     placeId: "griffith-observatory",
     userId: "user-sam",
-    imageUrl: "/generated/photo-70-city-lights-came-up-under-a-thin-layer-of-june-haze.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/---_To_Telescope_%288965650681%29.jpg/960px----_To_Telescope_%288965650681%29.jpg",
     caption: "City lights came up under a thin layer of June haze.",
     locationLabel: "Griffith Observatory",
     metadataText: "Tripod, 3s exposure",
@@ -2256,7 +2256,7 @@ export const photos: Photo[] = [
     id: "photo-71",
     placeId: "kerry-park",
     userId: "user-marcus",
-    imageUrl: "/generated/photo-71-the-mountain-showed-up-for-about-five-minutes-behind-the-space-needle.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Seattle_from_Kerry_Park_%281%29.jpg/960px-Seattle_from_Kerry_Park_%281%29.jpg",
     caption: "The mountain showed up for about five minutes behind the Space Needle.",
     locationLabel: "Kerry Park Skyline",
     metadataText: "85mm, clear sunset",
@@ -2269,7 +2269,7 @@ export const photos: Photo[] = [
     id: "photo-72",
     placeId: "kerry-park",
     userId: "user-noah",
-    imageUrl: "/generated/photo-72-blue-hour-balanced-the-skyline-lights-with-the-cloud-deck.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Seattle_from_kerry_park.jpg/960px-Seattle_from_kerry_park.jpg",
     caption: "Blue hour balanced the skyline lights with the cloud deck.",
     locationLabel: "Kerry Park Skyline",
     metadataText: "135mm, blue hour",
@@ -2282,7 +2282,7 @@ export const photos: Photo[] = [
     id: "photo-73",
     placeId: "pike-place-market",
     userId: "user-lena",
-    imageUrl: "/generated/photo-73-morning-setup-gave-the-market-color-without-shoulder-to-shoulder-crowds.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Pike_Place_Market_1.jpg/960px-Pike_Place_Market_1.jpg",
     caption: "Morning setup gave the market color without shoulder-to-shoulder crowds.",
     locationLabel: "Pike Place Market",
     metadataText: "35mm, market light",
@@ -2295,7 +2295,7 @@ export const photos: Photo[] = [
     id: "photo-74",
     placeId: "pike-place-market",
     userId: "user-diego",
-    imageUrl: "/generated/photo-74-rain-made-every-sign-and-awning-pull-double-duty.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Pike_Place_Market_2009_2.jpg/960px-Pike_Place_Market_2009_2.jpg",
     caption: "Rain made every sign and awning pull double duty.",
     locationLabel: "Pike Place Market",
     metadataText: "50mm, rainy day",
@@ -2308,7 +2308,7 @@ export const photos: Photo[] = [
     id: "photo-75",
     placeId: "chicago-riverwalk",
     userId: "user-marcus",
-    imageUrl: "/generated/photo-75-the-river-turned-into-a-mirror-right-before-the-office-lights-peaked.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/-i---i-_%289960118174%29.jpg/960px--i---i-_%289960118174%29.jpg",
     caption: "The river turned into a mirror right before the office lights peaked.",
     locationLabel: "Chicago Riverwalk",
     metadataText: "24mm, blue hour",
@@ -2321,7 +2321,7 @@ export const photos: Photo[] = [
     id: "photo-76",
     placeId: "chicago-riverwalk",
     userId: "user-noah",
-    imageUrl: "/generated/photo-76-rain-darkened-the-bridges-and-made-the-tower-lights-stretch-across-the-.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/20090524_Buildings_along_Chicago_River_line_the_south_border_of_the_Near_North_Side_and_Streeterville_and_the_north_border_of_Chicago_Loop%2C_Lakeshore_East_and_Illinois_Center.jpg/960px-20090524_Buildings_along_Chicago_River_line_the_south_border_of_the_Near_North_Side_and_Streeterville_and_the_north_border_of_Chicago_Loop%2C_Lakeshore_East_and_Illinois_Center.jpg",
     caption: "Rain darkened the bridges and made the tower lights stretch across the water.",
     locationLabel: "Chicago Riverwalk",
     metadataText: "35mm, rainy evening",
@@ -2334,7 +2334,7 @@ export const photos: Photo[] = [
     id: "photo-77",
     placeId: "millennium-park",
     userId: "user-isha",
-    imageUrl: "/generated/photo-77-early-morning-kept-the-reflections-readable-before-the-plaza-filled-up.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Chicago_Sky_gate_monument%2C_also_known_as_the_bean.jpg/960px-Chicago_Sky_gate_monument%2C_also_known_as_the_bean.jpg",
     caption: "Early morning kept the reflections readable before the plaza filled up.",
     locationLabel: "Millennium Park Cloud Gate",
     metadataText: "24mm, clean plaza",
@@ -2347,7 +2347,7 @@ export const photos: Photo[] = [
     id: "photo-78",
     placeId: "millennium-park",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-78-fresh-snow-simplified-the-plaza-and-made-the-skyline-reflection-pop.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Tented_cloud_gate.jpg/960px-Tented_cloud_gate.jpg",
     caption: "Fresh snow simplified the plaza and made the skyline reflection pop.",
     locationLabel: "Millennium Park Cloud Gate",
     metadataText: "35mm, snowy day",
@@ -2360,7 +2360,7 @@ export const photos: Photo[] = [
     id: "photo-79",
     placeId: "south-beach",
     userId: "user-camila",
-    imageUrl: "/generated/photo-79-pastel-walls-looked-best-before-the-midday-glare-kicked-in.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Ocean_drive_south_beach_miami_night.JPG/960px-Ocean_drive_south_beach_miami_night.JPG",
     caption: "Pastel walls looked best before the midday glare kicked in.",
     locationLabel: "South Beach Art Deco",
     metadataText: "35mm, morning sun",
@@ -2373,7 +2373,7 @@ export const photos: Photo[] = [
     id: "photo-80",
     placeId: "south-beach",
     userId: "user-diego",
-    imageUrl: "/generated/photo-80-ocean-drive-neon-works-best-once-the-sky-still-has-a-little-blue-left.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/SouthBeachMiamiBeach.jpg/960px-SouthBeachMiamiBeach.jpg",
     caption: "Ocean Drive neon works best once the sky still has a little blue left.",
     locationLabel: "South Beach Art Deco",
     metadataText: "50mm, neon glow",
@@ -2386,7 +2386,7 @@ export const photos: Photo[] = [
     id: "photo-81",
     placeId: "everglades-anjinga",
     userId: "user-camila",
-    imageUrl: "/generated/photo-81-morning-humidity-turned-the-sawgrass-into-layered-silhouettes.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Ahinga_Trail_%281%29%2C_NPSPhoto_%289258021008%29.jpg/960px-Ahinga_Trail_%281%29%2C_NPSPhoto_%289258021008%29.jpg",
     caption: "Morning humidity turned the sawgrass into layered silhouettes.",
     locationLabel: "Everglades Anhinga Trail",
     metadataText: "70mm, humid morning",
@@ -2399,7 +2399,7 @@ export const photos: Photo[] = [
     id: "photo-82",
     placeId: "everglades-anjinga",
     userId: "user-nora",
-    imageUrl: "/generated/photo-82-storm-clouds-made-the-boardwalk-reflections-feel-much-deeper.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Ahinga_Trail_%2811%29%2C_NPSPhoto_%289255238181%29.jpg/960px-Ahinga_Trail_%2811%29%2C_NPSPhoto_%289255238181%29.jpg",
     caption: "Storm clouds made the boardwalk reflections feel much deeper.",
     locationLabel: "Everglades Anhinga Trail",
     metadataText: "35mm, storm light",
@@ -2412,7 +2412,7 @@ export const photos: Photo[] = [
     id: "photo-83",
     placeId: "french-quarter",
     userId: "user-diego",
-    imageUrl: "/generated/photo-83-balcony-shadows-and-painted-shutters-kept-the-block-feeling-layered.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/French_Quarter02_New_Orleans.jpg/960px-French_Quarter02_New_Orleans.jpg",
     caption: "Balcony shadows and painted shutters kept the block feeling layered.",
     locationLabel: "French Quarter Balconies",
     metadataText: "35mm, humid morning",
@@ -2425,7 +2425,7 @@ export const photos: Photo[] = [
     id: "photo-84",
     placeId: "french-quarter",
     userId: "user-lena",
-    imageUrl: "/generated/photo-84-rainy-blue-hour-gave-the-ironwork-a-clean-edge-against-the-signs.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/New_Orleans_-_French_Quarter_-_balcon.JPG/960px-New_Orleans_-_French_Quarter_-_balcon.JPG",
     caption: "Rainy blue hour gave the ironwork a clean edge against the signs.",
     locationLabel: "French Quarter Balconies",
     metadataText: "50mm, rainy evening",
@@ -2438,7 +2438,7 @@ export const photos: Photo[] = [
     id: "photo-85",
     placeId: "acorn-street",
     userId: "user-zoe",
-    imageUrl: "/generated/photo-85-soft-morning-light-kept-the-brick-texture-from-going-too-contrasty.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/2008_AcornSt_Boston_2453817250.jpg/960px-2008_AcornSt_Boston_2453817250.jpg",
     caption: "Soft morning light kept the brick texture from going too contrasty.",
     locationLabel: "Acorn Street",
     metadataText: "50mm, cobblestones",
@@ -2451,7 +2451,7 @@ export const photos: Photo[] = [
     id: "photo-86",
     placeId: "acorn-street",
     userId: "user-jules",
-    imageUrl: "/generated/photo-86-fall-color-made-the-narrow-lane-feel-warmer-without-adding-clutter.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/2008_AcornSt_Boston_2852241269.jpg/960px-2008_AcornSt_Boston_2852241269.jpg",
     caption: "Fall color made the narrow lane feel warmer without adding clutter.",
     locationLabel: "Acorn Street",
     metadataText: "85mm, fall color",
@@ -2464,7 +2464,7 @@ export const photos: Photo[] = [
     id: "photo-87",
     placeId: "philadelphia-art-museum",
     userId: "user-marcus",
-    imageUrl: "/generated/photo-87-long-stair-shadows-pointed-straight-back-toward-the-skyline.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Philadelphia_museum_of_art%2C_esterno%2C_02.JPG/960px-Philadelphia_museum_of_art%2C_esterno%2C_02.JPG",
     caption: "Long stair shadows pointed straight back toward the skyline.",
     locationLabel: "Philadelphia Museum Steps",
     metadataText: "35mm, golden hour",
@@ -2477,7 +2477,7 @@ export const photos: Photo[] = [
     id: "photo-88",
     placeId: "philadelphia-art-museum",
     userId: "user-noah",
-    imageUrl: "/generated/photo-88-blue-hour-softened-the-museum-stone-and-kept-the-plaza-readable.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Philadelphia_museum_district.JPG/960px-Philadelphia_museum_district.JPG",
     caption: "Blue hour softened the museum stone and kept the plaza readable.",
     locationLabel: "Philadelphia Museum Steps",
     metadataText: "70mm, blue hour",
@@ -2490,7 +2490,7 @@ export const photos: Photo[] = [
     id: "photo-89",
     placeId: "dream-lake",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-89-the-wind-paused-just-long-enough-for-a-real-mountain-reflection.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Dream_Lake_%2829560311697%29.jpg/960px-Dream_Lake_%2829560311697%29.jpg",
     caption: "The wind paused just long enough for a real mountain reflection.",
     locationLabel: "Dream Lake",
     metadataText: "24mm, alpine sunrise",
@@ -2503,7 +2503,7 @@ export const photos: Photo[] = [
     id: "photo-90",
     placeId: "dream-lake",
     userId: "user-ava",
-    imageUrl: "/generated/photo-90-patchy-snow-made-the-lake-edge-easy-to-read-from-a-low-angle.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Dream_Lake_-_Rocky_Mountain_National_Park_-_panoramio.jpg/960px-Dream_Lake_-_Rocky_Mountain_National_Park_-_panoramio.jpg",
     caption: "Patchy snow made the lake edge easy to read from a low angle.",
     locationLabel: "Dream Lake",
     metadataText: "35mm, snowy morning",
@@ -2516,7 +2516,7 @@ export const photos: Photo[] = [
     id: "photo-91",
     placeId: "grand-prismatic",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-91-cool-morning-air-made-the-steam-drift-low-across-the-boardwalk.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Aerial_image_of_Grand_Prismatic_Spring_%28view_from_the_south%29.jpg/960px-Aerial_image_of_Grand_Prismatic_Spring_%28view_from_the_south%29.jpg",
     caption: "Cool morning air made the steam drift low across the boardwalk.",
     locationLabel: "Grand Prismatic Spring",
     metadataText: "70mm, steam layers",
@@ -2529,7 +2529,7 @@ export const photos: Photo[] = [
     id: "photo-92",
     placeId: "grand-prismatic",
     userId: "user-nora",
-    imageUrl: "/generated/photo-92-midday-light-finally-revealed-the-orange-mats-without-too-much-haze.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Grand_Prismatic_Spring%2C_Yellowstone_NP.jpg/960px-Grand_Prismatic_Spring%2C_Yellowstone_NP.jpg",
     caption: "Midday light finally revealed the orange mats without too much haze.",
     locationLabel: "Grand Prismatic Spring",
     metadataText: "50mm, daylight",
@@ -2542,7 +2542,7 @@ export const photos: Photo[] = [
     id: "photo-93",
     placeId: "schwabacher-landing",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-93-the-tetons-doubled-in-the-river-before-the-breeze-picked-up.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/2025-05-30-184633_USA_Wyoming_Moose_1983.4.jpg/960px-2025-05-30-184633_USA_Wyoming_Moose_1983.4.jpg",
     caption: "The Tetons doubled in the river before the breeze picked up.",
     locationLabel: "Schwabacher Landing",
     metadataText: "35mm, calm water",
@@ -2555,7 +2555,7 @@ export const photos: Photo[] = [
     id: "photo-94",
     placeId: "schwabacher-landing",
     userId: "user-ava",
-    imageUrl: "/generated/photo-94-fall-color-gave-the-riverbank-a-warmer-line-under-the-peaks.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/2025-05-30-184907_USA_Wyoming_Moose_1982.7.jpg/960px-2025-05-30-184907_USA_Wyoming_Moose_1982.7.jpg",
     caption: "Fall color gave the riverbank a warmer line under the peaks.",
     locationLabel: "Schwabacher Landing",
     metadataText: "85mm, fall color",
@@ -2568,7 +2568,7 @@ export const photos: Photo[] = [
     id: "photo-95",
     placeId: "portland-japanese-garden",
     userId: "user-zoe",
-    imageUrl: "/generated/photo-95-rain-made-the-stones-and-maples-feel-freshly-polished.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Bon-Odori_being_celebrated_in_2024_at_Portland_Japanese_Garden.jpg/960px-Bon-Odori_being_celebrated_in_2024_at_Portland_Japanese_Garden.jpg",
     caption: "Rain made the stones and maples feel freshly polished.",
     locationLabel: "Portland Japanese Garden",
     metadataText: "50mm, light rain",
@@ -2581,7 +2581,7 @@ export const photos: Photo[] = [
     id: "photo-96",
     placeId: "portland-japanese-garden",
     userId: "user-isha",
-    imageUrl: "/generated/photo-96-maple-color-framed-the-path-without-needing-a-portrait-subject.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Fall_foliage.jpg/960px-Fall_foliage.jpg",
     caption: "Maple color framed the path without needing a portrait subject.",
     locationLabel: "Portland Japanese Garden",
     metadataText: "85mm, fall color",
@@ -2594,7 +2594,7 @@ export const photos: Photo[] = [
     id: "photo-97",
     placeId: "multnomah-falls",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-97-morning-mist-kept-the-bridge-from-getting-lost-against-the-cliff.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/08367-Oregon-1906-Multnomah_Falls%2C_near_The_Dalles-Br%C3%BCck_%26_Sohn_Kunstverlag.jpg/960px-08367-Oregon-1906-Multnomah_Falls%2C_near_The_Dalles-Br%C3%BCck_%26_Sohn_Kunstverlag.jpg",
     caption: "Morning mist kept the bridge from getting lost against the cliff.",
     locationLabel: "Multnomah Falls",
     metadataText: "24mm, mist",
@@ -2607,7 +2607,7 @@ export const photos: Photo[] = [
     id: "photo-98",
     placeId: "multnomah-falls",
     userId: "user-nora",
-    imageUrl: "/generated/photo-98-overcast-rain-let-me-slow-the-falls-without-blowing-the-highlights.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/20190407_FS_CRGNSA_Multnomah_Falls_in_the_spring_sun_by_Forest_Service_Ranger_Matt_Ramich.jpg/960px-20190407_FS_CRGNSA_Multnomah_Falls_in_the_spring_sun_by_Forest_Service_Ranger_Matt_Ramich.jpg",
     caption: "Overcast rain let me slow the falls without blowing the highlights.",
     locationLabel: "Multnomah Falls",
     metadataText: "Tripod, long exposure",
@@ -2620,7 +2620,7 @@ export const photos: Photo[] = [
     id: "photo-99",
     placeId: "nashville-broadway",
     userId: "user-diego",
-    imageUrl: "/generated/photo-99-the-signs-were-bright-enough-to-shoot-handheld-at-the-curb.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Apple_Store%2C_Fifth_%2B_Broadway%2C_Broadway_and_5th_Avenue%2C_Nashville%2C_TN_%2854384283346%29.jpg/960px-Apple_Store%2C_Fifth_%2B_Broadway%2C_Broadway_and_5th_Avenue%2C_Nashville%2C_TN_%2854384283346%29.jpg",
     caption: "The signs were bright enough to shoot handheld at the curb.",
     locationLabel: "Broadway Neon",
     metadataText: "35mm, handheld",
@@ -2633,7 +2633,7 @@ export const photos: Photo[] = [
     id: "photo-100",
     placeId: "nashville-broadway",
     userId: "user-noah",
-    imageUrl: "/generated/photo-100-wet-pavement-turned-broadway-into-a-strip-of-reflected-signs.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Apple_Store%2C_Fifth_%2B_Broadway%2C_Broadway_and_5th_Avenue%2C_Nashville%2C_TN_%2854384526118%29.jpg/960px-Apple_Store%2C_Fifth_%2B_Broadway%2C_Broadway_and_5th_Avenue%2C_Nashville%2C_TN_%2854384526118%29.jpg",
     caption: "Wet pavement turned Broadway into a strip of reflected signs.",
     locationLabel: "Broadway Neon",
     metadataText: "50mm, rainy blue hour",
@@ -2646,7 +2646,7 @@ export const photos: Photo[] = [
     id: "photo-101",
     placeId: "eiffel-tower-trocadero",
     userId: "user-kenji",
-    imageUrl: "/generated/photo-101-sunrise-kept-the-plaza-quiet-and-the-tower-edges-clean.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/1000_Eiffel_tower_night_illumination_by_Pierre_Bideau_in_Paris_Photo_by_Giles_Laurent.jpg/960px-1000_Eiffel_tower_night_illumination_by_Pierre_Bideau_in_Paris_Photo_by_Giles_Laurent.jpg",
     caption: "Sunrise kept the plaza quiet and the tower edges clean.",
     locationLabel: "Eiffel Tower from Trocadero",
     metadataText: "70mm, pale sunrise",
@@ -2659,7 +2659,7 @@ export const photos: Photo[] = [
     id: "photo-102",
     placeId: "eiffel-tower-trocadero",
     userId: "user-maya",
-    imageUrl: "/generated/photo-102-rainy-blue-hour-made-the-stone-plaza-reflect-just-enough-sparkle.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/View_of_Paris_in_the_winter_%2838441642120%29.jpg/960px-View_of_Paris_in_the_winter_%2838441642120%29.jpg",
     caption: "Rainy blue hour made the stone plaza reflect just enough sparkle.",
     locationLabel: "Eiffel Tower from Trocadero",
     metadataText: "50mm, rainy blue hour",
@@ -2672,7 +2672,7 @@ export const photos: Photo[] = [
     id: "photo-103",
     placeId: "tower-bridge",
     userId: "user-kenji",
-    imageUrl: "/generated/photo-103-the-thames-was-calm-enough-to-hold-the-bridge-lights-between-boat-wake.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Tower_Bridge_at_night_from_South_Bank.jpg/960px-Tower_Bridge_at_night_from_South_Bank.jpg",
     caption: "The Thames was calm enough to hold the bridge lights between boat wakes.",
     locationLabel: "Tower Bridge River Walk",
     metadataText: "35mm, blue hour",
@@ -2685,7 +2685,7 @@ export const photos: Photo[] = [
     id: "photo-104",
     placeId: "tower-bridge",
     userId: "user-noah",
-    imageUrl: "/generated/photo-104-classic-london-rain-gave-the-river-walk-a-stronger-mood-than-clear-ski.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Tower_bridge_schm020.png/960px-Tower_bridge_schm020.png",
     caption: "Classic London rain gave the river walk a stronger mood than clear skies.",
     locationLabel: "Tower Bridge River Walk",
     metadataText: "50mm, rainy evening",
@@ -2698,7 +2698,7 @@ export const photos: Photo[] = [
     id: "photo-105",
     placeId: "colosseum",
     userId: "user-kenji",
-    imageUrl: "/generated/photo-105-morning-side-light-made-the-arches-feel-layered-instead-of-flat.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/2760px-Kolosseum180-050712.jpg/960px-2760px-Kolosseum180-050712.jpg",
     caption: "Morning side light made the arches feel layered instead of flat.",
     locationLabel: "Colosseum Exterior",
     metadataText: "70mm, warm stone",
@@ -2711,7 +2711,7 @@ export const photos: Photo[] = [
     id: "photo-106",
     placeId: "colosseum",
     userId: "user-isha",
-    imageUrl: "/generated/photo-106-blue-hour-balanced-the-warm-arch-lights-with-a-cooler-sky.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Rom_%28IT%29%2C_Kolosseum_--_2024_--_0610.jpg/960px-Rom_%28IT%29%2C_Kolosseum_--_2024_--_0610.jpg",
     caption: "Blue hour balanced the warm arch lights with a cooler sky.",
     locationLabel: "Colosseum Exterior",
     metadataText: "35mm, blue hour",
@@ -2724,7 +2724,7 @@ export const photos: Photo[] = [
     id: "photo-107",
     placeId: "shibuya-crossing",
     userId: "user-kenji",
-    imageUrl: "/generated/photo-107-the-crossing-works-best-when-the-crowd-becomes-texture-not-the-subject.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/1_shibuya_crossing_2012.jpg/960px-1_shibuya_crossing_2012.jpg",
     caption: "The crossing works best when the crowd becomes texture, not the subject.",
     locationLabel: "Shibuya Crossing",
     metadataText: "35mm, handheld",
@@ -2737,7 +2737,7 @@ export const photos: Photo[] = [
     id: "photo-108",
     placeId: "shibuya-crossing",
     userId: "user-diego",
-    imageUrl: "/generated/photo-108-umbrellas-turned-the-crosswalk-into-a-moving-pattern.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Scramble_from_above%2C_SHIBUYA_SKY_%2849367160502%29_%28cropped%29.jpg/960px-Scramble_from_above%2C_SHIBUYA_SKY_%2849367160502%29_%28cropped%29.jpg",
     caption: "Umbrellas turned the crosswalk into a moving pattern.",
     locationLabel: "Shibuya Crossing",
     metadataText: "50mm, rainy neon",
@@ -2750,7 +2750,7 @@ export const photos: Photo[] = [
     id: "photo-109",
     placeId: "pyramids-giza",
     userId: "user-kenji",
-    imageUrl: "/generated/photo-109-low-sun-gave-the-pyramid-faces-enough-separation-from-the-desert-haze.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Giza-pyramids.JPG/960px-Giza-pyramids.JPG",
     caption: "Low sun gave the pyramid faces enough separation from the desert haze.",
     locationLabel: "Pyramids of Giza",
     metadataText: "85mm, desert sunrise",
@@ -2763,7 +2763,7 @@ export const photos: Photo[] = [
     id: "photo-110",
     placeId: "pyramids-giza",
     userId: "user-hannah",
-    imageUrl: "/generated/photo-110-sunset-silhouettes-made-the-scale-read-better-than-a-clean-midday-shot.png",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Model_of_Giza_pyramid_complex-Kunsthistorisches_Museum.jpg/960px-Model_of_Giza_pyramid_complex-Kunsthistorisches_Museum.jpg",
     caption: "Sunset silhouettes made the scale read better than a clean midday shot.",
     locationLabel: "Pyramids of Giza",
     metadataText: "135mm, sunset haze",
