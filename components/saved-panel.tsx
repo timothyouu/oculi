@@ -809,7 +809,7 @@ function RouteStopRow({
 
         <div>
           <p className="line-clamp-2 text-sm leading-5 text-white/86 drop-shadow-sm">{stop.note}</p>
-          <div className="mt-3 rounded-lg border border-white/24 bg-white/16 p-3 text-white shadow-sm backdrop-blur-md">
+          <div className="mt-3 rounded-lg bg-white/8 p-3 text-white shadow-sm backdrop-blur-md">
             <p className="flex items-start gap-2 font-sans text-xs leading-5 text-white/90">
               <MapPinned className="mt-0.5 size-4 shrink-0 text-[var(--gold)]" />
               <span className="min-w-0">
@@ -818,15 +818,15 @@ function RouteStopRow({
               </span>
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <button type="button" className="inline-flex h-8 items-center gap-1.5 rounded-md border border-white/25 bg-white/18 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/26" onClick={() => onCopyAddress(stop)}>
+              <button type="button" className="inline-flex h-8 items-center gap-1.5 rounded-md bg-white/10 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/18" onClick={() => onCopyAddress(stop)}>
                 <Copy className="size-3.5" />
                 Copy
               </button>
-              <a className="inline-flex h-8 items-center gap-1.5 rounded-md border border-white/25 bg-white/18 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/26" href={stop.googleMapsUrl} target="_blank" rel="noreferrer">
+              <a className="inline-flex h-8 items-center gap-1.5 rounded-md bg-white/10 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/18" href={stop.googleMapsUrl} target="_blank" rel="noreferrer">
                 <Navigation className="size-3.5" />
                 Google <ExternalLink className="size-3" />
               </a>
-              <a className="inline-flex h-8 items-center gap-1.5 rounded-md border border-white/25 bg-white/18 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/26" href={stop.appleMapsUrl} target="_blank" rel="noreferrer">
+              <a className="inline-flex h-8 items-center gap-1.5 rounded-md bg-white/10 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/18" href={stop.appleMapsUrl} target="_blank" rel="noreferrer">
                 <Map className="size-3.5" />
                 Apple <ExternalLink className="size-3" />
               </a>
