@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Bell, Check, Moon, Plus, Settings, Sun, Type, UserRound } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Bell, Camera, Check, Moon, Plus, Settings, Sparkles, Sun, Tag, Type, UserRound } from "lucide-react";
 import { useAppSettings } from "@/components/app-settings";
+import { useDemoState } from "@/lib/demo-state";
 import type { User } from "../lib/types";
 
 type NavItem = {
@@ -44,6 +45,15 @@ const fontSizeOptions = [
   { id: "large", label: "Large", sample: "Aa" },
   { id: "extra-large", label: "Extra large", sample: "Aa" },
 ] as const;
+
+function formatRelativeDate(value: string) {
+  const then = new Date(value).getTime();
+  const now = Date.now();
+  const hours = Math.max(1, Math.round((now - then) / 36e5));
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.round(hours / 24);
+  return `${days}d ago`;
+}
 
 function SettingsPanel({ onClose }: { onClose?: () => void }) {
   const { themeMode, fontSize, setThemeMode, setFontSize, resetSettings } = useAppSettings();
@@ -156,9 +166,58 @@ export function TopNav({
   onOpenProfile,
   className,
 }: TopNavProps) {
+  const demo = useDemoState();
   const allNavItems = [...navItems, { id: "add", label: "Add Photo" }];
   const [noticeOpen, setNoticeOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const notifications = useMemo(() => {
+    const followed = new Set(demo.followedUserIds);
+    const favoriteTags = new Set(demo.state.profile.favoriteTags.map((tag) => tag.toLowerCase()));
+    const currentUserPhotoIds = new Set(demo.state.uploadedPhotos.map((photo) => photo.id));
+    const byDate = [...demo.photos].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+    const followedPosts = byDate
+      .filter((photo) => followed.has(photo.userId) && !currentUserPhotoIds.has(photo.id))
+      .slice(0, 3)
+      .map((photo) => {
+        const user = demo.users.find((item) => item.id === photo.userId);
+        const place = demo.places.find((item) => item.id === photo.placeId);
+        return {
+          id: `follow-${photo.id}`,
+          icon: Camera,
+          title: `${user?.name ?? "Someone you follow"} posted at ${place?.name ?? photo.locationLabel}`,
+          body: photo.caption,
+          meta: formatRelativeDate(photo.createdAt),
+        };
+      });
+    const tagUpdates = byDate
+      .filter((photo) => !followed.has(photo.userId) && photo.tags.some((tag) => favoriteTags.has(tag.toLowerCase())))
+      .slice(0, 2)
+      .map((photo) => {
+        const matchedTag = photo.tags.find((tag) => favoriteTags.has(tag.toLowerCase())) ?? photo.tags[0];
+        const place = demo.places.find((item) => item.id === photo.placeId);
+        return {
+          id: `tag-${photo.id}`,
+          icon: Tag,
+          title: `New ${matchedTag} update near ${place?.name ?? photo.locationLabel}`,
+          body: photo.caption,
+          meta: "Favorite tag",
+        };
+      });
+
+    return [
+      ...followedPosts,
+      ...tagUpdates,
+      {
+        id: "saved",
+        icon: Sparkles,
+        title: `${savedCount} saved places are ready for planning`,
+        body: "Use Saved to turn them into a morning or sunset route.",
+        meta: "Shoot list",
+      },
+    ].slice(0, 6);
+  }, [demo.followedUserIds, demo.photos, demo.places, demo.state.profile.favoriteTags, demo.state.uploadedPhotos, demo.users, savedCount]);
 
   return (
     <header className={cx("sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--nav-bg)] backdrop-blur-xl", className)}>
@@ -198,7 +257,7 @@ export function TopNav({
         <div className="relative ml-auto hidden items-center gap-4 md:flex">
           <button
             type="button"
-            className="grid size-10 place-items-center rounded-full text-[var(--ink)] outline-none hover:bg-[var(--chip)]"
+            className="relative grid size-10 place-items-center rounded-full text-[var(--ink)] outline-none hover:bg-[var(--chip)]"
             aria-label="Notifications"
             onClick={() => {
               setNoticeOpen((open) => !open);
@@ -206,10 +265,19 @@ export function TopNav({
             }}
           >
             <Bell className="size-5" aria-hidden="true" />
+            {notifications.length ? (
+              <span className="absolute right-2 top-2 size-2 rounded-full bg-[var(--gold)] ring-2 ring-[var(--paper-strong)]" />
+            ) : null}
           </button>
           <button
             type="button"
-            className="grid size-10 place-items-center overflow-hidden rounded-full bg-[var(--chip)] outline-none ring-1 ring-[var(--line)]"
+            className={cx(
+              "grid size-10 place-items-center overflow-hidden rounded-full bg-[var(--chip)] outline-none transition hover:ring-[var(--moss)]",
+              activeItem === "profile"
+                ? "ring-[3px] ring-[var(--moss)] ring-offset-2 ring-offset-[var(--nav-bg)]"
+                : "ring-1 ring-[var(--line)]",
+            )}
+            aria-current={activeItem === "profile" ? "page" : undefined}
             aria-label={currentUser ? `Open ${currentUser.name}'s profile` : "Open profile"}
             onClick={() => currentUser && onOpenProfile?.(currentUser.id)}
           >
@@ -233,14 +301,36 @@ export function TopNav({
           </button>
           {noticeOpen ? (
             <div
-              className="absolute right-14 top-14 z-50 w-80 rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] p-4"
+              className="absolute right-14 top-14 z-50 w-[min(24rem,calc(100vw-2.5rem))] rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] p-4"
               style={{ boxShadow: "var(--elevated-shadow)" }}
             >
-              <p className="text-sm font-semibold text-[var(--ink)]">Today on Oculi</p>
-              <div className="mt-3 space-y-3 text-sm text-[var(--muted)]">
-                <p>Maya saved Baker Beach for sunset portraits.</p>
-                <p>Eli posted a new fog photo near the Presidio overlook.</p>
-                <p>{savedCount} places are ready in your shoot list.</p>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-[var(--ink)]">Updates for you</p>
+                  <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                    Posts from people you follow and tags in your photo profile.
+                  </p>
+                </div>
+                <span className="rounded-full bg-[var(--chip)] px-2 py-1 text-xs text-[var(--muted)]">
+                  {notifications.length}
+                </span>
+              </div>
+              <div className="mt-4 space-y-2">
+                {notifications.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <article key={item.id} className="grid grid-cols-[36px_minmax(0,1fr)] gap-3 rounded-md border border-[var(--line)] bg-[var(--paper)] p-3">
+                      <span className="grid size-9 place-items-center rounded-full bg-[var(--chip)] text-[var(--moss)]">
+                        <Icon className="size-4" aria-hidden="true" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-sm font-semibold leading-5 text-[var(--ink)]">{item.title}</span>
+                        <span className="mt-1 line-clamp-2 block text-xs leading-5 text-[var(--muted)]">{item.body}</span>
+                        <span className="mt-2 block text-[11px] uppercase tracking-[0.12em] text-[var(--muted)]">{item.meta}</span>
+                      </span>
+                    </article>
+                  );
+                })}
               </div>
             </div>
           ) : null}

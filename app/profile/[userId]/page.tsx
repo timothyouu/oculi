@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
-import { BackButton } from "@/components/back-button";
 import { PlaceDetailPopup } from "@/components/place-detail-popup";
 import { ProfileSummary } from "@/components/profile-summary";
 import { useDemoState } from "@/lib/demo-state";
@@ -48,9 +47,8 @@ export default function ProfilePage({ params }: { params: { userId: string } }) 
   }, []);
 
   return (
-    <AppShell>
+    <AppShell activeItem="profile">
       <div className="space-y-5">
-        <BackButton label="Back" fallbackHref="/" />
         <ProfileSummary
           user={user}
           photos={photos.filter((photo) => photo.userId === user.id)}

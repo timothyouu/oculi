@@ -116,7 +116,25 @@ export function AppShell({
                   else handleNavigate({ id: item.id, label: item.label, href: item.href });
                 }}
               >
-                <Icon className="size-5" aria-hidden="true" />
+                {item.id === "profile" ? (
+                  <span
+                    className={cx(
+                      "grid size-7 place-items-center overflow-hidden rounded-full bg-[var(--chip)]",
+                      isActive
+                        ? "ring-[3px] ring-[var(--moss)] ring-offset-2 ring-offset-[var(--mobile-nav-bg)]"
+                        : "ring-1 ring-[var(--line)]",
+                    )}
+                    aria-hidden="true"
+                  >
+                    {shellCurrentUser?.avatarUrl ? (
+                      <img src={shellCurrentUser.avatarUrl} alt="" className="size-full object-cover" />
+                    ) : (
+                      <Icon className="size-4" aria-hidden="true" />
+                    )}
+                  </span>
+                ) : (
+                  <Icon className="size-5" aria-hidden="true" />
+                )}
                 <span>{item.label}</span>
               </button>
             );

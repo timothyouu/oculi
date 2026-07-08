@@ -7,13 +7,14 @@ import {
   loadRemoteDemoCatalog,
   loadRemoteDemoState,
   resetRemoteDemoState,
+  saveRemoteCatalogPhoto,
   saveRemoteDemoState,
   seedCatalog,
   uploadPhotoFile,
 } from "./remote-state";
 import { sortTopPlaces } from "./scoring";
 import { createInitialDemoState, loadLocalDemoState, resetLocalDemoState, saveLocalDemoState } from "./storage";
-import type { AddPhotoInput, Area, DemoState, Photo, Place, User } from "./types";
+import type { AddPhotoInput, Area, DemoState, EditableProfile, Photo, Place, User } from "./types";
 
 type DemoContextValue = {
   state: DemoState;
@@ -33,6 +34,7 @@ type DemoContextValue = {
   toggleSavedPlace: (placeId: string) => void;
   toggleFollowUser: (userId: string) => void;
   togglePhotoLike: (photoId: string) => void;
+  updateProfile: (profile: EditableProfile) => void;
   addPhoto: (input: AddPhotoInput) => Photo;
   resetDemoState: () => void;
 };
@@ -49,6 +51,18 @@ function makeId(prefix: string) {
   }
 
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function isDurableImageUrl(url: string) {
+  return !url.startsWith("blob:") && !url.startsWith("data:");
+}
+
+function mergePhotos(uploadedPhotos: Photo[], catalogPhotos: Photo[]) {
+  const photosById = new Map<string, Photo>();
+  [...catalogPhotos, ...uploadedPhotos].forEach((photo) => photosById.set(photo.id, photo));
+  return Array.from(photosById.values()).sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 }
 
 export function DemoStateProvider({ children }: { children: React.ReactNode }) {
@@ -99,15 +113,17 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
     const areas = catalog.areas;
     const places = catalog.places;
     const seedPhotos = catalog.photos;
-    const currentUser = users.find((user) => user.id === currentUserId) ?? users[0];
+    const seedCurrentUser = users.find((user) => user.id === currentUserId) ?? users[0];
+    const currentUser = { ...seedCurrentUser, ...state.profile };
+    const visibleUsers = users.map((user) => (user.id === currentUserId ? currentUser : user));
 
     return {
       state,
-      users,
+      users: visibleUsers,
       areas,
       places,
       topPlaces: sortTopPlaces(places),
-      photos: [...state.uploadedPhotos, ...seedPhotos],
+      photos: mergePhotos(state.uploadedPhotos, seedPhotos),
       currentUser,
       currentUserId,
       savedPlaceIds: state.savedPlaceIds,
@@ -148,6 +164,17 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       },
       togglePhotoLike: (photoId) =>
         update((prev) => ({ ...prev, likedPhotoIds: toggleId(prev.likedPhotoIds, photoId) })),
+      updateProfile: (profile) =>
+        update((prev) => ({
+          ...prev,
+          profile: {
+            ...profile,
+            username: profile.username.startsWith("@") ? profile.username : `@${profile.username}`,
+            favoriteTags: Array.from(
+              new Set(profile.favoriteTags.map((tag) => tag.trim().toLowerCase()).filter(Boolean)),
+            ).slice(0, 8),
+          },
+        })),
       addPhoto: (input) => {
         const place = places.find((item) => item.id === input.placeId);
         const id = makeId("upload");
@@ -162,15 +189,20 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
           tags: input.tags ?? []
         };
         update((prev) => ({ ...prev, uploadedPhotos: [photo, ...prev.uploadedPhotos] }));
+        if (isDurableImageUrl(photo.imageUrl)) {
+          saveRemoteCatalogPhoto(photo);
+        }
         if (file) {
           uploadPhotoFile(file, id).then((remoteUrl) => {
             if (!remoteUrl) return;
+            const remotePhoto = { ...photo, imageUrl: remoteUrl };
             update((prev) => ({
               ...prev,
               uploadedPhotos: prev.uploadedPhotos.map((item) =>
                 item.id === id ? { ...item, imageUrl: remoteUrl } : item,
               ),
             }));
+            saveRemoteCatalogPhoto(remotePhoto);
           });
         }
         return photo;

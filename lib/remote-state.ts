@@ -125,6 +125,20 @@ export async function saveRemoteDemoState(state: DemoState) {
   if (error) console.warn("Unable to save Oculi state to Supabase.", error.message);
 }
 
+export async function saveRemoteCatalogPhoto(photo: Photo) {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return;
+
+  const { error } = await supabase.from(CATALOG_TABLE).upsert({
+    kind: "photo",
+    item_id: photo.id,
+    payload: photo,
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) console.warn("Unable to save Oculi photo catalog item to Supabase.", error.message);
+}
+
 export async function resetRemoteDemoState() {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return;

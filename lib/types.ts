@@ -62,6 +62,15 @@ export type AddPhotoInput = {
   locationLabel?: string;
 };
 
+export type EditableProfile = {
+  name: string;
+  username: string;
+  avatarUrl: string;
+  bio: string;
+  homeArea: string;
+  favoriteTags: string[];
+};
+
 export type PlaceView = {
   placeId: string;
   viewedAt: string;
@@ -78,4 +87,5 @@ export type DemoState = {
   lastDiscoveryPlaceId?: string;
   discoveryActiveIndex: number;
   uploadedPhotos: Photo[];
+  profile: EditableProfile;
 };
