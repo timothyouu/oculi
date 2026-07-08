@@ -63,6 +63,7 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: calc(16px * var(--app-font-scale));
 }
 
 body {
@@ -70,13 +71,15 @@ body {
   background: var(--body-bg);
   color: var(--ink);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: calc(16px * var(--app-font-scale));
+  font-size: 1rem;
 }
 
 button,
 input,
 select,
-textarea {
+textarea,
+optgroup,
+option {
   font: inherit;
 }
 

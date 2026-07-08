@@ -164,18 +164,29 @@ export function DiscoverDeck({
   return (
     <section className="mx-auto w-full max-w-[980px]" aria-label="Swipe discovery">
       {showTutorial ? (
-        <div className="mb-4 rounded-md border border-[var(--line)] bg-[var(--paper-strong)] p-4 shadow-soft">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h2 className="text-base font-semibold text-[var(--ink)]">Quick start</h2>
-              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
-                Swipe right or tap the heart to save a spot. Swipe left or tap X to pass. Tap the photo or info
-                button for place details, then use Saved, Map, and Profile from the nav when you want to plan or review.
-              </p>
+        <div className="mb-4 overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_16px_42px_rgba(39,34,27,0.08)]">
+          <div className="grid gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-5">
+            <div className="min-w-0 text-center sm:text-left">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--moss)]">Quick start</p>
+              <h2 className="mt-1 text-xl font-semibold tracking-tight text-[var(--ink)]">Discover photo spots</h2>
+              <div className="mt-4 grid gap-2 text-sm text-[var(--muted)] sm:grid-cols-3">
+                <div className="flex items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white/62 px-3 py-2 sm:justify-start">
+                  <Heart className="size-4 shrink-0 text-[var(--moss)]" aria-hidden="true" />
+                  <span>Swipe right to save</span>
+                </div>
+                <div className="flex items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white/62 px-3 py-2 sm:justify-start">
+                  <X className="size-4 shrink-0 text-[var(--ink)]" aria-hidden="true" />
+                  <span>Swipe left to pass</span>
+                </div>
+                <div className="flex items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white/62 px-3 py-2 sm:justify-start">
+                  <Info className="size-4 shrink-0 text-[var(--gold)]" aria-hidden="true" />
+                  <span>Tap for details</span>
+                </div>
+              </div>
             </div>
             <button
               type="button"
-              className="w-fit rounded-full border border-[var(--line)] px-3 py-1.5 text-sm font-semibold text-[var(--ink)] transition hover:bg-[var(--chip)]"
+              className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-[var(--moss)] px-5 text-base font-semibold text-white outline-none transition hover:bg-[var(--moss-dark)] sm:w-auto"
               onClick={dismissTutorial}
             >
               Got it

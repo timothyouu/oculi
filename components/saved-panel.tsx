@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -13,6 +13,7 @@ import {
   Grid2X2,
   Map,
   MapPinned,
+  Mountain,
   Navigation,
   PencilLine,
   Pin,
@@ -20,8 +21,10 @@ import {
   RefreshCw,
   Save,
   Search,
+  SlidersHorizontal,
   Sun,
   Trash2,
+  X,
 } from "lucide-react";
 import { MapboxMap } from "@/components/mapbox-map";
 import { useDemoState } from "@/lib/demo-state";
@@ -67,6 +70,7 @@ export function SavedPanel({
     morning: [],
     sunset: [],
   });
+  const hasActiveFilters = lightFilter !== "All" || sceneFilter !== "All";
 
   const filteredPlaces = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -246,10 +250,17 @@ export function SavedPanel({
             </button>
           </div>
         </div>
-        <div className="space-y-4">
-          <FilterRow title="Best light" items={["All", "Golden hour", "Blue hour", "Sunrise", "Sunset", "Fog"]} active={lightFilter} onSelect={setLightFilter} />
-          <FilterRow title="Scene type" items={["All", "Cityscape", "Landscape", "Coastal", "Architecture", "Street", "Portraits"]} active={sceneFilter} onSelect={setSceneFilter} />
-        </div>
+        <FilterToolbar
+          lightFilter={lightFilter}
+          sceneFilter={sceneFilter}
+          hasActiveFilters={hasActiveFilters}
+          onLightChange={setLightFilter}
+          onSceneChange={setSceneFilter}
+          onClear={() => {
+            setLightFilter("All");
+            setSceneFilter("All");
+          }}
+        />
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {visiblePlaces.map((place) => (
@@ -385,8 +396,8 @@ function ShootPlanner({
         <button
           type="button"
           className={cx(
-            "grid size-10 place-items-center rounded-lg border border-[var(--line)] text-[var(--ink)]",
-            isEditingRoute ? "bg-[var(--chip)]" : "bg-white",
+            "grid size-10 place-items-center rounded-lg border border-[var(--line)] text-[var(--ink)] shadow-sm transition hover:bg-[var(--chip)]",
+            isEditingRoute ? "bg-[var(--chip)] text-[var(--moss)]" : "bg-white",
           )}
           onClick={onToggleEditing}
           aria-label="Edit stops"
@@ -417,15 +428,22 @@ function ShootPlanner({
             type="button"
             onClick={() => onSetActiveRoute(plan.id)}
             className={cx(
-              "rounded-lg border border-[var(--line)] px-3 py-3 text-left transition",
-              activeRouteId === plan.id ? "bg-[var(--moss)] text-white" : "bg-white text-[var(--ink)]",
+              "rounded-lg border border-[var(--line)] px-3 py-3 text-left shadow-sm transition",
+              activeRouteId === plan.id ? "bg-[var(--moss)] text-white" : "bg-white text-[var(--ink)] hover:bg-[var(--chip)]",
             )}
           >
             <span className="flex items-center gap-2 text-sm">
-              {plan.id === "morning" ? <Sun className="size-4" /> : <CloudSun className="size-4" />}
+              <span
+                className={cx(
+                  "grid size-7 shrink-0 place-items-center rounded-md",
+                  activeRouteId === plan.id ? "bg-white/15" : "bg-[var(--chip)] text-[var(--moss)]",
+                )}
+              >
+                {plan.id === "morning" ? <Sun className="size-4" /> : <CloudSun className="size-4" />}
+              </span>
               {plan.eyebrow}
             </span>
-            <strong className="mt-1 block font-normal">{plan.title}</strong>
+            <strong className="mt-2 block font-normal">{plan.title}</strong>
           </button>
         ))}
       </div>
@@ -454,29 +472,35 @@ function ShootPlanner({
       <div className="grid gap-3 p-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_52px]">
         <a
           className={cx(
-            "inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[var(--moss)] px-3 text-white",
+            "inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[var(--moss)] px-3 text-white shadow-sm transition hover:bg-[var(--moss-dark)]",
             !activeRoute.stops.length && "pointer-events-none opacity-50",
           )}
           href={activeRoute.googleMapsUrl}
           target="_blank"
           rel="noreferrer"
         >
-          <Navigation className="size-5" />Google Maps
+          <span className="grid size-7 place-items-center rounded-md bg-white/15">
+            <Navigation className="size-4" />
+          </span>
+          Google Maps
         </a>
         <a
           className={cx(
-            "inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white px-3 text-[var(--ink)]",
+            "inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white px-3 text-[var(--ink)] shadow-sm transition hover:bg-[var(--chip)]",
             !activeRoute.stops.length && "pointer-events-none opacity-50",
           )}
           href={activeRoute.appleMapsUrl}
           target="_blank"
           rel="noreferrer"
         >
-          <Map className="size-5" />Apple Maps
+          <span className="grid size-7 place-items-center rounded-md bg-[var(--chip)] text-[var(--moss)]">
+            <Map className="size-4" />
+          </span>
+          Apple Maps
         </a>
         <button
           type="button"
-          className="grid size-12 place-items-center rounded-lg border border-[var(--line)] bg-white"
+          className="grid size-12 place-items-center rounded-lg border border-[var(--line)] bg-white shadow-sm transition hover:bg-[var(--chip)]"
           onClick={onRegenerateRoute}
           aria-label="Regenerate route"
         >
@@ -484,10 +508,13 @@ function ShootPlanner({
         </button>
         <button
           type="button"
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white px-3 text-[var(--ink)] md:col-span-3"
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white px-3 text-[var(--ink)] shadow-sm transition hover:bg-[var(--chip)] md:col-span-3"
           onClick={onSaveRoutePlan}
         >
-          <Save className="size-5" />Save route plan
+          <span className="grid size-7 place-items-center rounded-md bg-[var(--chip)] text-[var(--moss)]">
+            <Save className="size-4" />
+          </span>
+          Save route plan
         </button>
       </div>
     </aside>
@@ -653,14 +680,23 @@ function RouteStopRow({
             </span>
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <button type="button" className="inline-flex h-8 items-center gap-1 rounded-md border border-[var(--line)] px-2 text-xs" onClick={() => onCopyAddress(stop)}>
-              <Copy className="size-3.5" />Copy address
+            <button type="button" className="inline-flex h-9 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--paper-strong)] px-2.5 text-xs shadow-sm transition hover:bg-[var(--chip)]" onClick={() => onCopyAddress(stop)}>
+              <span className="grid size-5 place-items-center rounded bg-[var(--chip)] text-[var(--moss)]">
+                <Copy className="size-3" />
+              </span>
+              Copy
             </button>
-            <a className="inline-flex h-8 items-center gap-1 rounded-md border border-[var(--line)] px-2 text-xs" href={stop.googleMapsUrl} target="_blank" rel="noreferrer">
-              Google Maps <ExternalLink className="size-3.5" />
+            <a className="inline-flex h-9 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--paper-strong)] px-2.5 text-xs shadow-sm transition hover:bg-[var(--chip)]" href={stop.googleMapsUrl} target="_blank" rel="noreferrer">
+              <span className="grid size-5 place-items-center rounded bg-[var(--moss)] text-white">
+                <Navigation className="size-3" />
+              </span>
+              Google <ExternalLink className="size-3" />
             </a>
-            <a className="inline-flex h-8 items-center gap-1 rounded-md border border-[var(--line)] px-2 text-xs" href={stop.appleMapsUrl} target="_blank" rel="noreferrer">
-              Apple Maps <ExternalLink className="size-3.5" />
+            <a className="inline-flex h-9 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--paper-strong)] px-2.5 text-xs shadow-sm transition hover:bg-[var(--chip)]" href={stop.appleMapsUrl} target="_blank" rel="noreferrer">
+              <span className="grid size-5 place-items-center rounded bg-[var(--chip)] text-[var(--moss)]">
+                <Map className="size-3" />
+              </span>
+              Apple <ExternalLink className="size-3" />
             </a>
           </div>
         </div>
@@ -669,15 +705,84 @@ function RouteStopRow({
   );
 }
 
-function FilterRow({ title, items, active, onSelect }: { title: string; items: string[]; active: string; onSelect: (item: string) => void }) {
+function FilterToolbar({
+  lightFilter,
+  sceneFilter,
+  hasActiveFilters,
+  onLightChange,
+  onSceneChange,
+  onClear,
+}: {
+  lightFilter: string;
+  sceneFilter: string;
+  hasActiveFilters: boolean;
+  onLightChange: (item: string) => void;
+  onSceneChange: (item: string) => void;
+  onClear: () => void;
+}) {
   return (
-    <div>
-      <p className="mb-2 text-base text-[var(--ink)]">{title}</p>
-      <div className="flex flex-wrap gap-3">
-        {items.map((item) => (
-          <button key={item} type="button" onClick={() => onSelect(item)} className={`rounded-lg border border-[var(--line)] px-4 py-2 text-sm ${active === item ? "bg-[var(--moss)] text-white" : "bg-[var(--paper-strong)] text-[var(--ink)]"}`}>{item}</button>
-        ))}
+    <div className="flex flex-wrap items-center gap-3 rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] p-3 shadow-[0_12px_30px_rgba(39,34,27,0.05)]">
+      <div className="inline-flex h-10 items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-3 text-sm text-[var(--ink)]">
+        <SlidersHorizontal className="size-4 text-[var(--moss)]" />
+        Filters
       </div>
+      <FilterSelect
+        label="Light"
+        icon={<Sun className="size-4" />}
+        value={lightFilter}
+        options={["All", "Golden hour", "Blue hour", "Sunrise", "Sunset", "Fog"]}
+        onChange={onLightChange}
+      />
+      <FilterSelect
+        label="Scene"
+        icon={<Mountain className="size-4" />}
+        value={sceneFilter}
+        options={["All", "Cityscape", "Landscape", "Coastal", "Architecture", "Street", "Portraits"]}
+        onChange={onSceneChange}
+      />
+      <span className="min-w-0 flex-1 text-sm text-[var(--muted)] max-sm:basis-full">
+        {hasActiveFilters ? `${lightFilter} light · ${sceneFilter} scenes` : "All light · All scenes"}
+      </span>
+      {hasActiveFilters ? (
+        <button type="button" className="inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm text-[var(--moss)] transition hover:bg-[var(--chip)]" onClick={onClear}>
+          <X className="size-4" />
+          Clear
+        </button>
+      ) : null}
     </div>
+  );
+}
+
+function FilterSelect({
+  label,
+  icon,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  icon: ReactNode;
+  value: string;
+  options: string[];
+  onChange: (item: string) => void;
+}) {
+  return (
+    <label className="relative inline-flex h-10 min-w-[11rem] items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-3 text-sm shadow-sm">
+      <span className="text-[var(--moss)]">{icon}</span>
+      <span className="text-[var(--muted)]">{label}</span>
+      <select
+        className="min-w-0 flex-1 appearance-none bg-transparent pr-7 text-[var(--ink)] outline-none"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        aria-label={`${label} filter`}
+      >
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+      <ChevronRight className="pointer-events-none absolute right-3 size-4 rotate-90 text-[var(--muted)]" />
+    </label>
   );
 }
