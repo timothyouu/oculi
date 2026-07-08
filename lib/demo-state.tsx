@@ -13,7 +13,13 @@ import {
   uploadPhotoFile,
 } from "./remote-state";
 import { sortTopPlaces } from "./scoring";
-import { createInitialDemoState, loadLocalDemoState, resetLocalDemoState, saveLocalDemoState } from "./storage";
+import {
+  createInitialDemoState,
+  getDemoVisitorId,
+  loadLocalDemoState,
+  resetLocalDemoState,
+  saveLocalDemoState,
+} from "./storage";
 import type { AddPhotoInput, Area, DemoState, EditableProfile, Photo, Place, User } from "./types";
 
 type DemoContextValue = {
@@ -30,6 +36,7 @@ type DemoContextValue = {
   likedPhotoIds: string[];
   isRemoteBacked: boolean;
   hasLoadedRemoteState: boolean;
+  recordPhotoView: (photo: Photo, discoveryActiveIndex?: number) => void;
   recordPlaceView: (placeId: string, discoveryActiveIndex?: number) => void;
   toggleSavedPlace: (placeId: string) => void;
   toggleFollowUser: (userId: string) => void;
@@ -65,27 +72,73 @@ function mergePhotos(uploadedPhotos: Photo[], catalogPhotos: Photo[]) {
   );
 }
 
+function recordPlaceViewInState(
+  state: DemoState,
+  placeId: string,
+  discoveryActiveIndex?: number,
+): DemoState {
+  const viewedAt = new Date().toISOString();
+  const existingView = state.placeViews.find((view) => view.placeId === placeId);
+  const placeViews = existingView
+    ? state.placeViews.map((view) =>
+        view.placeId === placeId
+          ? { ...view, viewedAt, viewCount: view.viewCount + 1 }
+          : view,
+      )
+    : [...state.placeViews, { placeId, viewedAt, viewCount: 1 }];
+
+  return {
+    ...state,
+    viewedPlaceIds: state.viewedPlaceIds.includes(placeId)
+      ? state.viewedPlaceIds
+      : [...state.viewedPlaceIds, placeId],
+    placeViews,
+    lastViewedPlaceId: placeId,
+    lastDiscoveryPlaceId: discoveryActiveIndex === undefined ? state.lastDiscoveryPlaceId : placeId,
+    discoveryActiveIndex: discoveryActiveIndex === undefined ? state.discoveryActiveIndex : discoveryActiveIndex,
+  };
+}
+
 export function DemoStateProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<DemoState>(() => createInitialDemoState());
   const [catalog, setCatalog] = useState(seedCatalog);
   const [hasLoadedRemoteState, setHasLoadedRemoteState] = useState(false);
+  const [stateOwnerId, setStateOwnerId] = useState(currentUserId);
 
   useEffect(() => {
     let cancelled = false;
 
     if (!isRemoteStateEnabled()) {
+      setStateOwnerId(getDemoVisitorId());
       setState(loadLocalDemoState());
       setCatalog(seedCatalog);
       setHasLoadedRemoteState(true);
       return;
     }
 
-    Promise.all([loadRemoteDemoState(), loadRemoteDemoCatalog()]).then(([remoteState, remoteCatalog]) => {
-      if (cancelled) return;
-      setState(remoteState);
-      setCatalog(remoteCatalog);
-      setHasLoadedRemoteState(true);
-    });
+    const visitorId = getDemoVisitorId();
+    setStateOwnerId(visitorId);
+
+    loadRemoteDemoState(visitorId)
+      .catch((error) => {
+        console.warn("Unable to hydrate Oculi state from Supabase.", error);
+        return createInitialDemoState();
+      })
+      .then((remoteState) => {
+        if (cancelled) return;
+        setState(remoteState);
+        setHasLoadedRemoteState(true);
+      });
+
+    loadRemoteDemoCatalog()
+      .catch((error) => {
+        console.warn("Unable to hydrate Oculi catalog from Supabase.", error);
+        return seedCatalog;
+      })
+      .then((remoteCatalog) => {
+        if (cancelled) return;
+        setCatalog(remoteCatalog);
+      });
 
     return () => {
       cancelled = true;
@@ -97,13 +150,17 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
 
     const timeout = window.setTimeout(() => {
       saveLocalDemoState(state);
-      if (isRemoteStateEnabled()) saveRemoteDemoState(state);
+      if (isRemoteStateEnabled()) saveRemoteDemoState(state, stateOwnerId);
     }, 350);
 
     return () => window.clearTimeout(timeout);
-  }, [hasLoadedRemoteState, state]);
+  }, [hasLoadedRemoteState, state, stateOwnerId]);
 
   const value = useMemo<DemoContextValue>(() => {
+    const persistStateNow = (next: DemoState) => {
+      saveLocalDemoState(next);
+      if (isRemoteStateEnabled()) saveRemoteDemoState(next, stateOwnerId);
+    };
     const update = (fn: (state: DemoState) => DemoState) =>
       setState((prev) => {
         const next = fn(prev);
@@ -131,33 +188,23 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       likedPhotoIds: state.likedPhotoIds,
       isRemoteBacked: isRemoteStateEnabled(),
       hasLoadedRemoteState,
-      recordPlaceView: (placeId, discoveryActiveIndex) =>
+      recordPhotoView: (photo, discoveryActiveIndex) =>
         update((prev) => {
-          const viewedAt = new Date().toISOString();
-          const existingView = prev.placeViews.find((view) => view.placeId === placeId);
-          const placeViews = existingView
-            ? prev.placeViews.map((view) =>
-                view.placeId === placeId
-                  ? { ...view, viewedAt, viewCount: view.viewCount + 1 }
-                  : view,
-              )
-            : [...prev.placeViews, { placeId, viewedAt, viewCount: 1 }];
-
+          const next = recordPlaceViewInState(prev, photo.placeId, discoveryActiveIndex);
           return {
-            ...prev,
-            viewedPlaceIds: prev.viewedPlaceIds.includes(placeId)
-              ? prev.viewedPlaceIds
-              : [...prev.viewedPlaceIds, placeId],
-            placeViews,
-            lastViewedPlaceId: placeId,
-            lastDiscoveryPlaceId:
-              discoveryActiveIndex === undefined ? prev.lastDiscoveryPlaceId : placeId,
-            discoveryActiveIndex:
-              discoveryActiveIndex === undefined ? prev.discoveryActiveIndex : discoveryActiveIndex,
+            ...next,
+            viewedPhotoIds: next.viewedPhotoIds.includes(photo.id)
+              ? next.viewedPhotoIds
+              : [...next.viewedPhotoIds, photo.id],
           };
         }),
-      toggleSavedPlace: (placeId) =>
-        update((prev) => ({ ...prev, savedPlaceIds: toggleId(prev.savedPlaceIds, placeId) })),
+      recordPlaceView: (placeId, discoveryActiveIndex) =>
+        update((prev) => recordPlaceViewInState(prev, placeId, discoveryActiveIndex)),
+      toggleSavedPlace: (placeId) => {
+        const next = { ...state, savedPlaceIds: toggleId(state.savedPlaceIds, placeId) };
+        setState(next);
+        persistStateNow(next);
+      },
       toggleFollowUser: (userId) => {
         if (userId === currentUserId) return;
         update((prev) => ({ ...prev, followedUserIds: toggleId(prev.followedUserIds, userId) }));
@@ -188,7 +235,9 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
           locationLabel: input.locationLabel || place?.fuzzyLocationLabel || "Selected Oculi place",
           tags: input.tags ?? []
         };
-        update((prev) => ({ ...prev, uploadedPhotos: [photo, ...prev.uploadedPhotos] }));
+        const next = { ...state, uploadedPhotos: [photo, ...state.uploadedPhotos] };
+        setState(next);
+        persistStateNow(next);
         if (isDurableImageUrl(photo.imageUrl)) {
           saveRemoteCatalogPhoto(photo);
         }
@@ -196,12 +245,16 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
           uploadPhotoFile(file, id).then((remoteUrl) => {
             if (!remoteUrl) return;
             const remotePhoto = { ...photo, imageUrl: remoteUrl };
-            update((prev) => ({
-              ...prev,
-              uploadedPhotos: prev.uploadedPhotos.map((item) =>
-                item.id === id ? { ...item, imageUrl: remoteUrl } : item,
-              ),
-            }));
+            setState((prev) => {
+              const nextState = {
+                ...prev,
+                uploadedPhotos: prev.uploadedPhotos.map((item) =>
+                  item.id === id ? { ...item, imageUrl: remoteUrl } : item,
+                ),
+              };
+              persistStateNow(nextState);
+              return nextState;
+            });
             saveRemoteCatalogPhoto(remotePhoto);
           });
         }
@@ -210,10 +263,10 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       resetDemoState: () => {
         setState(createInitialDemoState());
         resetLocalDemoState();
-        resetRemoteDemoState();
+        resetRemoteDemoState(stateOwnerId);
       }
     };
-  }, [catalog, hasLoadedRemoteState, state]);
+  }, [catalog, hasLoadedRemoteState, state, stateOwnerId]);
 
   return <DemoStateContext.Provider value={value}>{children}</DemoStateContext.Provider>;
 }

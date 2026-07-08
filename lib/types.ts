@@ -81,6 +81,7 @@ export type DemoState = {
   savedPlaceIds: string[];
   followedUserIds: string[];
   likedPhotoIds: string[];
+  viewedPhotoIds: string[];
   viewedPlaceIds: string[];
   placeViews: PlaceView[];
   lastViewedPlaceId?: string;

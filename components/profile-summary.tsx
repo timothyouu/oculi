@@ -180,7 +180,7 @@ export function ProfileSummary({
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Saved places</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {savedPlaces.slice(0, 4).map((place) => (
+            {savedPlaces.map((place) => (
               <button key={place.id} type="button" className="grid grid-cols-[72px_minmax(0,1fr)_32px] items-center gap-4 rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] p-3 text-left" onClick={() => onOpenPlace?.(place.id)}>
                 <img src={place.coverPhotoUrl} alt="" className="aspect-[4/3] rounded object-cover" />
                 <span className="min-w-0">

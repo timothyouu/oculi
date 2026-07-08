@@ -1,16 +1,15 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type PointerEvent, type ReactNode } from "react";
 import {
-  ArrowDown,
-  ArrowUp,
   Bookmark,
+  Check,
   ChevronRight,
   Clock3,
   CloudSun,
   Copy,
   ExternalLink,
-  Grid2X2,
+  GripVertical,
   Map,
   MapPinned,
   Mountain,
@@ -18,6 +17,7 @@ import {
   PencilLine,
   Pin,
   PinOff,
+  Plus,
   RefreshCw,
   Save,
   Search,
@@ -44,6 +44,7 @@ import {
 type SavedPanelProps = {
   savedPlaces: Place[];
   savedPhotos?: Photo[];
+  savedCount?: number;
   onOpenPlace?: (placeId: string) => void;
   onToggleSaved?: (placeId: string) => void;
 };
@@ -52,9 +53,14 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function isInteractiveDragTarget(target: EventTarget) {
+  return target instanceof Element && Boolean(target.closest("button,a,input,select,textarea"));
+}
+
 export function SavedPanel({
   savedPlaces,
   savedPhotos = [],
+  savedCount = savedPlaces.length,
   onOpenPlace,
   onToggleSaved,
 }: SavedPanelProps) {
@@ -73,17 +79,46 @@ export function SavedPanel({
   });
   const hasActiveFilters = lightFilter !== "All" || sceneFilter !== "All";
 
+  const savedPhotoTextByPlace = useMemo(
+    () =>
+      savedPhotos.reduce<Record<string, string>>((groups, photo) => {
+        groups[photo.placeId] = [
+          groups[photo.placeId],
+          photo.caption,
+          photo.locationLabel,
+          photo.metadataText,
+          photo.shotAtTimeOfDay,
+          ...photo.tags,
+        ]
+          .filter(Boolean)
+          .join(" ");
+        return groups;
+      }, {}),
+    [savedPhotos],
+  );
+
   const filteredPlaces = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     return savedPlaces.filter((place) => {
+      const savedSearchText = [
+        place.name,
+        place.fuzzyLocationLabel,
+        place.description,
+        ...place.bestTimes,
+        ...place.tags,
+        savedPhotoTextByPlace[place.id],
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
       const matchesQuery =
         !normalized ||
-        [place.name, place.fuzzyLocationLabel, place.description, ...place.tags].join(" ").toLowerCase().includes(normalized);
+        savedSearchText.includes(normalized);
       const matchesLight = lightFilter === "All" || place.bestTimes.some((time) => time.toLowerCase().includes(lightFilter.toLowerCase()));
       const matchesScene = sceneFilter === "All" || place.tags.some((tag) => tag.toLowerCase().includes(sceneFilter.toLowerCase()));
       return matchesQuery && matchesLight && matchesScene;
     });
-  }, [lightFilter, query, savedPlaces, sceneFilter]);
+  }, [lightFilter, query, savedPhotoTextByPlace, savedPlaces, sceneFilter]);
 
   const visiblePlaces = showAll ? filteredPlaces : filteredPlaces.slice(0, 6);
   const generatedRoutePlans = useMemo(() => buildSavedRoutePlans(filteredPlaces.length ? filteredPlaces : savedPlaces, savedPhotos), [filteredPlaces, savedPhotos, savedPlaces]);
@@ -152,16 +187,19 @@ export function SavedPanel({
     setRouteStatus("Removed stop from this route.");
   }
 
-  function moveStop(placeId: string, direction: -1 | 1) {
+  function reorderStop(placeId: string, nextIndex: number) {
     updateActiveRouteStops((stops) => {
       const index = stops.findIndex((stop) => stop.place.id === placeId);
-      const nextIndex = index + direction;
-      if (index < 0 || nextIndex < 0 || nextIndex >= stops.length) return stops;
+      if (index < 0 || nextIndex < 0 || nextIndex >= stops.length || index === nextIndex) return stops;
       const nextStops = [...stops];
       const [movedStop] = nextStops.splice(index, 1);
       nextStops.splice(nextIndex, 0, movedStop);
       return nextStops;
     });
+  }
+
+  function finishReorder() {
+    setIsEditingRoute(true);
     setRouteStatus("Reordered route stops.");
   }
 
@@ -230,9 +268,12 @@ export function SavedPanel({
       <div className="space-y-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <h1 className="text-4xl font-semibold leading-tight tracking-tight text-[var(--ink)] 2xl:text-5xl">
-            Saved places <span className="ml-2 inline-block whitespace-nowrap align-middle text-base font-normal text-[var(--muted)]">{savedPlaces.length} saved</span>
+            Saved places <span className="ml-2 inline-block whitespace-nowrap align-middle text-base font-normal text-[var(--muted)]">{savedCount} saved</span>
           </h1>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+            <button className="inline-flex h-12 items-center gap-3 rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] px-4">
+              Recently saved <ChevronRight className="size-4 rotate-90" />
+            </button>
             <label className="relative block max-sm:w-full">
               <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--ink)]/70" />
               <input
@@ -243,12 +284,6 @@ export function SavedPanel({
                 aria-label="Search saved places"
               />
             </label>
-            <button className="inline-flex h-12 items-center gap-3 rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] px-4">
-              Recently saved <ChevronRight className="size-4 rotate-90" />
-            </button>
-            <button className="grid size-12 place-items-center rounded-lg border border-[var(--line)] bg-[var(--paper-strong)]" aria-label="Grid view">
-              <Grid2X2 className="size-5" />
-            </button>
           </div>
         </div>
         <FilterToolbar
@@ -332,7 +367,8 @@ export function SavedPanel({
         onCopyAddress={copyAddress}
         onAddStop={addStop}
         onRemoveStop={removeStop}
-        onMoveStop={moveStop}
+        onReorderStop={reorderStop}
+        onFinishReorder={finishReorder}
         onTogglePinnedStop={togglePinnedStop}
         onRegenerateRoute={regenerateActiveRoute}
         onSaveRoutePlan={saveActiveRoutePlan}
@@ -358,7 +394,8 @@ function ShootPlanner({
   onCopyAddress,
   onAddStop,
   onRemoveStop,
-  onMoveStop,
+  onReorderStop,
+  onFinishReorder,
   onTogglePinnedStop,
   onRegenerateRoute,
   onSaveRoutePlan,
@@ -379,7 +416,8 @@ function ShootPlanner({
   onCopyAddress: (stop: ShootRouteStop) => void;
   onAddStop: (placeId: string) => void;
   onRemoveStop: (placeId: string) => void;
-  onMoveStop: (placeId: string, direction: -1 | 1) => void;
+  onReorderStop: (placeId: string, nextIndex: number) => void;
+  onFinishReorder: () => void;
   onTogglePinnedStop: (placeId: string) => void;
   onRegenerateRoute: () => void;
   onSaveRoutePlan: () => void;
@@ -458,7 +496,8 @@ function ShootPlanner({
           onCopyAddress={onCopyAddress}
           onAddStop={onAddStop}
           onRemoveStop={onRemoveStop}
-          onMoveStop={onMoveStop}
+          onReorderStop={onReorderStop}
+          onFinishReorder={onFinishReorder}
           onTogglePinnedStop={onTogglePinnedStop}
         />
       ) : (
@@ -530,7 +569,8 @@ function RoutePlanCard({
   onCopyAddress,
   onAddStop,
   onRemoveStop,
-  onMoveStop,
+  onReorderStop,
+  onFinishReorder,
   onTogglePinnedStop,
 }: {
   plan: ShootRoutePlan;
@@ -540,56 +580,114 @@ function RoutePlanCard({
   onCopyAddress: (stop: ShootRouteStop) => void;
   onAddStop: (placeId: string) => void;
   onRemoveStop: (placeId: string) => void;
-  onMoveStop: (placeId: string, direction: -1 | 1) => void;
+  onReorderStop: (placeId: string, nextIndex: number) => void;
+  onFinishReorder: () => void;
   onTogglePinnedStop: (placeId: string) => void;
 }) {
+  const [draggingStopId, setDraggingStopId] = useState<string | null>(null);
+  const draggingStopIdRef = useRef<string | null>(null);
+  const dragStartedRef = useRef(false);
+  const pointerStartRef = useRef({ x: 0, y: 0 });
+
+  function startStopPointerDrag(event: PointerEvent<HTMLElement>, placeId: string) {
+    if (!isEditing || isInteractiveDragTarget(event.target)) return;
+
+    draggingStopIdRef.current = placeId;
+    dragStartedRef.current = false;
+    pointerStartRef.current = { x: event.clientX, y: event.clientY };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function moveDraggedStop(clientX: number, clientY: number) {
+    const draggedPlaceId = draggingStopIdRef.current;
+    if (!draggedPlaceId) return false;
+
+    const deltaX = Math.abs(clientX - pointerStartRef.current.x);
+    const deltaY = Math.abs(clientY - pointerStartRef.current.y);
+    if (!dragStartedRef.current && deltaX + deltaY < 6) return false;
+
+    dragStartedRef.current = true;
+    setDraggingStopId(draggedPlaceId);
+
+    const overStopElement = document
+      .elementFromPoint(clientX, clientY)
+      ?.closest<HTMLElement>("[data-route-stop-id]");
+    const overPlaceId = overStopElement?.dataset.routeStopId;
+    if (!overPlaceId || overPlaceId === draggedPlaceId) return true;
+
+    const nextIndex = plan.stops.findIndex((stop) => stop.place.id === overPlaceId);
+    if (nextIndex >= 0) onReorderStop(draggedPlaceId, nextIndex);
+    return true;
+  }
+
+  function moveStopPointerDrag(event: PointerEvent<HTMLElement>) {
+    if (moveDraggedStop(event.clientX, event.clientY)) event.preventDefault();
+  }
+
+  function endStopPointerDrag(event: PointerEvent<HTMLElement>) {
+    if (draggingStopIdRef.current && dragStartedRef.current) onFinishReorder();
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    draggingStopIdRef.current = null;
+    dragStartedRef.current = false;
+    setDraggingStopId(null);
+  }
+
+  function startStopMouseDrag(event: ReactMouseEvent<HTMLElement>, placeId: string) {
+    if (!isEditing || isInteractiveDragTarget(event.target)) return;
+
+    draggingStopIdRef.current = placeId;
+    dragStartedRef.current = false;
+    pointerStartRef.current = { x: event.clientX, y: event.clientY };
+    event.preventDefault();
+  }
+
+  function moveStopMouseDrag(event: ReactMouseEvent<HTMLElement>) {
+    if (moveDraggedStop(event.clientX, event.clientY)) event.preventDefault();
+  }
+
+  function endStopMouseDrag() {
+    if (draggingStopIdRef.current && dragStartedRef.current) onFinishReorder();
+    draggingStopIdRef.current = null;
+    dragStartedRef.current = false;
+    setDraggingStopId(null);
+  }
+
   return (
     <section className="border-y border-[var(--line)] px-6 py-5">
-      <div className="mb-4 flex items-start justify-between gap-4">
-        <div>
-          <h3 className="flex items-center gap-2 text-xl">
-            {plan.id === "morning" ? <Sun className="size-5 text-[var(--gold)]" /> : <CloudSun className="size-5 text-orange-500" />}
-            {plan.title}
-          </h3>
-          <p className="mt-1 text-sm text-[var(--muted)]">{plan.summary}</p>
+      <div className="mb-4 space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="flex items-center gap-2 text-xl">
+              {plan.id === "morning" ? <Sun className="size-5 text-[var(--gold)]" /> : <CloudSun className="size-5 text-orange-500" />}
+              {plan.title}
+            </h3>
+            <p className="mt-1 text-sm text-[var(--muted)]">{plan.summary}</p>
+          </div>
+          {isEditing ? <span className="rounded-full bg-[var(--chip)] px-3 py-1.5 font-sans text-xs text-[var(--muted)]">Drag stops</span> : null}
         </div>
-        {isEditing ? (
-          <label className="relative">
-            <span className="sr-only">Add saved place to route</span>
-            <select
-              className="h-9 rounded-lg border border-[var(--line)] bg-white pl-3 pr-9 text-sm"
-              defaultValue=""
-              onChange={(event) => {
-                if (!event.target.value) return;
-                onAddStop(event.target.value);
-                event.target.value = "";
-              }}
-            >
-              <option value="">Add stop</option>
-              {addablePlaces.map((place) => (
-                <option key={place.id} value={place.id}>
-                  {place.name}
-                </option>
-              ))}
-            </select>
-          </label>
-        ) : null}
+        {isEditing ? <AddStopTileRail places={addablePlaces} onAddStop={onAddStop} /> : null}
       </div>
       <div className="mb-5 rounded-lg bg-[var(--chip)] px-4 py-3 text-xs leading-5 text-[var(--muted)]">
         {plan.confidenceText}
       </div>
-      <div className="space-y-4">
+      <div className="space-y-3" onMouseMove={moveStopMouseDrag} onMouseUp={endStopMouseDrag} onMouseLeave={endStopMouseDrag}>
         {plan.stops.map((stop, index) => (
           <RouteStopRow
             key={stop.place.id}
             stop={stop}
             index={index}
-            stopCount={plan.stops.length}
             isEditing={isEditing}
             isPinned={pinnedStopIds.includes(stop.place.id)}
+            isDragging={draggingStopId === stop.place.id}
             onCopyAddress={onCopyAddress}
             onRemoveStop={onRemoveStop}
-            onMoveStop={onMoveStop}
+            onMouseDown={(event) => startStopMouseDrag(event, stop.place.id)}
+            onPointerDown={(event) => startStopPointerDrag(event, stop.place.id)}
+            onPointerMove={moveStopPointerDrag}
+            onPointerUp={endStopPointerDrag}
+            onPointerCancel={endStopPointerDrag}
             onTogglePinnedStop={onTogglePinnedStop}
           />
         ))}
@@ -598,64 +696,150 @@ function RoutePlanCard({
   );
 }
 
+function AddStopTileRail({ places, onAddStop }: { places: Place[]; onAddStop: (placeId: string) => void }) {
+  if (!places.length) {
+    return (
+      <div className="rounded-lg border border-dashed border-[var(--line)] bg-white/70 px-3 py-2 font-sans text-xs text-[var(--muted)]">
+        Every saved place is already in this route.
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]" aria-label="Add saved places to route">
+      {places.slice(0, 8).map((place) => (
+        <button
+          key={place.id}
+          type="button"
+          className="group relative h-20 min-w-[11rem] overflow-hidden rounded-lg border border-white/60 text-left text-white shadow-sm transition hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[var(--moss)]"
+          onClick={() => onAddStop(place.id)}
+        >
+          <ResilientImage src={place.coverPhotoUrl} alt="" className="absolute inset-0 size-full object-cover transition duration-300 group-hover:scale-105" />
+          <span className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/42 to-black/20" />
+          <span className="relative flex h-full flex-col justify-between p-3">
+            <span className="inline-flex size-7 items-center justify-center rounded-md bg-white/20 backdrop-blur">
+              <Plus className="size-4" />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-semibold">{place.name}</span>
+              <span className="block truncate font-sans text-[11px] text-white/78">{place.fuzzyLocationLabel}</span>
+            </span>
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function RouteStopRow({
   stop,
   index,
-  stopCount,
   isEditing,
   isPinned,
+  isDragging,
   onCopyAddress,
   onRemoveStop,
-  onMoveStop,
+  onMouseDown,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onPointerCancel,
   onTogglePinnedStop,
 }: {
   stop: ShootRouteStop;
   index: number;
-  stopCount: number;
   isEditing: boolean;
   isPinned: boolean;
+  isDragging: boolean;
   onCopyAddress: (stop: ShootRouteStop) => void;
   onRemoveStop: (placeId: string) => void;
-  onMoveStop: (placeId: string, direction: -1 | 1) => void;
+  onMouseDown: (event: ReactMouseEvent<HTMLElement>) => void;
+  onPointerDown: (event: PointerEvent<HTMLElement>) => void;
+  onPointerMove: (event: PointerEvent<HTMLElement>) => void;
+  onPointerUp: (event: PointerEvent<HTMLElement>) => void;
+  onPointerCancel: (event: PointerEvent<HTMLElement>) => void;
   onTogglePinnedStop: (placeId: string) => void;
 }) {
   return (
-    <article className="grid grid-cols-[32px_minmax(0,1fr)] gap-3">
-      <span className="mt-1 grid size-8 place-items-center rounded-full bg-[var(--moss)] text-sm text-white">{index + 1}</span>
-      <div className="min-w-0 border-b border-[var(--line)] pb-4 last:border-b-0 last:pb-0">
+    <article
+      className={cx(
+        "group relative min-h-[11rem] select-none overflow-hidden rounded-[10px] border border-white/60 bg-[var(--chip)] text-white shadow-[0_16px_38px_rgba(39,34,27,0.18)] transition",
+        isEditing && "touch-none cursor-grab active:cursor-grabbing",
+        isDragging && "scale-[0.985] opacity-60 ring-2 ring-[var(--gold)]",
+      )}
+      data-route-stop-id={stop.place.id}
+      onMouseDown={onMouseDown}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerCancel}
+    >
+      <ResilientImage src={stop.place.coverPhotoUrl} alt="" className="absolute inset-0 size-full object-cover transition duration-300 group-hover:scale-[1.03]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/48 to-black/18" />
+      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/72 to-transparent" />
+
+      <div className="relative flex min-h-[11rem] flex-col justify-between p-4">
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h4 className="truncate text-base font-semibold">{stop.place.name}</h4>
-            <p className="mt-1 flex items-center gap-1 text-xs text-[var(--muted)]">
-              <Clock3 className="size-3.5" />
-              {stop.arrivalLabel} · {stop.durationLabel}
-            </p>
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="grid size-9 shrink-0 place-items-center rounded-full border border-white/45 bg-white/20 font-sans text-sm font-semibold backdrop-blur">
+              {index + 1}
+            </span>
+            <div className="min-w-0">
+              <h4 className="truncate text-lg font-semibold drop-shadow-sm">{stop.place.name}</h4>
+              <p className="mt-1 flex items-center gap-1.5 font-sans text-xs text-white/82">
+                <Clock3 className="size-3.5" />
+                {stop.arrivalLabel} · {stop.durationLabel}
+              </p>
+            </div>
           </div>
-          <span className="rounded-md bg-[var(--chip)] px-2 py-1 text-xs text-[var(--muted)]">{Math.round(stop.score)} match</span>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {isPinned ? (
+              <span className="inline-flex size-8 items-center justify-center rounded-md bg-white/20 backdrop-blur" aria-label="Pinned stop">
+                <Check className="size-4" />
+              </span>
+            ) : null}
+            {isEditing ? (
+              <span className="grid size-8 place-items-center rounded-md bg-white/18 backdrop-blur" aria-hidden="true">
+                <GripVertical className="size-4" />
+              </span>
+            ) : null}
+          </div>
         </div>
+
+        <div>
+          <p className="line-clamp-2 text-sm leading-5 text-white/86 drop-shadow-sm">{stop.note}</p>
+          <div className="mt-3 rounded-lg border border-white/24 bg-white/16 p-3 text-white shadow-sm backdrop-blur-md">
+            <p className="flex items-start gap-2 font-sans text-xs leading-5 text-white/90">
+              <MapPinned className="mt-0.5 size-4 shrink-0 text-[var(--gold)]" />
+              <span className="min-w-0">
+                <span className="block truncate">{stop.address}</span>
+                <span className="block truncate text-white/66">{stop.coordinateLabel}</span>
+              </span>
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button type="button" className="inline-flex h-8 items-center gap-1.5 rounded-md border border-white/25 bg-white/18 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/26" onClick={() => onCopyAddress(stop)}>
+                <Copy className="size-3.5" />
+                Copy
+              </button>
+              <a className="inline-flex h-8 items-center gap-1.5 rounded-md border border-white/25 bg-white/18 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/26" href={stop.googleMapsUrl} target="_blank" rel="noreferrer">
+                <Navigation className="size-3.5" />
+                Google <ExternalLink className="size-3" />
+              </a>
+              <a className="inline-flex h-8 items-center gap-1.5 rounded-md border border-white/25 bg-white/18 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/26" href={stop.appleMapsUrl} target="_blank" rel="noreferrer">
+                <Map className="size-3.5" />
+                Apple <ExternalLink className="size-3" />
+              </a>
+            </div>
+          </div>
+        </div>
+
         {isEditing ? (
           <div className="mt-3 flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex h-8 items-center gap-1 rounded-md border border-[var(--line)] px-2 text-xs disabled:opacity-40"
-              onClick={() => onMoveStop(stop.place.id, -1)}
-              disabled={index === 0}
-            >
-              <ArrowUp className="size-3.5" />Move up
-            </button>
-            <button
-              type="button"
-              className="inline-flex h-8 items-center gap-1 rounded-md border border-[var(--line)] px-2 text-xs disabled:opacity-40"
-              onClick={() => onMoveStop(stop.place.id, 1)}
-              disabled={index === stopCount - 1}
-            >
-              <ArrowDown className="size-3.5" />Move down
-            </button>
-            <button
-              type="button"
               className={cx(
-                "inline-flex h-8 items-center gap-1 rounded-md border border-[var(--line)] px-2 text-xs",
-                isPinned && "bg-[var(--chip)]",
+                "inline-flex h-8 items-center gap-1.5 rounded-md border border-white/25 bg-white/18 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/26",
+                isPinned && "bg-[var(--gold)]/70",
               )}
               onClick={() => onTogglePinnedStop(stop.place.id)}
             >
@@ -664,43 +848,13 @@ function RouteStopRow({
             </button>
             <button
               type="button"
-              className="inline-flex h-8 items-center gap-1 rounded-md border border-[var(--line)] px-2 text-xs text-red-700"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-white/25 bg-white/18 px-2.5 font-sans text-xs text-white shadow-sm backdrop-blur transition hover:bg-red-500/50"
               onClick={() => onRemoveStop(stop.place.id)}
             >
               <Trash2 className="size-3.5" />Remove
             </button>
           </div>
         ) : null}
-        <p className="mt-2 text-sm leading-5 text-[var(--ink)]/80">{stop.note}</p>
-        <div className="mt-3 rounded-lg border border-[var(--line)] bg-white p-3">
-          <p className="flex items-start gap-2 text-sm leading-5 text-[var(--ink)]">
-            <MapPinned className="mt-0.5 size-4 shrink-0 text-[var(--moss)]" />
-            <span>
-              {stop.address}
-              <span className="block font-sans text-xs text-[var(--muted)]">{stop.coordinateLabel}</span>
-            </span>
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <button type="button" className="inline-flex h-9 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--paper-strong)] px-2.5 text-xs shadow-sm transition hover:bg-[var(--chip)]" onClick={() => onCopyAddress(stop)}>
-              <span className="grid size-5 place-items-center rounded bg-[var(--chip)] text-[var(--moss)]">
-                <Copy className="size-3" />
-              </span>
-              Copy
-            </button>
-            <a className="inline-flex h-9 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--paper-strong)] px-2.5 text-xs shadow-sm transition hover:bg-[var(--chip)]" href={stop.googleMapsUrl} target="_blank" rel="noreferrer">
-              <span className="grid size-5 place-items-center rounded bg-[var(--moss)] text-white">
-                <Navigation className="size-3" />
-              </span>
-              Google <ExternalLink className="size-3" />
-            </a>
-            <a className="inline-flex h-9 items-center gap-2 rounded-md border border-[var(--line)] bg-[var(--paper-strong)] px-2.5 text-xs shadow-sm transition hover:bg-[var(--chip)]" href={stop.appleMapsUrl} target="_blank" rel="noreferrer">
-              <span className="grid size-5 place-items-center rounded bg-[var(--chip)] text-[var(--moss)]">
-                <Map className="size-3" />
-              </span>
-              Apple <ExternalLink className="size-3" />
-            </a>
-          </div>
-        </div>
       </div>
     </article>
   );

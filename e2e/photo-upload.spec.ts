@@ -7,6 +7,7 @@ type DemoState = {
   savedPlaceIds: string[];
   followedUserIds: string[];
   likedPhotoIds: string[];
+  viewedPhotoIds: string[];
   viewedPlaceIds: string[];
   placeViews: Array<{ placeId: string; viewedAt: string; viewCount: number }>;
   lastViewedPlaceId?: string;
@@ -43,6 +44,7 @@ function createInitialState(): DemoState {
     savedPlaceIds: ["golden-gate-overlook", "baker-beach"],
     followedUserIds: ["user-maya", "user-eli"],
     likedPhotoIds: [],
+    viewedPhotoIds: [],
     viewedPlaceIds: [],
     placeViews: [],
     lastViewedPlaceId: undefined,

@@ -2,6 +2,7 @@ import { currentUserId } from "./data";
 import type { DemoState, Photo } from "./types";
 
 export const DEMO_STATE_STORAGE_KEY = "oculi:demo-state";
+export const DEMO_VISITOR_ID_STORAGE_KEY = "oculi:visitor-id";
 
 export const starterUploadedPhotos: Photo[] = [
   {
@@ -114,6 +115,7 @@ export const initialDemoState: DemoState = {
   savedPlaceIds: ["coit-tower", "grace-cathedral", "mission-murals", "golden-gate-overlook"],
   followedUserIds: ["user-maya", "user-eli"],
   likedPhotoIds: [],
+  viewedPhotoIds: [],
   viewedPlaceIds: [],
   placeViews: [],
   lastViewedPlaceId: undefined,
@@ -135,6 +137,7 @@ export function createInitialDemoState(): DemoState {
     savedPlaceIds: [...initialDemoState.savedPlaceIds],
     followedUserIds: [...initialDemoState.followedUserIds],
     likedPhotoIds: [],
+    viewedPhotoIds: [],
     viewedPlaceIds: [],
     placeViews: [],
     lastViewedPlaceId: undefined,
@@ -150,16 +153,19 @@ export function createInitialDemoState(): DemoState {
 
 export function normalizeDemoState(state?: Partial<DemoState> | null): DemoState {
   const initial = createInitialDemoState();
-  const uploadedPhotos = state?.uploadedPhotos?.length
-    ? [...starterUploadedPhotos.filter((photo) => !state.uploadedPhotos?.some((item) => item.id === photo.id)), ...state.uploadedPhotos]
+  const uploadedPhotos = Array.isArray(state?.uploadedPhotos)
+    ? state.uploadedPhotos
     : initial.uploadedPhotos;
 
   return {
     ...initial,
     ...(state ?? {}),
-    savedPlaceIds: Array.from(new Set([...(state?.savedPlaceIds ?? []), ...initial.savedPlaceIds])),
+    savedPlaceIds: Array.isArray(state?.savedPlaceIds)
+      ? Array.from(new Set(state.savedPlaceIds))
+      : initial.savedPlaceIds,
     followedUserIds: state?.followedUserIds ?? initial.followedUserIds,
     likedPhotoIds: state?.likedPhotoIds ?? initial.likedPhotoIds,
+    viewedPhotoIds: state?.viewedPhotoIds ?? initial.viewedPhotoIds,
     viewedPlaceIds: state?.viewedPlaceIds ?? initial.viewedPlaceIds,
     placeViews: state?.placeViews ?? initial.placeViews,
     discoveryActiveIndex: state?.discoveryActiveIndex ?? initial.discoveryActiveIndex,
@@ -202,5 +208,23 @@ export function resetLocalDemoState() {
     window.localStorage.removeItem(DEMO_STATE_STORAGE_KEY);
   } catch {
     // Ignore local reset failures; the in-memory reset still applies.
+  }
+}
+
+export function getDemoVisitorId(): string {
+  if (typeof window === "undefined") return currentUserId;
+
+  try {
+    const stored = window.localStorage.getItem(DEMO_VISITOR_ID_STORAGE_KEY);
+    if (stored) return stored;
+
+    const id =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? `visitor-${crypto.randomUUID()}`
+        : `visitor-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    window.localStorage.setItem(DEMO_VISITOR_ID_STORAGE_KEY, id);
+    return id;
+  } catch {
+    return currentUserId;
   }
 }

@@ -6,6 +6,7 @@ import { MapboxMap } from "@/components/mapbox-map";
 import { PlaceDetailPopup } from "@/components/place-detail-popup";
 import { useDemoState } from "@/lib/demo-state";
 import { buildSearchCorpus, getSearchCorrection, matchesCorrectedQuery } from "@/lib/search-corrections";
+import { rankSearchResults } from "@/lib/search-ranking";
 import { sortTopPlaces } from "@/lib/scoring";
 import {
   BookOpen,
@@ -69,6 +70,35 @@ function accessibilityForPlace(place: Place) {
   return "Easy";
 }
 
+function placeSearchFields(place: Place, area?: { id?: string; name: string; region: string }, placePhotos: Photo[] = []) {
+  return [
+    place.name,
+    place.fuzzyLocationLabel,
+    place.navigationAddress,
+    place.description,
+    place.tags,
+    place.bestTimes,
+    area?.id,
+    area?.name,
+    area?.region,
+    ...placePhotos.flatMap((photo) => [
+      photo.caption,
+      photo.locationLabel,
+      photo.metadataText,
+      photo.shotAtTimeOfDay,
+      photo.tags,
+    ]),
+  ];
+}
+
+function isExactPlaceSearch(place: Place, correctedQuery: string) {
+  if (!correctedQuery) return false;
+
+  return [place.name, place.fuzzyLocationLabel, place.navigationAddress]
+    .filter(Boolean)
+    .some((field) => normalizedText([field]).replace(/[,]+/g, "") === correctedQuery);
+}
+
 function matchesLightFilter(lightFilter: string, place: Place, photo: Photo) {
   if (lightFilter === "Any") return true;
   const aliases = lightAliases[lightFilter] ?? [lightFilter.toLowerCase()];
@@ -82,7 +112,7 @@ function cx(...classes: Array<string | false | null | undefined>) {
 }
 
 export default function MapPage() {
-  const { photos, places, state, toggleSavedPlace, recordPlaceView } = useDemoState();
+  const { areas, photos, places, state, toggleSavedPlace, recordPlaceView } = useDemoState();
   const topPlaces = useMemo(() => sortTopPlaces(places), [places]);
   const [selectedPlaceId, setSelectedPlaceId] = useState(topPlaces[0]?.id);
   const [detailPlaceId, setDetailPlaceId] = useState<string | null>(null);
@@ -93,10 +123,22 @@ export default function MapPage() {
   const [nearStatus, setNearStatus] = useState("");
   const popupHistoryRef = useRef(false);
   const placesById = useMemo(() => Object.fromEntries(topPlaces.map((place) => [place.id, place])), [topPlaces]);
+  const areasById = useMemo(() => Object.fromEntries(areas.map((area) => [area.id, area])), [areas]);
+  const photosByPlaceId = useMemo(
+    () =>
+      photos.reduce<Record<string, Photo[]>>((groups, photo) => {
+        groups[photo.placeId] = [...(groups[photo.placeId] ?? []), photo];
+        return groups;
+      }, {}),
+    [photos],
+  );
   const searchCorpus = useMemo(
     () =>
       buildSearchCorpus([
-        ...topPlaces.map((place) => [place.name, place.fuzzyLocationLabel, place.description, place.tags, place.bestTimes]),
+        ...areas.map((area) => [area.name, area.region, area.description]),
+        ...topPlaces.map((place) =>
+          placeSearchFields(place, areasById[place.areaId], photosByPlaceId[place.id] ?? []),
+        ),
         ...photos.map((photo) => [
           photo.caption,
           photo.locationLabel,
@@ -105,25 +147,73 @@ export default function MapPage() {
           photo.tags,
         ]),
       ]),
-    [photos, topPlaces],
+    [areas, areasById, photos, photosByPlaceId, topPlaces],
   );
   const searchCorrection = useMemo(() => getSearchCorrection(query, searchCorpus), [query, searchCorpus]);
+  const placeMatches = useMemo(() => {
+    const matchingPlaces = topPlaces.filter((place) => {
+      const placePhotos = photosByPlaceId[place.id] ?? [];
+      const matchesQuery = matchesCorrectedQuery(
+        placeSearchFields(place, areasById[place.areaId], placePhotos),
+        searchCorrection,
+      );
+      const matchesLight =
+        lightFilter === "Any" ||
+        place.bestTimes.some((time) =>
+          (lightAliases[lightFilter] ?? [lightFilter.toLowerCase()]).some((alias) =>
+            normalizedText([time]).includes(alias),
+          ),
+        ) ||
+        placePhotos.some((photo) => matchesLightFilter(lightFilter, place, photo));
+      const matchesScene =
+        !sceneFilters.length ||
+        sceneFilters.some((filter) => normalizedText([place.tags, placePhotos.flatMap((photo) => photo.tags)]).includes(filter));
+      const matchesAccessibility =
+        !accessibilityFilters.length || accessibilityFilters.includes(accessibilityForPlace(place));
+
+      return matchesQuery && matchesLight && matchesScene && matchesAccessibility;
+    });
+
+    if (!searchCorrection.correctedQuery) return matchingPlaces;
+
+    return rankSearchResults({
+      items: matchingPlaces,
+      query: searchCorrection.correctedQuery,
+      fields: [
+        { weight: 6, getValue: (place) => [place.name] },
+        { weight: 5, getValue: (place) => [areasById[place.areaId]?.id, areasById[place.areaId]?.name, areasById[place.areaId]?.region] },
+        { weight: 4, getValue: (place) => [place.fuzzyLocationLabel, place.navigationAddress] },
+        { weight: 3, getValue: (place) => [place.tags, place.bestTimes] },
+        { weight: 2, getValue: (place) => [place.description] },
+        {
+          weight: 1,
+          getValue: (place) =>
+            (photosByPlaceId[place.id] ?? []).flatMap((photo) => [
+              photo.caption,
+              photo.locationLabel,
+              photo.metadataText,
+              photo.shotAtTimeOfDay,
+              photo.tags,
+            ]),
+        },
+      ],
+    });
+  }, [accessibilityFilters, areasById, lightFilter, photosByPlaceId, sceneFilters, searchCorrection, topPlaces]);
+  const exactSearchPlace = useMemo(
+    () => placeMatches.find((place) => isExactPlaceSearch(place, searchCorrection.correctedQuery)),
+    [placeMatches, searchCorrection.correctedQuery],
+  );
+  const mapPlaces = placeMatches;
+  const mapPlaceIds = useMemo(() => new Set(mapPlaces.map((place) => place.id)), [mapPlaces]);
   const filteredPhotos = photos.filter((photo) => {
     const place = placesById[photo.placeId];
-    if (!place) return false;
+    if (!place || !mapPlaceIds.has(place.id)) return false;
 
-    const matchesQuery = matchesCorrectedQuery([
-      place.name,
-      place.fuzzyLocationLabel,
-      place.description,
-      place.tags,
-      photo.caption,
-      photo.locationLabel,
-      photo.metadataText,
-      photo.shotAtTimeOfDay,
-      photo.tags,
-    ], searchCorrection);
-    const matchesLight = matchesLightFilter(lightFilter, place, photo);
+    const placePhotos = photosByPlaceId[place.id] ?? [];
+    const matchesQuery =
+      !searchCorrection.correctedQuery ||
+      matchesCorrectedQuery(placeSearchFields(place, areasById[place.areaId], placePhotos), searchCorrection);
+    const matchesLight = matchesLightFilter(lightFilter, place, photo) || lightFilter === "Any";
     const matchesScene =
       !sceneFilters.length || sceneFilters.some((filter) => normalizedText([place.tags, photo.tags]).includes(filter));
     const matchesAccessibility =
@@ -131,10 +221,8 @@ export default function MapPage() {
 
     return matchesQuery && matchesLight && matchesScene && matchesAccessibility;
   });
-  const filteredPhotoPlaceIds = new Set(filteredPhotos.map((photo) => photo.placeId));
-  const mapPlaces = topPlaces.filter((place) => filteredPhotoPlaceIds.has(place.id));
   const selectedIsVisible = mapPlaces.some((place) => place.id === selectedPlaceId);
-  const visibleSelectedPlaceId = selectedIsVisible ? selectedPlaceId : mapPlaces[0]?.id;
+  const visibleSelectedPlaceId = exactSearchPlace?.id ?? (selectedIsVisible ? selectedPlaceId : mapPlaces[0]?.id);
   const activeFilterCount =
     (query.trim() ? 1 : 0) +
     (lightFilter !== "Any" ? 1 : 0) +
@@ -144,6 +232,12 @@ export default function MapPage() {
     .map((value) => sceneOptions.find((option) => option.value === value))
     .filter((option): option is (typeof sceneOptions)[number] => Boolean(option));
   const resultSummary = `${mapPlaces.length} place${mapPlaces.length === 1 ? "" : "s"} · ${filteredPhotos.length} photo${filteredPhotos.length === 1 ? "" : "s"}`;
+
+  useEffect(() => {
+    if (!exactSearchPlace || selectedPlaceId === exactSearchPlace.id) return;
+    setSelectedPlaceId(exactSearchPlace.id);
+    recordPlaceView(exactSearchPlace.id);
+  }, [exactSearchPlace, recordPlaceView, selectedPlaceId]);
 
   function toggleSceneFilter(filter: string) {
     setSceneFilters((filters) =>
@@ -290,7 +384,12 @@ export default function MapPage() {
 
             <div className="flex items-center justify-between gap-3">
               <button
-                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white font-sans text-sm font-semibold text-[var(--ink)]"
+                className={cx(
+                  "inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border font-sans text-sm font-semibold transition",
+                  nearStatus
+                    ? "border-[var(--moss)] bg-[var(--chip)] text-[var(--moss-dark)]"
+                    : "border-[var(--line)] bg-white text-[var(--ink)]",
+                )}
                 onClick={() => {
                   setNearStatus("Showing the closest seeded photo spots for this demo.");
                   setSelectedPlaceId(mapPlaces[0]?.id ?? topPlaces[0]?.id);
@@ -304,6 +403,7 @@ export default function MapPage() {
                 </button>
               ) : null}
             </div>
+            {nearStatus ? <NearStatusNotice status={nearStatus} /> : null}
           </div>
         </details>
 
@@ -474,9 +574,14 @@ export default function MapPage() {
               </FilterSection>
             </div>
 
-            {nearStatus ? <p className="mt-4 text-sm text-[var(--moss)]">{nearStatus}</p> : null}
+            {nearStatus ? <NearStatusNotice status={nearStatus} /> : null}
             <button
-              className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white font-sans text-sm font-semibold text-[var(--ink)] shadow-[0_8px_24px_rgba(39,34,27,0.05)] transition hover:border-[var(--moss)]/50"
+              className={cx(
+                "mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border font-sans text-sm font-semibold shadow-[0_8px_24px_rgba(39,34,27,0.05)] transition hover:border-[var(--moss)]/50",
+                nearStatus
+                  ? "border-[var(--moss)] bg-[var(--chip)] text-[var(--moss-dark)]"
+                  : "border-[var(--line)] bg-white text-[var(--ink)]",
+              )}
               onClick={() => {
                 setNearStatus("Showing the closest seeded photo spots for this demo.");
                 setSelectedPlaceId(mapPlaces[0]?.id ?? topPlaces[0]?.id);
@@ -495,7 +600,7 @@ export default function MapPage() {
               onToggleSaved={toggleSavedPlace}
               onOpenPlace={openPlace}
               showSelectedCard
-              autoFocusSelected={false}
+              autoFocusSelected={Boolean(exactSearchPlace)}
               className="h-full min-h-[560px] border-0 shadow-none lg:min-h-0"
             />
           </div>
@@ -503,6 +608,18 @@ export default function MapPage() {
         <PlaceDetailPopup placeId={detailPlaceId} onClose={closePlace} onOpenPlace={openPlace} />
       </div>
     </AppShell>
+  );
+}
+
+function NearStatusNotice({ status }: { status: string }) {
+  return (
+    <div
+      className="mt-4 flex items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white/70 px-3 py-2.5 text-center font-sans text-sm text-[var(--muted)]"
+      aria-live="polite"
+    >
+      <Navigation className="size-4 shrink-0 text-[var(--moss)]" aria-hidden="true" />
+      <span>{status}</span>
+    </div>
   );
 }
 

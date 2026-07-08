@@ -56,14 +56,23 @@ export function isRemoteStateEnabled() {
   return Boolean(getSupabaseBrowserClient());
 }
 
-export async function loadRemoteDemoState(): Promise<DemoState> {
+function durableStateForRemote(state: DemoState): DemoState {
+  return {
+    ...state,
+    uploadedPhotos: state.uploadedPhotos.filter(
+      (photo) => !photo.imageUrl.startsWith("blob:") && !photo.imageUrl.startsWith("data:"),
+    ),
+  };
+}
+
+export async function loadRemoteDemoState(stateOwnerId = currentUserId): Promise<DemoState> {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return createInitialDemoState();
 
   const { data, error } = await supabase
     .from(STATE_TABLE)
     .select("state")
-    .eq("user_id", currentUserId)
+    .eq("user_id", stateOwnerId)
     .maybeSingle<StateRow>();
 
   if (error) {
@@ -112,13 +121,13 @@ export async function loadRemoteDemoCatalog(): Promise<DemoCatalog> {
   };
 }
 
-export async function saveRemoteDemoState(state: DemoState) {
+export async function saveRemoteDemoState(state: DemoState, stateOwnerId = currentUserId) {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return;
 
   const { error } = await supabase.from(STATE_TABLE).upsert({
-    user_id: currentUserId,
-    state,
+    user_id: stateOwnerId,
+    state: durableStateForRemote(state),
     updated_at: new Date().toISOString(),
   });
 
@@ -139,11 +148,11 @@ export async function saveRemoteCatalogPhoto(photo: Photo) {
   if (error) console.warn("Unable to save Oculi photo catalog item to Supabase.", error.message);
 }
 
-export async function resetRemoteDemoState() {
+export async function resetRemoteDemoState(stateOwnerId = currentUserId) {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return;
 
-  const { error } = await supabase.from(STATE_TABLE).delete().eq("user_id", currentUserId);
+  const { error } = await supabase.from(STATE_TABLE).delete().eq("user_id", stateOwnerId);
   if (error) console.warn("Unable to reset Oculi state in Supabase.", error.message);
 }
 

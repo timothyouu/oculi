@@ -183,8 +183,12 @@ export function MapboxMap({
       markerButton.setAttribute("aria-label", `Select ${clusterName}, ${photoLabel}`);
       markerButton.title = `${clusterName} · ${photoLabel}`;
       markerButton.className = cx(
-        "grid h-11 min-w-11 place-items-center rounded-full border-2 border-white px-3 text-base font-semibold text-white shadow-[0_8px_18px_rgba(29,29,27,0.28)] transition hover:scale-105",
-        isSelected ? "scale-110 bg-[var(--gold)]" : isSaved ? "bg-[var(--moss)]" : "bg-[var(--moss-dark)]",
+        "inline-grid h-11 min-w-11 place-items-center rounded-full border-2 px-3 font-sans text-sm font-semibold leading-none shadow-[0_8px_18px_rgba(29,29,27,0.24)] transition hover:scale-105",
+        isSelected
+          ? "scale-110 border-[var(--paper-strong)] bg-[var(--paper-strong)] text-[var(--moss-dark)] ring-2 ring-[var(--moss)]"
+          : isSaved
+            ? "border-white bg-[var(--moss)] text-white"
+            : "border-white bg-[var(--moss-dark)] text-white",
       );
       countLabel.textContent = String(cluster.photoCount);
       countLabel.className = "leading-none";

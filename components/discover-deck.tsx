@@ -20,10 +20,11 @@ type DiscoverDeckProps = {
   usersById: Record<string, User | undefined>;
   savedPlaceIds: string[];
   followedUserIds: string[];
+  viewedPhotoIds: string[];
   resumePlaceId?: string;
   resumeIndex?: number;
   canResume?: boolean;
-  onViewPlace?: (placeId: string, activeIndex: number) => void;
+  onViewPhoto?: (photo: Photo, activeIndex: number) => void;
   onToggleSaved: (placeId: string) => void;
   onOpenPlace: (placeId: string) => void;
   onOpenProfile: (userId: string) => void;
@@ -45,15 +46,16 @@ export function DiscoverDeck({
   usersById,
   savedPlaceIds,
   followedUserIds,
+  viewedPhotoIds,
   resumePlaceId,
   resumeIndex = 0,
   canResume = true,
-  onViewPlace,
+  onViewPhoto,
   onToggleSaved,
   onOpenPlace,
   onOpenProfile,
 }: DiscoverDeckProps) {
-  const cards = useMemo(
+  const allCards = useMemo(
     () =>
       photos
         .map((photo) => {
@@ -61,10 +63,15 @@ export function DiscoverDeck({
           const photographer = usersById[photo.userId];
           return place && photographer ? { photo, place, photographer } : null;
         })
-        .filter((card) => card && !savedPlaceIds.includes(card.place.id))
         .filter(Boolean) as Array<{ photo: Photo; place: Place; photographer: User }>,
-    [photos, placesById, savedPlaceIds, usersById],
+    [photos, placesById, usersById],
   );
+  const [queuePhotoIds, setQueuePhotoIds] = useState<string[] | null>(null);
+  const cards = useMemo(() => {
+    if (!queuePhotoIds) return [];
+    const queueSet = new Set(queuePhotoIds);
+    return allCards.filter((card) => queueSet.has(card.photo.id));
+  }, [allCards, queuePhotoIds]);
   const [activeIndex, setActiveIndex] = useState(() => Math.max(0, resumeIndex));
   const [drag, setDrag] = useState<DragState>({ startX: 0, currentX: 0, dragging: false });
   const [showTutorial, setShowTutorial] = useState(() => {
@@ -80,6 +87,20 @@ export function DiscoverDeck({
   const offset = drag.dragging ? drag.currentX - drag.startX : 0;
   const rotation = Math.max(-10, Math.min(10, offset / 28));
   const intent = offset > 48 ? "save" : offset < -48 ? "skip" : null;
+
+  useEffect(() => {
+    if (!canResume) return;
+
+    const unseenPhotoIds = allCards
+      .map((card) => card.photo.id)
+      .filter((photoId) => !viewedPhotoIds.includes(photoId));
+
+    setQueuePhotoIds((current) => {
+      if (!current) return unseenPhotoIds;
+      const nextPhotoIds = unseenPhotoIds.filter((photoId) => !current.includes(photoId));
+      return nextPhotoIds.length ? [...current, ...nextPhotoIds] : current;
+    });
+  }, [allCards, canResume, viewedPhotoIds]);
 
   useEffect(() => {
     if (!canResume || !cards.length || appliedResumeRef.current) return;
@@ -101,8 +122,8 @@ export function DiscoverDeck({
     if (lastRecordedViewRef.current === viewKey) return;
 
     lastRecordedViewRef.current = viewKey;
-    onViewPlace?.(active.place.id, activeIndex);
-  }, [active, activeIndex, onViewPlace]);
+    onViewPhoto?.(active.photo, activeIndex);
+  }, [active, activeIndex, onViewPhoto]);
 
   useEffect(() => {
     if (!cards.length || activeIndex < cards.length) return;

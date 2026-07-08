@@ -32,10 +32,11 @@ export default function HomePage() {
           usersById={usersById}
           savedPlaceIds={state.savedPlaceIds}
           followedUserIds={state.followedUserIds}
+          viewedPhotoIds={state.viewedPhotoIds}
           resumePlaceId={state.lastDiscoveryPlaceId}
           resumeIndex={state.discoveryActiveIndex}
           canResume={demo.hasLoadedRemoteState}
-          onViewPlace={demo.recordPlaceView}
+          onViewPhoto={demo.recordPhotoView}
           onToggleSaved={toggleSavedPlace}
           onOpenPlace={(placeId) => {
             demo.recordPlaceView(placeId);

@@ -17,6 +17,7 @@ export default function SavedPage() {
         <SavedPanel
           savedPlaces={savedPlaces}
           savedPhotos={savedPhotos}
+          savedCount={state.savedPlaceIds.length}
           onOpenPlace={(placeId) => router.push(`/places/${placeId}`)}
           onToggleSaved={toggleSavedPlace}
         />
