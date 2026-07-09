@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Bookmark, Images, Send, X } from "lucide-react";
 import type { Photo, Place } from "@/lib/types";
 import { ResilientImage } from "./resilient-image";
+import { SharePlacePopover } from "./share-place-popover";
 
 type SelectedPlaceCardProps = {
   place: Place;
@@ -46,6 +47,7 @@ export function SelectedPlaceCard({
   onClose,
 }: SelectedPlaceCardProps) {
   const [view, setView] = useState<"overview" | "gallery">("overview");
+  const [saveNotice, setSaveNotice] = useState<string | null>(null);
   const placePhotos = useMemo(
     () => photos.filter((photo) => photo.placeId === place.id),
     [photos, place.id],
@@ -55,7 +57,19 @@ export function SelectedPlaceCard({
 
   useEffect(() => {
     setView("overview");
+    setSaveNotice(null);
   }, [place.id]);
+
+  useEffect(() => {
+    if (!saveNotice) return;
+    const timeout = setTimeout(() => setSaveNotice(null), 2000);
+    return () => clearTimeout(timeout);
+  }, [saveNotice]);
+
+  function handleToggleSaved() {
+    onToggleSaved?.(place.id);
+    setSaveNotice(isSaved ? "Removed from saved" : "Saved to your places");
+  }
 
   if (view === "gallery") {
     return (
@@ -131,7 +145,8 @@ export function SelectedPlaceCard({
           type="button"
           className="absolute right-4 top-0 grid size-11 place-items-center rounded-b-lg bg-[var(--gold)] text-white"
           aria-label={isSaved ? `Unsave ${place.name}` : `Save ${place.name}`}
-          onClick={() => onToggleSaved?.(place.id)}
+          aria-pressed={isSaved}
+          onClick={handleToggleSaved}
         >
           <Bookmark className={cx("size-5", isSaved && "fill-current")} />
         </button>
@@ -162,7 +177,7 @@ export function SelectedPlaceCard({
           <Bookmark className="size-4" aria-hidden="true" />
           {place.saveCount} saves
         </p>
-        <div className="grid grid-cols-[minmax(0,1fr)_56px] gap-3">
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_56px] gap-3">
           <button
             type="button"
             className="inline-flex h-12 items-center justify-center rounded-lg bg-[var(--moss)] text-base text-white"
@@ -170,10 +185,32 @@ export function SelectedPlaceCard({
           >
             Open place
           </button>
-          <button type="button" className="grid size-12 place-items-center rounded-lg border border-[var(--line)] bg-white text-[var(--ink)]">
-            <Send className="size-5" />
+          <button
+            type="button"
+            className={cx(
+              "inline-flex h-12 items-center justify-center gap-2 rounded-lg text-base",
+              isSaved
+                ? "bg-[var(--gold)] text-white"
+                : "border border-[var(--line)] bg-white text-[var(--ink)]",
+            )}
+            aria-pressed={isSaved}
+            onClick={handleToggleSaved}
+          >
+            <Bookmark className={cx("size-4", isSaved && "fill-current")} aria-hidden="true" />
+            {isSaved ? "Saved" : "Save"}
           </button>
+          <SharePlacePopover
+            place={place}
+            icon={<Send className="size-5" />}
+            align="right"
+            className="grid size-12 place-items-center rounded-lg border border-[var(--line)] bg-white text-[var(--ink)]"
+          />
         </div>
+        {saveNotice ? (
+          <p className="text-sm text-[var(--moss)]" aria-live="polite">
+            {saveNotice}
+          </p>
+        ) : null}
       </div>
     </>
   );
