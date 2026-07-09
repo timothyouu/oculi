@@ -10,6 +10,7 @@ import {
   X
 } from "lucide-react";
 import type { Photo, Place, User } from "../lib/types";
+import { buildResumableQueue } from "../lib/discovery-queue";
 import { ResilientImage } from "./resilient-image";
 
 const TUTORIAL_STORAGE_KEY = "oculi:has-seen-discover-tutorial";
@@ -91,16 +92,21 @@ export function DiscoverDeck({
   useEffect(() => {
     if (!canResume) return;
 
-    const unseenPhotoIds = allCards
-      .map((card) => card.photo.id)
-      .filter((photoId) => !viewedPhotoIds.includes(photoId));
+    const resumePhotoId = resumePlaceId
+      ? allCards.find((card) => card.place.id === resumePlaceId)?.photo.id
+      : undefined;
+    const unseenPhotoIds = buildResumableQueue(
+      allCards.map((card) => card.photo.id),
+      viewedPhotoIds,
+      resumePhotoId,
+    );
 
     setQueuePhotoIds((current) => {
       if (!current) return unseenPhotoIds;
       const nextPhotoIds = unseenPhotoIds.filter((photoId) => !current.includes(photoId));
       return nextPhotoIds.length ? [...current, ...nextPhotoIds] : current;
     });
-  }, [allCards, canResume, viewedPhotoIds]);
+  }, [allCards, canResume, resumePlaceId, viewedPhotoIds]);
 
   useEffect(() => {
     if (!canResume || !cards.length || appliedResumeRef.current) return;
