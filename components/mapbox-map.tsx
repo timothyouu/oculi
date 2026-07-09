@@ -350,6 +350,17 @@ export function MapboxMap({
     map.easeTo({ center: [selected.lng, selected.lat], zoom: Math.max(map.getZoom(), 12.8), duration: 650, essential: true });
   }, [autoFocusSelected, mapReady, selected]);
 
+  // Dismissing the card leaves the camera zoomed in tight on just the one
+  // place - back off a couple zoom levels so the surrounding spots that
+  // were clustered away or off-screen become visible again.
+  function handleCloseSelected() {
+    const map = mapRef.current;
+    if (map) {
+      map.easeTo({ zoom: Math.max(map.getZoom() - 2.5, 3), duration: 650, essential: true });
+    }
+    onCloseSelected?.();
+  }
+
   if (shouldUseStylizedFallback) {
     return (
       <div className="relative h-full">
@@ -408,7 +419,7 @@ export function MapboxMap({
             isSaved={savedPlaceIds.includes(selected.id)}
             onToggleSaved={onToggleSaved}
             onOpenPlace={onOpenPlace}
-            onClose={onCloseSelected}
+            onClose={handleCloseSelected}
           />
         </div>
       ) : null}

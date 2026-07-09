@@ -78,6 +78,13 @@ export function StylizedMap({
     [detailLevel, placeNodes, places],
   );
 
+  // Mirror the live map's "back off a bit" behavior on close: broaden one
+  // detail level so nearby spots that had been clustered away reappear.
+  function handleCloseSelected() {
+    setDetailLevel((level) => Math.max(level - 1, 0));
+    onCloseSelected?.();
+  }
+
   return (
     <section className={cx("relative overflow-hidden rounded-none bg-[#e8eee7]", className)} aria-label="Map preview">
       <div className="absolute right-8 top-8 z-20 overflow-hidden rounded-[18px] border border-[var(--line)] bg-white shadow-[0_12px_30px_rgba(39,34,27,0.12)]">
@@ -162,7 +169,7 @@ export function StylizedMap({
             isSaved={savedPlaceIds.includes(selected.id)}
             onToggleSaved={onToggleSaved}
             onOpenPlace={onOpenPlace}
-            onClose={onCloseSelected}
+            onClose={handleCloseSelected}
           />
         </div>
       ) : null}
