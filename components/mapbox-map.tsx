@@ -7,6 +7,7 @@ import type { Map as MapboxMapInstance, Marker } from "mapbox-gl";
 import type { Photo, Place } from "@/lib/types";
 import { buildPlacePhotoNodes, clusterProjectedPlacePhotoNodes, clusterSizeForZoom } from "@/lib/map-clusters";
 import { shouldFallbackToStylizedMap } from "@/lib/mapbox-fallback";
+import { loadMapCameraView, saveMapCameraView } from "@/lib/storage";
 import { StylizedMap } from "./stylized-map";
 
 type MapboxMapProps = {
@@ -77,6 +78,8 @@ export function MapboxMap({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapboxMapInstance | null>(null);
   const markersRef = useRef<Marker[]>([]);
+  const hasRestoredCameraRef = useRef(false);
+  const suppressNextAutoFocusRef = useRef(false);
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState("");
   const [mapUnauthorized, setMapUnauthorized] = useState(false);
@@ -168,16 +171,24 @@ export function MapboxMap({
 
     const updateZoom = () => setMapZoom(map.getZoom());
     const updateView = () => setMapViewTick((tick) => tick + 1);
+    // Persist wherever the visitor leaves the camera so reopening the map
+    // lands back in the same spot instead of re-fitting to every place.
+    const persistCamera = () => {
+      const center = map.getCenter();
+      saveMapCameraView({ center: [center.lng, center.lat], zoom: map.getZoom(), bearing: map.getBearing(), pitch: map.getPitch() });
+    };
 
     updateZoom();
     updateView();
     map.on("zoom", updateZoom);
     map.on("moveend", updateView);
+    map.on("moveend", persistCamera);
     map.on("resize", updateView);
 
     return () => {
       map.off("zoom", updateZoom);
       map.off("moveend", updateView);
+      map.off("moveend", persistCamera);
       map.off("resize", updateView);
     };
   }, [mapReady]);
@@ -308,6 +319,23 @@ export function MapboxMap({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
+
+    // On the very first mount, restore wherever the visitor left the camera
+    // instead of re-fitting to every place - reopening the map should land
+    // back in the same spot, not reset the view. Later re-fits (the visible
+    // place set actually changing, e.g. a filter) still use fitPlaces as
+    // normal. Suppress the one-shot restored-selection autofocus below so it
+    // doesn't immediately pan away from the camera we just restored.
+    if (!hasRestoredCameraRef.current) {
+      hasRestoredCameraRef.current = true;
+      const savedCamera = loadMapCameraView();
+      if (savedCamera) {
+        map.jumpTo(savedCamera);
+        suppressNextAutoFocusRef.current = true;
+        return;
+      }
+    }
+
     fitPlaces(map, places, showSelectedCard);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapReady, visiblePlaceIdsKey, showSelectedCard]);
@@ -315,6 +343,10 @@ export function MapboxMap({
   useEffect(() => {
     const map = mapRef.current;
     if (!autoFocusSelected || !map || !mapReady || !selected) return;
+    if (suppressNextAutoFocusRef.current) {
+      suppressNextAutoFocusRef.current = false;
+      return;
+    }
     map.easeTo({ center: [selected.lng, selected.lat], zoom: Math.max(map.getZoom(), 12.8), duration: 650, essential: true });
   }, [autoFocusSelected, mapReady, selected]);
 

@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Navigation, Plus, ZoomOut } from "lucide-react";
 import { buildPlacePhotoNodes, clusterProjectedPlacePhotoNodes } from "@/lib/map-clusters";
+import { loadMapDetailLevel, saveMapDetailLevel } from "@/lib/storage";
 import type { Photo, Place } from "../lib/types";
 import { SelectedPlaceCard } from "./selected-place-card";
 
@@ -53,7 +54,14 @@ export function StylizedMap({
   showSelectedCard = true,
   className,
 }: StylizedMapProps) {
-  const [detailLevel, setDetailLevel] = useState(1);
+  const [detailLevel, setDetailLevel] = useState(() => {
+    const saved = loadMapDetailLevel();
+    return saved !== null && saved >= 0 && saved < stylizedClusterRadii.length ? saved : 1;
+  });
+
+  useEffect(() => {
+    saveMapDetailLevel(detailLevel);
+  }, [detailLevel]);
   const selected = places.find((place) => place.id === selectedPlaceId);
   const placeNodes = useMemo(() => buildPlacePhotoNodes(places, photos), [photos, places]);
   const placeClusters = useMemo(

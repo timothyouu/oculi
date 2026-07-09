@@ -4,6 +4,8 @@ import type { DemoState, Photo } from "./types";
 export const DEMO_STATE_STORAGE_KEY = "oculi:demo-state";
 export const DEMO_VISITOR_ID_STORAGE_KEY = "oculi:visitor-id";
 export const MAP_SELECTED_PLACE_STORAGE_KEY = "oculi:map-selected-place-id";
+export const MAP_CAMERA_STORAGE_KEY = "oculi:map-camera";
+export const MAP_DETAIL_LEVEL_STORAGE_KEY = "oculi:map-detail-level";
 
 export const starterUploadedPhotos: Photo[] = [
   {
@@ -239,6 +241,78 @@ export function clearMapSelectedPlaceId() {
     window.localStorage.removeItem(MAP_SELECTED_PLACE_STORAGE_KEY);
   } catch {
     // Ignore; nothing persisted to clear.
+  }
+}
+
+export type MapCameraView = {
+  center: [number, number];
+  zoom: number;
+  bearing: number;
+  pitch: number;
+};
+
+function isMapCameraView(value: unknown): value is MapCameraView {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<MapCameraView>;
+
+  return (
+    Array.isArray(candidate.center) &&
+    candidate.center.length === 2 &&
+    candidate.center.every((coordinate) => typeof coordinate === "number") &&
+    typeof candidate.zoom === "number" &&
+    typeof candidate.bearing === "number" &&
+    typeof candidate.pitch === "number"
+  );
+}
+
+export function loadMapCameraView(): MapCameraView | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const stored = window.localStorage.getItem(MAP_CAMERA_STORAGE_KEY);
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored);
+    return isMapCameraView(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveMapCameraView(view: MapCameraView) {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.setItem(MAP_CAMERA_STORAGE_KEY, JSON.stringify(view));
+  } catch {
+    // The map still works with an in-memory camera position when storage is unavailable.
+  }
+}
+
+// The stylized (no-token) map fallback has no real camera, only a cluster
+// "detail level" stepper - persist that instead so it still reopens at
+// roughly the same zoom, matching the live map's camera restore.
+export function loadMapDetailLevel(): number | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const stored = window.localStorage.getItem(MAP_DETAIL_LEVEL_STORAGE_KEY);
+    if (stored === null) return null;
+
+    const parsed = Number(stored);
+    return Number.isInteger(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveMapDetailLevel(level: number) {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.setItem(MAP_DETAIL_LEVEL_STORAGE_KEY, String(level));
+  } catch {
+    // The map still works with an in-memory detail level when storage is unavailable.
   }
 }
 

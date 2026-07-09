@@ -2,8 +2,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   clearMapSelectedPlaceId,
   createInitialDemoState,
+  loadMapCameraView,
+  loadMapDetailLevel,
   loadMapSelectedPlaceId,
   normalizeDemoState,
+  saveMapCameraView,
+  saveMapDetailLevel,
   saveMapSelectedPlaceId,
   starterUploadedPhotos,
 } from "./storage";
@@ -73,5 +77,41 @@ describe("map selected place persistence", () => {
     saveMapSelectedPlaceId("baker-beach");
     clearMapSelectedPlaceId();
     expect(loadMapSelectedPlaceId()).toBeNull();
+  });
+});
+
+describe("map camera persistence", () => {
+  beforeEach(() => {
+    globalThis.window = { localStorage: createMemoryLocalStorage() } as unknown as Window & typeof globalThis;
+  });
+
+  it("returns null when nothing has been persisted", () => {
+    expect(loadMapCameraView()).toBeNull();
+  });
+
+  it("round-trips a saved camera view", () => {
+    const view = { center: [-122.4194, 37.7749] as [number, number], zoom: 13.5, bearing: 12, pitch: 0 };
+    saveMapCameraView(view);
+    expect(loadMapCameraView()).toEqual(view);
+  });
+
+  it("ignores malformed stored data instead of throwing", () => {
+    window.localStorage.setItem("oculi:map-camera", JSON.stringify({ zoom: 13.5 }));
+    expect(loadMapCameraView()).toBeNull();
+  });
+});
+
+describe("map detail level persistence", () => {
+  beforeEach(() => {
+    globalThis.window = { localStorage: createMemoryLocalStorage() } as unknown as Window & typeof globalThis;
+  });
+
+  it("returns null when nothing has been persisted", () => {
+    expect(loadMapDetailLevel()).toBeNull();
+  });
+
+  it("round-trips a saved detail level", () => {
+    saveMapDetailLevel(2);
+    expect(loadMapDetailLevel()).toBe(2);
   });
 });
