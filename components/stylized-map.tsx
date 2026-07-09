@@ -4,12 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Navigation, Plus, ZoomOut } from "lucide-react";
 import { buildPlacePhotoNodes, clusterProjectedPlacePhotoNodes } from "@/lib/map-clusters";
 import { loadMapDetailLevel, saveMapDetailLevel } from "@/lib/storage";
-import type { Photo, Place } from "../lib/types";
+import type { Photo, Place, User } from "../lib/types";
 import { SelectedPlaceCard } from "./selected-place-card";
 
 type StylizedMapProps = {
   places: Place[];
   photos?: Photo[];
+  users?: User[];
   selectedPlaceId?: string;
   savedPlaceIds?: string[];
   onSelectPlace?: (placeId: string) => void;
@@ -45,6 +46,7 @@ const stylizedClusterRadii = [18, 12, 8, 0];
 export function StylizedMap({
   places,
   photos = [],
+  users = [],
   selectedPlaceId,
   savedPlaceIds = [],
   onSelectPlace,
@@ -166,6 +168,7 @@ export function StylizedMap({
           <SelectedPlaceCard
             place={selected}
             photos={photos}
+            users={users}
             isSaved={savedPlaceIds.includes(selected.id)}
             onToggleSaved={onToggleSaved}
             onOpenPlace={onOpenPlace}

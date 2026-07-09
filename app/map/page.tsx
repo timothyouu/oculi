@@ -94,7 +94,7 @@ function cx(...classes: Array<string | false | null | undefined>) {
 }
 
 export default function MapPage() {
-  const { areas, photos, places, state, toggleSavedPlace, recordPlaceView } = useDemoState();
+  const { areas, photos, places, users, state, toggleSavedPlace, recordPlaceView } = useDemoState();
   const topPlaces = useMemo(() => sortTopPlaces(places), [places]);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | undefined>(undefined);
   const [detailPlaceId, setDetailPlaceId] = useState<string | null>(null);
@@ -633,6 +633,7 @@ export default function MapPage() {
             <MapboxMap
               places={mapPlaces}
               photos={filteredPhotos}
+              users={users}
               selectedPlaceId={visibleSelectedPlaceId}
               savedPlaceIds={state.savedPlaceIds}
               onSelectPlace={selectPlace}

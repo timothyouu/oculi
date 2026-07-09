@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { SelectedPlaceCard } from "@/components/selected-place-card";
 import type { Map as MapboxMapInstance, Marker } from "mapbox-gl";
-import type { Photo, Place } from "@/lib/types";
+import type { Photo, Place, User } from "@/lib/types";
 import { buildPlacePhotoNodes, clusterProjectedPlacePhotoNodes, clusterSizeForZoom } from "@/lib/map-clusters";
 import { shouldFallbackToStylizedMap } from "@/lib/mapbox-fallback";
 import { loadMapCameraView, saveMapCameraView } from "@/lib/storage";
@@ -13,6 +13,7 @@ import { StylizedMap } from "./stylized-map";
 type MapboxMapProps = {
   places: Place[];
   photos?: Photo[];
+  users?: User[];
   selectedPlaceId?: string;
   savedPlaceIds?: string[];
   onSelectPlace?: (placeId: string) => void;
@@ -70,6 +71,7 @@ function proxiedMapboxUrl(url: string) {
 export function MapboxMap({
   places,
   photos = [],
+  users = [],
   selectedPlaceId,
   savedPlaceIds = [],
   onSelectPlace,
@@ -394,6 +396,7 @@ export function MapboxMap({
         <StylizedMap
           places={places}
           photos={photos}
+          users={users}
           selectedPlaceId={selectedPlaceId}
           savedPlaceIds={savedPlaceIds}
           onSelectPlace={onSelectPlace}
@@ -443,6 +446,7 @@ export function MapboxMap({
           <SelectedPlaceCard
             place={selected}
             photos={photos}
+            users={users}
             isSaved={savedPlaceIds.includes(selected.id)}
             onToggleSaved={onToggleSaved}
             onOpenPlace={onOpenPlace}

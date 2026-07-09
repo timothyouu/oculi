@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Bookmark, Images, Send, X } from "lucide-react";
-import type { Photo, Place } from "@/lib/types";
+import { ArrowLeft, Bookmark, ChevronLeft, ChevronRight, Heart, Images, Send, X } from "lucide-react";
+import type { Photo, Place, User } from "@/lib/types";
 import { accessibilityForPlace } from "@/lib/place-accessibility";
 import { sceneLabelsFor } from "@/lib/place-taxonomy";
 import { ResilientImage } from "./resilient-image";
@@ -11,6 +11,7 @@ import { SharePlaceButton } from "./share-place-button";
 type SelectedPlaceCardProps = {
   place: Place;
   photos?: Photo[];
+  users?: User[];
   isSaved?: boolean;
   onToggleSaved?: (placeId: string) => void;
   onOpenPlace?: (placeId: string) => void;
@@ -33,33 +34,32 @@ function formatPhotoDate(value: string) {
   }).format(date);
 }
 
-function photoStatus(photo: Photo, index: number) {
-  if (index === 0) return "selected";
-  if (photo.metadataText?.toLowerCase().includes("raw")) return "raw";
-  if (photo.likeCount > 40) return "edited";
-  return "candidate";
-}
-
 export function SelectedPlaceCard({
   place,
   photos = [],
+  users = [],
   isSaved = false,
   onToggleSaved,
   onOpenPlace,
   onClose,
 }: SelectedPlaceCardProps) {
-  const [view, setView] = useState<"overview" | "gallery">("overview");
+  const [view, setView] = useState<"overview" | "gallery" | "post">("overview");
   const [cardNotice, setCardNotice] = useState<string | null>(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const placePhotos = useMemo(
     () => photos.filter((photo) => photo.placeId === place.id),
     [photos, place.id],
   );
+  const usersById = useMemo(() => new Map(users.map((user) => [user.id, user])), [users]);
   const photoCount = placePhotos.length;
   const visiblePhotos = placePhotos.slice(0, 6);
+  const activePhoto = visiblePhotos[selectedPhotoIndex];
+  const activePhotographer = activePhoto ? usersById.get(activePhoto.userId) : undefined;
 
   useEffect(() => {
     setView("overview");
     setCardNotice(null);
+    setSelectedPhotoIndex(0);
   }, [place.id]);
 
   useEffect(() => {
@@ -85,46 +85,180 @@ export function SelectedPlaceCard({
           >
             <ArrowLeft className="size-5" />
           </button>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h3 className="truncate text-2xl font-semibold text-[var(--ink)]">Photos</h3>
             <p className="truncate text-sm text-[var(--muted)]">
               {photoCount} photo{photoCount === 1 ? "" : "s"} in {place.name}
             </p>
           </div>
+          {onClose ? (
+            <button
+              type="button"
+              className="grid size-10 shrink-0 place-items-center rounded-lg border border-[var(--line)] bg-white text-[var(--ink)]"
+              aria-label={`Close ${place.name} card`}
+              onClick={onClose}
+            >
+              <X className="size-5" />
+            </button>
+          ) : null}
         </div>
 
         <div className="min-h-0 space-y-2 overflow-y-auto p-3">
           {visiblePhotos.length ? (
-            visiblePhotos.map((photo, index) => (
-              <button
-                key={photo.id}
-                type="button"
-                className="flex w-full items-center gap-3 rounded-xl border border-transparent p-2 text-left transition hover:border-[var(--line)] hover:bg-white"
-              >
-                <ResilientImage
-                  src={photo.imageUrl}
-                  alt={photo.caption}
-                  fallbackSrc={place.coverPhotoUrl}
-                  className="size-16 shrink-0 rounded-lg bg-[var(--chip)] object-cover"
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-base font-semibold text-[var(--ink)]">
-                    {photo.caption || `Photo ${index + 1}`}
+            visiblePhotos.map((photo, index) => {
+              const photographer = usersById.get(photo.userId);
+              return (
+                <button
+                  key={photo.id}
+                  type="button"
+                  className="flex w-full items-center gap-3 rounded-xl border border-transparent p-2 text-left transition hover:border-[var(--line)] hover:bg-white"
+                  aria-label={`View post: ${photo.caption || `Photo ${index + 1}`}`}
+                  onClick={() => {
+                    setSelectedPhotoIndex(index);
+                    setView("post");
+                  }}
+                >
+                  <ResilientImage
+                    src={photo.imageUrl}
+                    alt={photo.caption}
+                    fallbackSrc={place.coverPhotoUrl}
+                    className="size-16 shrink-0 rounded-lg bg-[var(--chip)] object-cover"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-base font-semibold text-[var(--ink)]">
+                      {photo.caption || `Photo ${index + 1}`}
+                    </span>
+                    <span className="mt-1 block truncate text-sm text-[var(--muted)]">
+                      {photographer ? `${photographer.name} · ` : ""}
+                      {formatPhotoDate(photo.createdAt)}
+                    </span>
                   </span>
-                  <span className="mt-1 block truncate text-sm text-[var(--muted)]">
-                    IMG_{String(index + 4821).padStart(4, "0")}.jpg · {formatPhotoDate(photo.createdAt)}
+                  <span className="flex shrink-0 items-center gap-1 rounded-full border border-[var(--line)] bg-white px-2.5 py-1 text-[11px] text-[var(--muted)]">
+                    <Heart className="size-3" aria-hidden="true" />
+                    {photo.likeCount}
                   </span>
-                </span>
-                <span className="shrink-0 rounded-full border border-[var(--line)] bg-white px-2.5 py-1 text-[11px] text-[var(--muted)]">
-                  {photoStatus(photo, index)}
-                </span>
-              </button>
-            ))
+                </button>
+              );
+            })
           ) : (
             <div className="rounded-xl border border-dashed border-[var(--line)] bg-white/70 p-5 text-sm text-[var(--muted)]">
               No photos match the current filters for this area.
             </div>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  if (view === "post" && activePhoto) {
+    const hasMultiple = visiblePhotos.length > 1;
+    const goToPhoto = (index: number) => {
+      setSelectedPhotoIndex((index + visiblePhotos.length) % visiblePhotos.length);
+    };
+
+    return (
+      <div className="flex max-h-[min(620px,calc(100vh-4rem))] flex-col overflow-hidden">
+        <div className="flex items-center gap-3 border-b border-[var(--line)] p-4">
+          <button
+            type="button"
+            className="grid size-10 shrink-0 place-items-center rounded-lg border border-[var(--line)] bg-white text-[var(--ink)]"
+            aria-label="Back to photos"
+            onClick={() => setView("gallery")}
+          >
+            <ArrowLeft className="size-5" />
+          </button>
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-2xl font-semibold text-[var(--ink)]">Post</h3>
+            <p className="truncate text-sm text-[var(--muted)]">
+              {selectedPhotoIndex + 1} of {visiblePhotos.length} · {place.name}
+            </p>
+          </div>
+          {onClose ? (
+            <button
+              type="button"
+              className="grid size-10 shrink-0 place-items-center rounded-lg border border-[var(--line)] bg-white text-[var(--ink)]"
+              aria-label={`Close ${place.name} card and return to map`}
+              onClick={onClose}
+            >
+              <X className="size-5" />
+            </button>
+          ) : null}
+        </div>
+
+        <div className="min-h-0 overflow-y-auto">
+          <div className="relative">
+            <ResilientImage
+              src={activePhoto.imageUrl}
+              alt={activePhoto.caption || `Photo from ${place.name}`}
+              fallbackSrc={place.coverPhotoUrl}
+              className="aspect-[4/3] w-full object-cover"
+            />
+            {hasMultiple ? (
+              <>
+                <button
+                  type="button"
+                  className="absolute left-2 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-white/55 bg-[rgba(29,29,27,0.62)] text-white shadow-[0_8px_20px_rgba(29,29,27,0.24)] backdrop-blur"
+                  aria-label="Previous photo"
+                  onClick={() => goToPhoto(selectedPhotoIndex - 1)}
+                >
+                  <ChevronLeft className="size-5" />
+                </button>
+                <button
+                  type="button"
+                  className="absolute right-2 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-white/55 bg-[rgba(29,29,27,0.62)] text-white shadow-[0_8px_20px_rgba(29,29,27,0.24)] backdrop-blur"
+                  aria-label="Next photo"
+                  onClick={() => goToPhoto(selectedPhotoIndex + 1)}
+                >
+                  <ChevronRight className="size-5" />
+                </button>
+              </>
+            ) : null}
+          </div>
+
+          <div className="space-y-3 p-4">
+            {activePhotographer ? (
+              <div className="flex items-center gap-2.5">
+                <ResilientImage
+                  src={activePhotographer.avatarUrl}
+                  alt=""
+                  className="size-9 shrink-0 rounded-full border border-[var(--line)] object-cover"
+                />
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-semibold text-[var(--ink)]">
+                    {activePhotographer.name}
+                  </span>
+                  <span className="block truncate text-xs text-[var(--muted)]">
+                    {activePhotographer.username}
+                  </span>
+                </span>
+              </div>
+            ) : null}
+
+            {activePhoto.caption ? (
+              <p className="text-base leading-relaxed text-[var(--ink)]">{activePhoto.caption}</p>
+            ) : null}
+
+            <div className="flex items-center gap-4 text-sm text-[var(--muted)]">
+              <span className="flex items-center gap-1.5">
+                <Heart className="size-4" aria-hidden="true" />
+                {activePhoto.likeCount}
+              </span>
+              <span>{formatPhotoDate(activePhoto.createdAt)}</span>
+            </div>
+
+            {activePhoto.tags.length ? (
+              <div className="flex flex-wrap gap-2">
+                {activePhoto.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-lg border border-[var(--line)] bg-white px-3 py-1.5 text-xs text-[var(--ink)]"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     );
