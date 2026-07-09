@@ -66,9 +66,11 @@ export function PlaceDetail({
               alt={`${place.name} hero photo`}
               className="aspect-[16/9] w-full object-cover max-sm:aspect-[4/3]"
             />
-            <span className="absolute right-4 top-0 grid h-20 w-12 place-items-center rounded-b bg-[var(--gold)] text-white">
-              <Bookmark className="size-6 fill-current" />
-            </span>
+            {isSaved ? (
+              <span className="absolute right-4 top-0 grid h-20 w-12 place-items-center rounded-b bg-[var(--gold)] text-white">
+                <Bookmark className="size-6 fill-current" />
+              </span>
+            ) : null}
           </div>
         </div>
 
