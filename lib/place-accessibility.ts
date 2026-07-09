@@ -15,12 +15,17 @@ function normalizedText(parts: Array<string | string[] | undefined>): string {
 }
 
 /**
- * Derives how hard a place is to reach from its own tags, best-shooting times,
- * and description. This is intentionally pure so both the map filters and the
- * place-detail stats row can share a single source of truth instead of
- * hardcoding a difficulty label.
+ * Reports how hard a place is to reach. Prefers the curated `easeOfVisit` field
+ * (the source of truth the map's "Ease of visit" filter matches against) and
+ * only falls back to deriving from tags/best-times/description for any place
+ * that predates the field. Pure so the map filters and the place-detail stats
+ * row share one implementation.
  */
 export function accessibilityForPlace(place: Place): PlaceAccessibility {
+  if (place.easeOfVisit && accessibilityOptions.includes(place.easeOfVisit)) {
+    return place.easeOfVisit;
+  }
+
   const text = normalizedText([place.tags, place.bestTimes, place.description]);
 
   if (DIFFICULT_TERMS.some((term) => text.includes(term))) {

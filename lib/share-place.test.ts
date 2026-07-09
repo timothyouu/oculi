@@ -15,6 +15,9 @@ const basePlace: Place = {
   recentActivityScore: 1,
   bestTimes: ["sunset"],
   tags: ["landmark"],
+  sceneTypes: ["bridge"],
+  easeOfVisit: "Easy",
+  bestLight: ["Sunset"],
   coverPhotoUrl: "https://example.com/photo.jpg",
 };
 

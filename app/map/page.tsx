@@ -9,6 +9,12 @@ import { buildSearchCorpus, getSearchCorrection, matchesCorrectedQuery } from "@
 import { rankSearchResults } from "@/lib/search-ranking";
 import { sortTopPlaces } from "@/lib/scoring";
 import { accessibilityForPlace, accessibilityOptions } from "@/lib/place-accessibility";
+import {
+  LIGHT_OPTIONS,
+  SCENE_OPTIONS,
+  matchesBestLightFilter,
+  matchesSceneFilter,
+} from "@/lib/place-taxonomy";
 import { nearbyPlaces, type LatLng } from "@/lib/geo";
 import { clearMapSelectedPlaceId, loadMapSelectedPlaceId, saveMapSelectedPlaceId } from "@/lib/storage";
 import {
@@ -30,28 +36,25 @@ import {
 import type { ReactNode } from "react";
 import type { Photo, Place } from "@/lib/types";
 
-const lightAliases: Record<string, string[]> = {
-  Any: [],
-  "Golden hour": ["golden hour", "sunrise", "sunset", "late afternoon"],
-  Sunrise: ["sunrise", "morning"],
-  Sunset: ["sunset", "late afternoon"],
-  "Blue hour": ["blue hour", "night"],
-  Daylight: ["daylight", "morning", "afternoon", "clear", "overcast", "low tide"],
-  Night: ["night"],
+const lightOptions = LIGHT_OPTIONS;
+
+// Resolve the taxonomy module's string icon keys (kept DOM-free there) to lucide components.
+const sceneIcons: Record<string, typeof Mountain> = {
+  Mountain,
+  Building2,
+  Waves,
+  BookOpen,
+  Users,
+  MapPin,
+  Landmark,
+  Palette,
 };
 
-const lightOptions = ["Any", "Golden hour", "Sunrise", "Sunset", "Blue hour", "Daylight", "Night"];
-
-const sceneOptions = [
-  { label: "Landscape", value: "landscape", icon: Mountain },
-  { label: "Cityscape", value: "skyline", icon: Building2 },
-  { label: "Seascape", value: "coast", icon: Waves },
-  { label: "Architecture", value: "architecture", icon: BookOpen },
-  { label: "Portraits", value: "portraits", icon: Users },
-  { label: "Street", value: "street", icon: MapPin },
-  { label: "Bridge", value: "bridge", icon: Landmark },
-  { label: "Color", value: "color", icon: Palette },
-];
+const sceneOptions = SCENE_OPTIONS.map((option) => ({
+  label: option.label,
+  value: option.value,
+  icon: sceneIcons[option.icon] ?? MapPin,
+}));
 
 function normalizedText(parts: Array<string | string[] | undefined>) {
   return parts.flatMap((part) => (Array.isArray(part) ? part : part ? [part] : [])).join(" ").toLowerCase();
@@ -84,14 +87,6 @@ function isExactPlaceSearch(place: Place, correctedQuery: string) {
   return [place.name, place.fuzzyLocationLabel, place.navigationAddress]
     .filter(Boolean)
     .some((field) => normalizedText([field]).replace(/[,]+/g, "") === correctedQuery);
-}
-
-function matchesLightFilter(lightFilter: string, place: Place, photo: Photo) {
-  if (lightFilter === "Any") return true;
-  const aliases = lightAliases[lightFilter] ?? [lightFilter.toLowerCase()];
-  const text = normalizedText([place.bestTimes, photo.shotAtTimeOfDay, photo.tags]);
-
-  return aliases.some((alias) => text.includes(alias));
 }
 
 function cx(...classes: Array<string | false | null | undefined>) {
@@ -145,17 +140,8 @@ export default function MapPage() {
         placeSearchFields(place, areasById[place.areaId], placePhotos),
         searchCorrection,
       );
-      const matchesLight =
-        lightFilter === "Any" ||
-        place.bestTimes.some((time) =>
-          (lightAliases[lightFilter] ?? [lightFilter.toLowerCase()]).some((alias) =>
-            normalizedText([time]).includes(alias),
-          ),
-        ) ||
-        placePhotos.some((photo) => matchesLightFilter(lightFilter, place, photo));
-      const matchesScene =
-        !sceneFilters.length ||
-        sceneFilters.some((filter) => normalizedText([place.tags, placePhotos.flatMap((photo) => photo.tags)]).includes(filter));
+      const matchesLight = matchesBestLightFilter(place, lightFilter);
+      const matchesScene = matchesSceneFilter(place, sceneFilters);
       const matchesAccessibility =
         !accessibilityFilters.length || accessibilityFilters.includes(accessibilityForPlace(place));
 
@@ -201,9 +187,10 @@ export default function MapPage() {
     const matchesQuery =
       !searchCorrection.correctedQuery ||
       matchesCorrectedQuery(placeSearchFields(place, areasById[place.areaId], placePhotos), searchCorrection);
-    const matchesLight = matchesLightFilter(lightFilter, place, photo) || lightFilter === "Any";
-    const matchesScene =
-      !sceneFilters.length || sceneFilters.some((filter) => normalizedText([place.tags, photo.tags]).includes(filter));
+    // Photos inherit their place's curated scene/light for map filtering, so the pins and their
+    // photos always narrow together to exactly the selected values.
+    const matchesLight = matchesBestLightFilter(place, lightFilter);
+    const matchesScene = matchesSceneFilter(place, sceneFilters);
     const matchesAccessibility =
       !accessibilityFilters.length || accessibilityFilters.includes(accessibilityForPlace(place));
 

@@ -34,6 +34,12 @@ export type Place = {
   recentActivityScore: number;
   bestTimes: string[];
   tags: string[];
+  /** Curated scene taxonomy (subset of the eight canonical scene values). */
+  sceneTypes: string[];
+  /** Curated ease of reaching the spot. */
+  easeOfVisit: "Easy" | "Moderate" | "Difficult";
+  /** Curated, filter-grade light windows (subset of the six canonical light values). */
+  bestLight: string[];
   coverPhotoUrl: string;
 };
 

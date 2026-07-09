@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Bookmark, Images, Send, X } from "lucide-react";
 import type { Photo, Place } from "@/lib/types";
+import { accessibilityForPlace } from "@/lib/place-accessibility";
+import { sceneLabelsFor } from "@/lib/place-taxonomy";
 import { ResilientImage } from "./resilient-image";
 import { SharePlaceButton } from "./share-place-button";
 
@@ -164,6 +166,11 @@ export function SelectedPlaceCard({
             </span>
           ))}
         </div>
+        <p className="text-sm text-[var(--muted)]">
+          {[sceneLabelsFor(place).join(" · "), `${accessibilityForPlace(place)} to reach`]
+            .filter(Boolean)
+            .join(" · ")}
+        </p>
         <p className="flex items-center gap-1.5 text-sm text-[var(--muted)]">
           <Bookmark className="size-4" aria-hidden="true" />
           {place.saveCount} saves

@@ -377,6 +377,9 @@ export const places: Place[] = [
     recentActivityScore: 95,
     bestTimes: ["Sunrise", "Blue hour", "Foggy mornings"],
     tags: ["bridge", "fog", "landscape", "iconic"],
+    sceneTypes: ["bridge", "landscape"],
+    easeOfVisit: "Easy",
+    bestLight: ["Sunrise", "Golden hour", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/GoldenGateBridge-001.jpg/960px-GoldenGateBridge-001.jpg"
   },
   {
@@ -393,6 +396,9 @@ export const places: Place[] = [
     recentActivityScore: 88,
     bestTimes: ["Sunset", "Low tide"],
     tags: ["beach", "bridge", "portraits", "sunset"],
+    sceneTypes: ["coast", "bridge", "portraits"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunset", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Baker_Beach_2.jpg/960px-Baker_Beach_2.jpg"
   },
   {
@@ -409,6 +415,9 @@ export const places: Place[] = [
     recentActivityScore: 74,
     bestTimes: ["Morning", "Late afternoon"],
     tags: ["architecture", "portraits", "reflections"],
+    sceneTypes: ["architecture", "portraits"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/San_Francisco_-_Palace_of_Fine_Arts.jpg/960px-San_Francisco_-_Palace_of_Fine_Arts.jpg"
   },
   {
@@ -425,6 +434,9 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Sunrise", "Night"],
     tags: ["skyline", "night", "wide-angle"],
+    sceneTypes: ["skyline", "landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunrise", "Golden hour", "Blue hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Twin_Peaks-San_Francisco.jpg/960px-Twin_Peaks-San_Francisco.jpg"
   },
   {
@@ -441,6 +453,9 @@ export const places: Place[] = [
     recentActivityScore: 67,
     bestTimes: ["Morning fog", "Sunset"],
     tags: ["trail", "coast", "moody", "landscape"],
+    sceneTypes: ["coast", "landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunset", "Golden hour", "Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Lands_End_-_San_Francisco_zum_Meer.JPG/960px-Lands_End_-_San_Francisco_zum_Meer.JPG"
   },
   {
@@ -457,6 +472,9 @@ export const places: Place[] = [
     recentActivityScore: 71,
     bestTimes: ["Sunset", "Overcast days"],
     tags: ["ruins", "coast", "long exposure"],
+    sceneTypes: ["coast", "landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunset", "Golden hour", "Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/San_Francisco_%28CA%2C_USA%29%2C_Sutro_Baths_--_2022_--_3045.jpg/960px-San_Francisco_%28CA%2C_USA%29%2C_Sutro_Baths_--_2022_--_3045.jpg"
   },
   {
@@ -473,6 +491,9 @@ export const places: Place[] = [
     recentActivityScore: 78,
     bestTimes: ["Blue hour", "Rainy evenings"],
     tags: ["waterfront", "street", "reflections"],
+    sceneTypes: ["street", "skyline"],
+    easeOfVisit: "Easy",
+    bestLight: ["Blue hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Ferry_Building_%28San_Francisco%29.jpg/960px-Ferry_Building_%28San_Francisco%29.jpg"
   },
   {
@@ -489,6 +510,9 @@ export const places: Place[] = [
     recentActivityScore: 69,
     bestTimes: ["Late afternoon", "Clear weekends"],
     tags: ["portraits", "skyline", "social"],
+    sceneTypes: ["portraits", "skyline"],
+    easeOfVisit: "Easy",
+    bestLight: ["Golden hour", "Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Mission_Dolores_Park%2C_San_Francisco.jpg/960px-Mission_Dolores_Park%2C_San_Francisco.jpg"
   },
   {
@@ -505,6 +529,9 @@ export const places: Place[] = [
     recentActivityScore: 56,
     bestTimes: ["Morning", "Clear afternoons"],
     tags: ["architecture", "color", "skyline"],
+    sceneTypes: ["architecture", "skyline", "color"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Painted_ladies_san_francisco.jpg/960px-Painted_ladies_san_francisco.jpg"
   },
   {
@@ -521,6 +548,9 @@ export const places: Place[] = [
     recentActivityScore: 90,
     bestTimes: ["Sunrise", "Golden hour"],
     tags: ["bridge", "overlook", "telephoto"],
+    sceneTypes: ["bridge", "landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunrise", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/17-31-086-spencer.jpg/960px-17-31-086-spencer.jpg"
   },
   {
@@ -537,6 +567,9 @@ export const places: Place[] = [
     recentActivityScore: 86,
     bestTimes: ["Sunset", "Low tide", "Golden hour"],
     tags: ["beach", "bridge", "coast", "landscape"],
+    sceneTypes: ["coast", "bridge", "landscape"],
+    easeOfVisit: "Difficult",
+    bestLight: ["Sunset", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Marshall%27s_Beach%2C_San_Francisco%2C_United_States_%28Unsplash%29.jpg/960px-Marshall%27s_Beach%2C_San_Francisco%2C_United_States_%28Unsplash%29.jpg"
   },
   {
@@ -553,6 +586,9 @@ export const places: Place[] = [
     recentActivityScore: 83,
     bestTimes: ["Morning", "Blue hour", "Foggy mornings"],
     tags: ["bridge", "architecture", "street", "waterfront"],
+    sceneTypes: ["architecture", "bridge"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Blue hour", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Fort_Point_Courtyard.jpg/960px-Fort_Point_Courtyard.jpg"
   },
   {
@@ -569,6 +605,9 @@ export const places: Place[] = [
     recentActivityScore: 80,
     bestTimes: ["Sunrise", "Golden hour", "Daylight"],
     tags: ["waterfront", "bridge", "portraits", "landscape"],
+    sceneTypes: ["coast", "bridge", "portraits"],
+    easeOfVisit: "Easy",
+    bestLight: ["Sunrise", "Golden hour", "Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Prsf_crissy_arial_1921.jpg/960px-Prsf_crissy_arial_1921.jpg"
   },
   {
@@ -585,6 +624,9 @@ export const places: Place[] = [
     recentActivityScore: 73,
     bestTimes: ["Morning", "Clear afternoons", "Blue hour"],
     tags: ["skyline", "architecture", "street", "bay"],
+    sceneTypes: ["skyline", "architecture"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Coit_Tower_2021.jpg/960px-Coit_Tower_2021.jpg"
   },
   {
@@ -601,6 +643,9 @@ export const places: Place[] = [
     recentActivityScore: 76,
     bestTimes: ["Daylight", "Late afternoon", "Blue hour"],
     tags: ["architecture", "portraits", "reflections", "skyline"],
+    sceneTypes: ["architecture", "skyline", "portraits"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Salesforce_Park%2C_San_Francisco_2023-07-18.jpg/960px-Salesforce_Park%2C_San_Francisco_2023-07-18.jpg"
   },
   {
@@ -617,6 +662,9 @@ export const places: Place[] = [
     recentActivityScore: 77,
     bestTimes: ["Daylight", "Night", "Rainy evenings"],
     tags: ["street", "color", "architecture", "night"],
+    sceneTypes: ["street", "color"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Blue hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/1_chinatown_san_francisco_arch_gateway.JPG/960px-1_chinatown_san_francisco_arch_gateway.JPG"
   },
   {
@@ -633,6 +681,9 @@ export const places: Place[] = [
     recentActivityScore: 65,
     bestTimes: ["Sunset", "Overcast days", "Morning fog"],
     tags: ["beach", "coast", "landscape", "surfers"],
+    sceneTypes: ["coast", "landscape"],
+    easeOfVisit: "Easy",
+    bestLight: ["Sunset", "Golden hour", "Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Oceanbeachsf.jpg/960px-Oceanbeachsf.jpg"
   },
   {
@@ -649,6 +700,9 @@ export const places: Place[] = [
     recentActivityScore: 68,
     bestTimes: ["Sunrise", "Sunset", "Golden hour"],
     tags: ["skyline", "landscape", "portraits", "trail"],
+    sceneTypes: ["skyline", "landscape", "portraits"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunrise", "Sunset", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/San_Francisco-Bernal_Heights.jpg/960px-San_Francisco-Bernal_Heights.jpg"
   },
   {
@@ -665,6 +719,9 @@ export const places: Place[] = [
     recentActivityScore: 61,
     bestTimes: ["Morning", "Late afternoon", "Daylight"],
     tags: ["architecture", "portraits", "stairs", "stone"],
+    sceneTypes: ["architecture", "portraits"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Grace_Cathedral_%285%29.JPG/960px-Grace_Cathedral_%285%29.JPG"
   },
   {
@@ -681,6 +738,9 @@ export const places: Place[] = [
     recentActivityScore: 79,
     bestTimes: ["Daylight", "Late afternoon", "Overcast days"],
     tags: ["street", "color", "portraits", "murals"],
+    sceneTypes: ["street", "color", "portraits"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Carnaval_San_Francisco_2014_Parade_Gamo%27s_Rhythm_Riders_115_%2814318836823%29.jpg/960px-Carnaval_San_Francisco_2014_Parade_Gamo%27s_Rhythm_Riders_115_%2814318836823%29.jpg"
   },
   {
@@ -697,6 +757,9 @@ export const places: Place[] = [
     recentActivityScore: 84,
     bestTimes: ["Morning", "Overcast days", "Spring bloom"],
     tags: ["garden", "architecture", "portraits", "details"],
+    sceneTypes: ["landscape", "architecture", "portraits"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Japaneseteagarden.JPG/960px-Japaneseteagarden.JPG"
   },
   {
@@ -713,6 +776,9 @@ export const places: Place[] = [
     recentActivityScore: 72,
     bestTimes: ["Daylight", "Late afternoon", "Clear afternoons"],
     tags: ["architecture", "skyline", "reflections", "museum"],
+    sceneTypes: ["architecture", "skyline"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/M._H._de_Young_Memorial_Museum.jpg/960px-M._H._de_Young_Memorial_Museum.jpg"
   },
   {
@@ -729,6 +795,9 @@ export const places: Place[] = [
     recentActivityScore: 75,
     bestTimes: ["Morning", "Foggy mornings", "Overcast days"],
     tags: ["forest", "landscape", "trail", "moody"],
+    sceneTypes: ["landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Muir_Wood11.JPG/960px-Muir_Wood11.JPG"
   },
   {
@@ -745,6 +814,9 @@ export const places: Place[] = [
     recentActivityScore: 70,
     bestTimes: ["Sunset", "Golden hour", "Spring bloom"],
     tags: ["coast", "trail", "landscape", "wildflowers"],
+    sceneTypes: ["coast", "landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunset", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Pacifica_Pano_2.jpg/960px-Pacifica_Pano_2.jpg"
   },
   {
@@ -761,6 +833,9 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Morning", "Daylight", "Rainy evenings"],
     tags: ["street", "food", "color", "waterfront"],
+    sceneTypes: ["street", "color"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Ferry_Building_Marketplace%2C_San_Francisco.jpg/960px-Ferry_Building_Marketplace%2C_San_Francisco.jpg"
   },
   {
@@ -777,6 +852,9 @@ export const places: Place[] = [
     recentActivityScore: 73,
     bestTimes: ["Morning", "Late afternoon", "Overcast days"],
     tags: ["stairs", "color", "portraits", "architecture"],
+    sceneTypes: ["architecture", "color", "portraits"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Daylight", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Inner_Sunset%2C_San_Francisco%2C_CA%2C_USA_-_panoramio_%28cropped%29.jpg/960px-Inner_Sunset%2C_San_Francisco%2C_CA%2C_USA_-_panoramio_%28cropped%29.jpg"
   },
   {
@@ -793,6 +871,9 @@ export const places: Place[] = [
     recentActivityScore: 78,
     bestTimes: ["Daylight", "Late afternoon", "Night"],
     tags: ["street", "color", "portraits", "night"],
+    sceneTypes: ["street", "color", "portraits"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Haight_Ashbury11.JPG/960px-Haight_Ashbury11.JPG"
   },
   {
@@ -809,6 +890,9 @@ export const places: Place[] = [
     recentActivityScore: 81,
     bestTimes: ["Blue hour", "Night", "Sunset"],
     tags: ["skyline", "waterfront", "night", "telephoto"],
+    sceneTypes: ["skyline"],
+    easeOfVisit: "Easy",
+    bestLight: ["Sunset", "Golden hour", "Blue hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/11-bay-bridge_treasure-island_east-bay.jpg/960px-11-bay-bridge_treasure-island_east-bay.jpg"
   },
   {
@@ -825,6 +909,9 @@ export const places: Place[] = [
     recentActivityScore: 92,
     bestTimes: ["Sunrise", "Blue hour", "Overcast days"],
     tags: ["bridge", "skyline", "street", "architecture"],
+    sceneTypes: ["bridge", "skyline", "street"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunrise", "Golden hour", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Brooklyn_Bridge_and_the_Lower_Manhattan_skyline_from_Pebble_Beach%2C_New_York.jpg/960px-Brooklyn_Bridge_and_the_Lower_Manhattan_skyline_from_Pebble_Beach%2C_New_York.jpg"
   },
   {
@@ -841,6 +928,9 @@ export const places: Place[] = [
     recentActivityScore: 77,
     bestTimes: ["Morning", "Late afternoon", "Rainy days"],
     tags: ["architecture", "portraits", "street", "park"],
+    sceneTypes: ["architecture", "portraits"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/NYC-CentralPark_%281869%29_p061_Stairs_leading_to_the_Lake-Terrace.jpg/960px-NYC-CentralPark_%281869%29_p061_Stairs_leading_to_the_Lake-Terrace.jpg"
   },
   {
@@ -857,6 +947,9 @@ export const places: Place[] = [
     recentActivityScore: 90,
     bestTimes: ["Night", "Rainy evenings", "Blue hour"],
     tags: ["street", "night", "color", "neon"],
+    sceneTypes: ["street", "color"],
+    easeOfVisit: "Easy",
+    bestLight: ["Night", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/New_york_times_square-terabass.jpg/960px-New_york_times_square-terabass.jpg"
   },
   {
@@ -873,6 +966,9 @@ export const places: Place[] = [
     recentActivityScore: 74,
     bestTimes: ["Sunrise", "Blue hour", "Clear afternoons"],
     tags: ["monument", "reflections", "architecture", "landmark"],
+    sceneTypes: ["architecture", "landscape"],
+    easeOfVisit: "Easy",
+    bestLight: ["Sunrise", "Golden hour", "Blue hour", "Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Washington_250424_Washington_Monument_01.jpg/960px-Washington_250424_Washington_Monument_01.jpg"
   },
   {
@@ -889,6 +985,9 @@ export const places: Place[] = [
     recentActivityScore: 73,
     bestTimes: ["Morning", "Golden hour", "Night"],
     tags: ["monument", "architecture", "portraits", "night"],
+    sceneTypes: ["architecture", "portraits"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Aerial_view_of_Lincoln_Memorial_-_east_side_EDIT.jpeg/960px-Aerial_view_of_Lincoln_Memorial_-_east_side_EDIT.jpeg"
   },
   {
@@ -905,6 +1004,9 @@ export const places: Place[] = [
     recentActivityScore: 68,
     bestTimes: ["Sunrise", "Sunset", "Clear nights"],
     tags: ["desert", "landscape", "landmark", "red rock"],
+    sceneTypes: ["landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunrise", "Sunset", "Golden hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Monumentvalleyviewfromnorth.jpg/960px-Monumentvalleyviewfromnorth.jpg"
   },
   {
@@ -921,6 +1023,9 @@ export const places: Place[] = [
     recentActivityScore: 72,
     bestTimes: ["Sunrise", "Late afternoon", "Overcast days"],
     tags: ["desert", "river", "landscape", "overlook"],
+    sceneTypes: ["landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunrise", "Golden hour", "Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Grand_Canyon_Horseshoe_Bend_%28crop_2%29.jpg/960px-Grand_Canyon_Horseshoe_Bend_%28crop_2%29.jpg"
   },
   {
@@ -937,6 +1042,9 @@ export const places: Place[] = [
     recentActivityScore: 79,
     bestTimes: ["Sunrise", "Sunset", "Storm light"],
     tags: ["canyon", "landscape", "overlook", "national park"],
+    sceneTypes: ["landscape"],
+    easeOfVisit: "Easy",
+    bestLight: ["Sunrise", "Sunset", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/10_Grand_Canyon_Navajo_Point_viewpoint_terrace%2C_Grand_Canyon_National_Park%2C_USA_-_American_nature.jpg/960px-10_Grand_Canyon_Navajo_Point_viewpoint_terrace%2C_Grand_Canyon_National_Park%2C_USA_-_American_nature.jpg"
   },
   {
@@ -953,6 +1061,9 @@ export const places: Place[] = [
     recentActivityScore: 76,
     bestTimes: ["Sunrise", "Late afternoon", "Clear days"],
     tags: ["canyon", "trail", "landscape", "red rock"],
+    sceneTypes: ["landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunrise", "Golden hour", "Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Zion_angels_landing_view.jpg/960px-Zion_angels_landing_view.jpg"
   },
   {
@@ -969,6 +1080,9 @@ export const places: Place[] = [
     recentActivityScore: 66,
     bestTimes: ["Sunrise", "Snowy mornings", "Golden hour"],
     tags: ["canyon", "landscape", "snow", "red rock"],
+    sceneTypes: ["landscape"],
+    easeOfVisit: "Easy",
+    bestLight: ["Sunrise", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/USA_10654_Bryce_Canyon_Luca_Galuzzi_2007.jpg/960px-USA_10654_Bryce_Canyon_Luca_Galuzzi_2007.jpg"
   },
   {
@@ -985,6 +1099,9 @@ export const places: Place[] = [
     recentActivityScore: 70,
     bestTimes: ["Sunset", "Blue hour", "Clear nights"],
     tags: ["desert", "landscape", "night", "national park"],
+    sceneTypes: ["landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunset", "Golden hour", "Blue hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Joshua_Tree_National_Park_2025.jpg/960px-Joshua_Tree_National_Park_2025.jpg"
   },
   {
@@ -1001,6 +1118,9 @@ export const places: Place[] = [
     recentActivityScore: 81,
     bestTimes: ["Sunset", "Blue hour", "Night"],
     tags: ["beach", "neon", "waterfront", "street"],
+    sceneTypes: ["coast", "street"],
+    easeOfVisit: "Easy",
+    bestLight: ["Sunset", "Golden hour", "Blue hour", "Night"],
     coverPhotoUrl: "/generated/santa-monica-pier.png"
   },
   {
@@ -1017,6 +1137,9 @@ export const places: Place[] = [
     recentActivityScore: 87,
     bestTimes: ["Golden hour", "Blue hour", "Clear nights"],
     tags: ["skyline", "architecture", "night", "landmark"],
+    sceneTypes: ["skyline", "architecture"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Golden hour", "Blue hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Griffith_Observatory%2C_Los_Angeles%2C_California.jpg/960px-Griffith_Observatory%2C_Los_Angeles%2C_California.jpg"
   },
   {
@@ -1033,6 +1156,9 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Sunset", "Blue hour", "Clear afternoons"],
     tags: ["skyline", "overlook", "mountains", "night"],
+    sceneTypes: ["skyline"],
+    easeOfVisit: "Easy",
+    bestLight: ["Sunset", "Golden hour", "Blue hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Seattle_Kerry_Park_Skyline.jpg/960px-Seattle_Kerry_Park_Skyline.jpg"
   },
   {
@@ -1049,6 +1175,9 @@ export const places: Place[] = [
     recentActivityScore: 84,
     bestTimes: ["Morning", "Rainy days", "Blue hour"],
     tags: ["market", "street", "color", "waterfront"],
+    sceneTypes: ["street", "color"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Pike-place-market.jpg/960px-Pike-place-market.jpg"
   },
   {
@@ -1065,6 +1194,9 @@ export const places: Place[] = [
     recentActivityScore: 83,
     bestTimes: ["Blue hour", "Golden hour", "Rainy evenings"],
     tags: ["architecture", "waterfront", "reflections", "cityscape"],
+    sceneTypes: ["architecture", "skyline"],
+    easeOfVisit: "Easy",
+    bestLight: ["Golden hour", "Blue hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Chicago_River_in_Chicago_2012-0241.jpg/960px-Chicago_River_in_Chicago_2012-0241.jpg"
   },
   {
@@ -1081,6 +1213,9 @@ export const places: Place[] = [
     recentActivityScore: 76,
     bestTimes: ["Morning", "Blue hour", "Snowy days"],
     tags: ["reflections", "architecture", "street", "landmark"],
+    sceneTypes: ["architecture", "street"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Cloud_gate_construction.jpg/960px-Cloud_gate_construction.jpg"
   },
   {
@@ -1097,6 +1232,9 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Morning", "Golden hour", "Night"],
     tags: ["beach", "architecture", "color", "night"],
+    sceneTypes: ["coast", "architecture", "color"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Ocean_Drive_in_the_Miami_Beach_Art_Deco_Historic_District.jpg/960px-Ocean_Drive_in_the_Miami_Beach_Art_Deco_Historic_District.jpg"
   },
   {
@@ -1113,6 +1251,9 @@ export const places: Place[] = [
     recentActivityScore: 58,
     bestTimes: ["Morning", "Storm light", "Overcast days"],
     tags: ["wetland", "wildlife", "landscape", "reflections"],
+    sceneTypes: ["landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Anhingatrail.jpg/960px-Anhingatrail.jpg"
   },
   {
@@ -1129,6 +1270,9 @@ export const places: Place[] = [
     recentActivityScore: 80,
     bestTimes: ["Morning", "Blue hour", "Rainy evenings"],
     tags: ["street", "architecture", "color", "night"],
+    sceneTypes: ["street", "architecture", "color"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Blue hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/French_Quarter03_New_Orleans.JPG/960px-French_Quarter03_New_Orleans.JPG"
   },
   {
@@ -1145,6 +1289,9 @@ export const places: Place[] = [
     recentActivityScore: 61,
     bestTimes: ["Morning", "Overcast days", "Fall color"],
     tags: ["street", "architecture", "historic", "portraits"],
+    sceneTypes: ["street", "architecture", "portraits"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/1890_AcornSt_Boston.png/960px-1890_AcornSt_Boston.png"
   },
   {
@@ -1161,6 +1308,9 @@ export const places: Place[] = [
     recentActivityScore: 64,
     bestTimes: ["Golden hour", "Morning", "Blue hour"],
     tags: ["architecture", "skyline", "stairs", "landmark"],
+    sceneTypes: ["architecture", "skyline"],
+    easeOfVisit: "Easy",
+    bestLight: ["Golden hour", "Daylight", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Philadelphia_Museum_of_Art.JPG/960px-Philadelphia_Museum_of_Art.JPG"
   },
   {
@@ -1177,6 +1327,9 @@ export const places: Place[] = [
     recentActivityScore: 69,
     bestTimes: ["Sunrise", "Snowy mornings", "Clear afternoons"],
     tags: ["mountains", "lake", "landscape", "trail"],
+    sceneTypes: ["landscape"],
+    easeOfVisit: "Difficult",
+    bestLight: ["Sunrise", "Golden hour", "Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Dream_Lake.jpg/960px-Dream_Lake.jpg"
   },
   {
@@ -1193,6 +1346,9 @@ export const places: Place[] = [
     recentActivityScore: 71,
     bestTimes: ["Morning", "Daylight", "Cool weather"],
     tags: ["thermal", "color", "landscape", "national park"],
+    sceneTypes: ["landscape", "color"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Yellowstone_National_Park_%28WY%2C_USA%29%2C_Grand_Prismatic_Spring_--_2022_--_2514.jpg/960px-Yellowstone_National_Park_%28WY%2C_USA%29%2C_Grand_Prismatic_Spring_--_2022_--_2514.jpg"
   },
   {
@@ -1209,6 +1365,9 @@ export const places: Place[] = [
     recentActivityScore: 66,
     bestTimes: ["Sunrise", "Morning fog", "Fall color"],
     tags: ["mountains", "river", "reflections", "landscape"],
+    sceneTypes: ["landscape"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunrise", "Golden hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/2025-05-30-184307_USA_Wyoming_Moose_1987.8.jpg/960px-2025-05-30-184307_USA_Wyoming_Moose_1987.8.jpg"
   },
   {
@@ -1225,6 +1384,9 @@ export const places: Place[] = [
     recentActivityScore: 73,
     bestTimes: ["Overcast days", "Morning", "Fall color"],
     tags: ["garden", "details", "portraits", "rain"],
+    sceneTypes: ["landscape", "portraits"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Japanese_Garden_-1.jpg/960px-Japanese_Garden_-1.jpg"
   },
   {
@@ -1241,6 +1403,9 @@ export const places: Place[] = [
     recentActivityScore: 70,
     bestTimes: ["Morning", "Overcast days", "Rainy days"],
     tags: ["waterfall", "forest", "long exposure", "landscape"],
+    sceneTypes: ["landscape"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Multnomah_Falls_on_2_August_2012.jpg/960px-Multnomah_Falls_on_2_August_2012.jpg"
   },
   {
@@ -1257,6 +1422,9 @@ export const places: Place[] = [
     recentActivityScore: 82,
     bestTimes: ["Night", "Blue hour", "Rainy evenings"],
     tags: ["street", "neon", "night", "music"],
+    sceneTypes: ["street", "color"],
+    easeOfVisit: "Easy",
+    bestLight: ["Night", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/WTN_PeepHoles_167.JPG/960px-WTN_PeepHoles_167.JPG"
   },
   {
@@ -1273,6 +1441,9 @@ export const places: Place[] = [
     recentActivityScore: 88,
     bestTimes: ["Sunrise", "Blue hour", "Rainy evenings"],
     tags: ["landmark", "architecture", "night", "cityscape"],
+    sceneTypes: ["architecture", "skyline"],
+    easeOfVisit: "Easy",
+    bestLight: ["Sunrise", "Golden hour", "Blue hour", "Night"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Tour_Eiffel_Wikimedia_Commons.jpg/960px-Tour_Eiffel_Wikimedia_Commons.jpg"
   },
   {
@@ -1289,6 +1460,9 @@ export const places: Place[] = [
     recentActivityScore: 83,
     bestTimes: ["Blue hour", "Rainy evenings", "Morning"],
     tags: ["bridge", "landmark", "reflections", "night"],
+    sceneTypes: ["bridge", "architecture"],
+    easeOfVisit: "Easy",
+    bestLight: ["Blue hour", "Night", "Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/London_-_London_Tower_Bridge_-_140806_171049.jpg/960px-London_-_London_Tower_Bridge_-_140806_171049.jpg"
   },
   {
@@ -1305,6 +1479,9 @@ export const places: Place[] = [
     recentActivityScore: 81,
     bestTimes: ["Morning", "Golden hour", "Blue hour"],
     tags: ["landmark", "architecture", "historic", "street"],
+    sceneTypes: ["architecture", "street"],
+    easeOfVisit: "Easy",
+    bestLight: ["Daylight", "Golden hour", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Colosseo_2020.jpg/960px-Colosseo_2020.jpg"
   },
   {
@@ -1321,6 +1498,9 @@ export const places: Place[] = [
     recentActivityScore: 94,
     bestTimes: ["Night", "Rainy evenings", "Blue hour"],
     tags: ["street", "neon", "night", "cityscape"],
+    sceneTypes: ["street", "color"],
+    easeOfVisit: "Easy",
+    bestLight: ["Night", "Blue hour"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Shibuya_scramble_crossing_during_Halloween_2023%2C_actually_less_crowded_than_usual%2C_high_police_presence_2.jpg/960px-Shibuya_scramble_crossing_during_Halloween_2023%2C_actually_less_crowded_than_usual%2C_high_police_presence_2.jpg"
   },
   {
@@ -1337,6 +1517,9 @@ export const places: Place[] = [
     recentActivityScore: 79,
     bestTimes: ["Sunrise", "Golden hour", "Clear afternoons"],
     tags: ["landmark", "desert", "historic", "silhouette"],
+    sceneTypes: ["landscape", "architecture"],
+    easeOfVisit: "Moderate",
+    bestLight: ["Sunrise", "Golden hour", "Daylight"],
     coverPhotoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Pyramids_of_the_Giza_Necropolis.jpg/960px-Pyramids_of_the_Giza_Necropolis.jpg"
   }
 ];

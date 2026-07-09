@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useDemoState } from "@/lib/demo-state";
 import { formatPlaceLocation } from "@/lib/location-labels";
 import { accessibilityForPlace } from "@/lib/place-accessibility";
+import { sceneLabelsFor } from "@/lib/place-taxonomy";
 import type { Photo, Place } from "../lib/types";
 import { BackButton } from "./back-button";
 import { MapboxMap } from "./mapbox-map";
@@ -120,6 +121,14 @@ export function PlaceDetail({
                 <div className="grid gap-1 sm:grid-cols-[92px_minmax(0,1fr)]">
                   <dt className="font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">Best light</dt>
                   <dd className="text-[var(--ink)]">{place.bestTimes.slice(0, 3).join(" · ")}</dd>
+                </div>
+                <div className="grid gap-1 sm:grid-cols-[92px_minmax(0,1fr)]">
+                  <dt className="font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">Scene</dt>
+                  <dd className="text-[var(--ink)]">{sceneLabelsFor(place).join(" · ")}</dd>
+                </div>
+                <div className="grid gap-1 sm:grid-cols-[92px_minmax(0,1fr)]">
+                  <dt className="font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">Ease of visit</dt>
+                  <dd className="text-[var(--ink)]">{accessibilityForPlace(place)}</dd>
                 </div>
                 <div className="grid gap-1 sm:grid-cols-[92px_minmax(0,1fr)]">
                   <dt className="font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">Good for</dt>
