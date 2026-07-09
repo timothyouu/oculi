@@ -237,11 +237,27 @@ export function MapboxMap({
           // enough to separate them, even if they're only a block apart.
           const clusterBounds = new mapboxgl.LngLatBounds();
           cluster.places.forEach((place) => clusterBounds.extend([place.lng, place.lat]));
-          map.fitBounds(clusterBounds, {
-            padding: 96,
-            maxZoom: 16,
-            duration: 650,
-          });
+
+          const fitOptions = { padding: 96, maxZoom: 16 };
+          const currentZoom = map.getZoom();
+          const targetCamera = map.cameraForBounds(clusterBounds, fitOptions);
+
+          // Clustering groups nodes by on-screen pixel distance, not geographic
+          // distance, so at low zoom (e.g. the initial world view) a "cluster"
+          // can contain places spread across continents. Their true bounding
+          // box is then nearly the whole visible world already, so fitBounds
+          // barely moves the camera. Detect that degenerate case and fall back
+          // to a flat zoom step centered on the cluster so the click always
+          // makes visible progress toward separating it.
+          if (targetCamera?.zoom !== undefined && targetCamera.zoom > currentZoom + 0.5) {
+            map.fitBounds(clusterBounds, { ...fitOptions, duration: 650 });
+          } else {
+            map.easeTo({
+              center: [cluster.lng, cluster.lat],
+              zoom: Math.min(currentZoom + 3, 16),
+              duration: 650,
+            });
+          }
         }
         onSelectPlace?.(cluster.primaryPlace.id);
       });
@@ -255,11 +271,21 @@ export function MapboxMap({
     };
   }, [mapReady, mapZoom, onSelectPlace, savedPlaceIds, selected?.id, showSelectedCard, visiblePlaceClusters]);
 
+  // Re-fit the camera to the full place set when which places are visible
+  // actually changes (e.g. a filter narrows the results) - but not merely
+  // when `places` gets a new array reference from re-sorting (selecting a
+  // place calls recordPlaceView, which bumps recentActivityScore and
+  // re-sorts topPlaces upstream). Keying on the sorted id set instead of the
+  // array reference stops that resort from cancelling an in-flight cluster
+  // zoom animation by snapping the camera back out to fit everything.
+  const visiblePlaceIdsKey = useMemo(() => places.map((place) => place.id).sort().join(","), [places]);
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
     fitPlaces(map, places, showSelectedCard);
-  }, [mapReady, places, showSelectedCard]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, visiblePlaceIdsKey, showSelectedCard]);
 
   useEffect(() => {
     const map = mapRef.current;
