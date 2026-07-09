@@ -1,7 +1,9 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
-import { Camera, ImagePlus, LocateFixed, MapPin, Search, Sun, X } from "lucide-react";
+import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
+import { Camera, ImagePlus, LocateFixed, MapPin, Sun, X } from "lucide-react";
+import { sortByDistanceFrom } from "../lib/geo";
+import { rankSearchResults } from "../lib/search-ranking";
 import type { Place } from "../lib/types";
 
 export type UploadPhotoInput = {
@@ -24,26 +26,75 @@ type UploadModalProps = {
   onSubmit: (input: UploadPhotoInput) => void;
 };
 
+type GeoStatus = "idle" | "locating" | "found" | "denied";
+
+const SUGGESTION_LIMIT = 6;
+
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
 export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }: UploadModalProps) {
+  const initialPlace = useMemo(
+    () => (initialPlaceId ? places.find((place) => place.id === initialPlaceId) : undefined),
+    [initialPlaceId, places],
+  );
+
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
-  const [placeId, setPlaceId] = useState(initialPlaceId || places[0]?.id || "");
+  const [placeId, setPlaceId] = useState(initialPlace?.id ?? "");
+  const [locationQuery, setLocationQuery] = useState(initialPlace?.name ?? "");
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const [nearbyPlaces, setNearbyPlaces] = useState<Place[] | null>(null);
+  const [geoStatus, setGeoStatus] = useState<GeoStatus>("idle");
+  const [usedCurrentLocation, setUsedCurrentLocation] = useState(false);
   const [caption, setCaption] = useState("");
   const [metadataText, setMetadataText] = useState("");
   const [bestLight, setBestLight] = useState("Golden hour");
   const [tagsText, setTagsText] = useState("");
-  const [locationStatus, setLocationStatus] = useState("Select a place or use an approximate current location.");
-  const [usedCurrentLocation, setUsedCurrentLocation] = useState(false);
+  const locationFieldRef = useRef<HTMLDivElement>(null);
 
   const selectedPlace = useMemo(() => places.find((place) => place.id === placeId), [places, placeId]);
 
+  const suggestions = useMemo(() => {
+    const query = locationQuery.trim();
+    if (query) {
+      return rankSearchResults({
+        items: places,
+        query,
+        fields: [
+          { weight: 5, getValue: (place) => [place.name] },
+          { weight: 3, getValue: (place) => [place.fuzzyLocationLabel] },
+          { weight: 2, getValue: (place) => [place.tags] },
+        ],
+        limit: SUGGESTION_LIMIT,
+      });
+    }
+    if (nearbyPlaces) return nearbyPlaces.slice(0, SUGGESTION_LIMIT);
+    return [];
+  }, [locationQuery, places, nearbyPlaces]);
+
   useEffect(() => {
-    if (initialPlaceId) setPlaceId(initialPlaceId);
-  }, [initialPlaceId]);
+    if (initialPlace) {
+      setPlaceId(initialPlace.id);
+      setLocationQuery(initialPlace.name);
+    }
+  }, [initialPlace]);
+
+  useEffect(() => {
+    setHighlightedIndex(0);
+  }, [suggestions]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (locationFieldRef.current && !locationFieldRef.current.contains(event.target as Node)) {
+        setSuggestionsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   if (!open) return null;
 
@@ -58,27 +109,56 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
     reader.readAsDataURL(nextFile);
   }
 
-  function handleSimulatedLocation() {
-    setUsedCurrentLocation(false);
-    setLocationStatus("Using a simulated nearby location for the demo.");
-    if (!placeId && places[0]) setPlaceId(places[0].id);
+  function chooseSuggestion(place: Place) {
+    setPlaceId(place.id);
+    setLocationQuery(place.name);
+    setSuggestionsOpen(false);
   }
 
-  function useCurrentLocation() {
+  function handleLocationQueryChange(value: string) {
+    setLocationQuery(value);
+    setSuggestionsOpen(true);
+    if (placeId && places.find((place) => place.id === placeId)?.name !== value) {
+      setPlaceId("");
+    }
+  }
+
+  function useMyLocation() {
     if (!navigator.geolocation) {
-      handleSimulatedLocation();
+      setGeoStatus("denied");
       return;
     }
 
-    setLocationStatus("Requesting browser location...");
+    setGeoStatus("locating");
     navigator.geolocation.getCurrentPosition(
-      () => {
+      (position) => {
+        const origin = { lat: position.coords.latitude, lng: position.coords.longitude };
+        setNearbyPlaces(sortByDistanceFrom(origin, places));
         setUsedCurrentLocation(true);
-        setLocationStatus("Using approximate current area. Pick the closest seeded spot before posting.");
+        setGeoStatus("found");
+        setLocationQuery("");
+        setPlaceId("");
+        setSuggestionsOpen(true);
       },
-      () => handleSimulatedLocation(),
+      () => setGeoStatus("denied"),
       { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 },
     );
+  }
+
+  function handleLocationKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (!suggestionsOpen || suggestions.length === 0) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setHighlightedIndex((index) => (index + 1) % suggestions.length);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setHighlightedIndex((index) => (index - 1 + suggestions.length) % suggestions.length);
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      chooseSuggestion(suggestions[highlightedIndex]);
+    } else if (event.key === "Escape") {
+      setSuggestionsOpen(false);
+    }
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -106,6 +186,16 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
     setTagsText("");
     onClose();
   }
+
+  const locationHint = geoStatus === "locating"
+    ? "Finding spots near you..."
+    : geoStatus === "denied"
+      ? "Couldn't get your location — type a place name instead."
+      : selectedPlace
+        ? selectedPlace.fuzzyLocationLabel
+        : geoStatus === "found"
+          ? "Showing spots near you — pick one below."
+          : "Type a place name, or tap the locate icon for nearby suggestions.";
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/42 p-0 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="upload-title">
@@ -142,29 +232,69 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
               <input type="file" accept="image/*" className="sr-only" onChange={handleFileChange} required />
             </label>
 
-            <label className="block">
-              <span className="mb-2 block text-base text-[var(--ink)]">Choose a place</span>
-              <span className="relative block">
-                <Search className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--ink)]/65" />
-                <select
-                  id="upload-place"
-                  value={placeId}
-                  onChange={(event) => setPlaceId(event.target.value)}
-                  className="h-12 w-full appearance-none rounded-lg border border-[var(--line)] bg-white pl-12 pr-10 text-base outline-none"
+            <div className="relative block" ref={locationFieldRef}>
+              <span className="mb-2 block text-base text-[var(--ink)]">Where was this taken?</span>
+              <span className="relative flex items-center">
+                <MapPin className="pointer-events-none absolute left-4 size-5 text-[var(--ink)]/65" aria-hidden="true" />
+                <input
+                  role="combobox"
+                  aria-expanded={suggestionsOpen}
+                  aria-controls="location-suggestions"
+                  aria-autocomplete="list"
+                  value={locationQuery}
+                  onChange={(event) => handleLocationQueryChange(event.target.value)}
+                  onFocus={() => setSuggestionsOpen(true)}
+                  onKeyDown={handleLocationKeyDown}
+                  className="h-12 w-full rounded-lg border border-[var(--line)] bg-white pl-12 pr-12 text-base outline-none placeholder:text-[var(--muted)]"
+                  placeholder="Start typing a place name..."
+                  autoComplete="off"
                   required
+                />
+                <button
+                  type="button"
+                  aria-label="Suggest places near my current location"
+                  className={cx(
+                    "absolute right-2 grid size-9 place-items-center rounded-full transition",
+                    usedCurrentLocation ? "bg-[var(--moss)] text-white" : "text-[var(--ink)] hover:bg-[var(--chip)]",
+                  )}
+                  onClick={useMyLocation}
                 >
-                  {places.map((place) => (
-                    <option key={place.id} value={place.id}>{place.name}</option>
-                  ))}
-                </select>
+                  <LocateFixed className={cx("size-5", geoStatus === "locating" && "animate-pulse")} aria-hidden="true" />
+                </button>
               </span>
-              {selectedPlace ? (
-                <p className="mt-2 flex items-center gap-1 text-xs text-[var(--muted)]">
-                  <MapPin className="size-3.5" aria-hidden="true" />
-                  {selectedPlace.fuzzyLocationLabel}
-                </p>
+
+              {suggestionsOpen && suggestions.length > 0 ? (
+                <ul
+                  id="location-suggestions"
+                  role="listbox"
+                  className="absolute z-10 mt-2 max-h-64 w-full overflow-y-auto rounded-lg border border-[var(--line)] bg-white py-1 shadow-lg"
+                >
+                  {suggestions.map((place, index) => (
+                    <li key={place.id} role="option" aria-selected={place.id === placeId}>
+                      <button
+                        type="button"
+                        className={cx(
+                          "flex w-full items-center gap-3 px-4 py-2 text-left text-sm",
+                          index === highlightedIndex ? "bg-[var(--chip)]" : "hover:bg-[var(--chip)]",
+                        )}
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                        onClick={() => chooseSuggestion(place)}
+                      >
+                        <MapPin className="size-4 shrink-0 text-[var(--ink)]/60" aria-hidden="true" />
+                        <span className="min-w-0">
+                          <span className="block truncate text-[var(--ink)]">{place.name}</span>
+                          <span className="block truncate text-xs text-[var(--muted)]">{place.fuzzyLocationLabel}</span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               ) : null}
-            </label>
+
+              <p className={cx("mt-2 flex items-center gap-1 text-xs", geoStatus === "denied" ? "text-red-600" : "text-[var(--muted)]")}>
+                {locationHint}
+              </p>
+            </div>
 
             <label className="block">
               <span className="mb-2 block text-base text-[var(--ink)]">Caption</span>
@@ -214,14 +344,6 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
                 placeholder="Fog, Bridge, Golden hour"
               />
             </label>
-
-            <button type="button" className="flex h-12 w-full items-center justify-between rounded-lg border border-[var(--line)] bg-white px-4 text-base" onClick={useCurrentLocation}>
-              <span className="flex items-center gap-2"><LocateFixed className="size-5" />Use current location</span>
-              <span className={cx("h-6 w-10 rounded-full p-0.5 transition", usedCurrentLocation ? "bg-[var(--moss)]" : "bg-[var(--chip)]")}>
-                <span className={cx("block size-5 rounded-full bg-white transition", usedCurrentLocation && "translate-x-4")} />
-              </span>
-            </button>
-            <p className="text-xs leading-5 text-[var(--muted)]">{locationStatus}</p>
 
             <div className="grid gap-3 sm:grid-cols-[160px_minmax(0,1fr)]">
               <button type="button" className="h-12 rounded-lg border border-[var(--line)] bg-white text-base" onClick={onClose}>Cancel</button>
