@@ -26,6 +26,7 @@ type AppShellProps = {
   onOpenUpload?: () => void;
   onOpenSaved?: () => void;
   onOpenProfile?: (userId: string) => void;
+  uploadInitialPlaceId?: string;
 };
 
 function cx(...classes: Array<string | false | null | undefined>) {
@@ -44,6 +45,7 @@ export function AppShell({
   onOpenUpload,
   onOpenSaved,
   onOpenProfile,
+  uploadInitialPlaceId,
 }: AppShellProps) {
   const router = useRouter();
   const demo = useDemoState();
@@ -144,6 +146,7 @@ export function AppShell({
       <UploadModal
         open={uploadOpen}
         places={demo.places}
+        initialPlaceId={uploadInitialPlaceId}
         onClose={() => setUploadOpen(false)}
         onSubmit={(input) => {
           const place = demo.places.find((item) => item.id === input.placeId);

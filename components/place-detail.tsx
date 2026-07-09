@@ -10,6 +10,7 @@ import type { Photo, Place } from "../lib/types";
 import { BackButton } from "./back-button";
 import { MapboxMap } from "./mapbox-map";
 import { PhotoCard } from "./photo-card";
+import { SharePlacePopover } from "./share-place-popover";
 
 type PlaceDetailProps = {
   place: Place;
@@ -89,14 +90,12 @@ export function PlaceDetail({
                 <Bookmark className={cx("size-5", isSaved && "fill-current")} aria-hidden="true" />
                 {isSaved ? "Bookmarked" : "Bookmark"}
               </button>
-              <button
-                type="button"
+              <SharePlacePopover
+                place={place}
+                icon={<Share className="size-5" />}
+                align="right"
                 className="grid size-14 place-items-center rounded-lg border border-[var(--line)] bg-white"
-                aria-label={`Copy demo share link for ${place.name}`}
-                onClick={() => setActionStatus(`Share card ready for ${place.name}.`)}
-              >
-                <Share className="size-5" />
-              </button>
+              />
               <button
                 type="button"
                 className="grid size-14 place-items-center rounded-lg border border-[var(--line)] bg-white"

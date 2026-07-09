@@ -314,7 +314,7 @@ export default function MapPage() {
   }, []);
 
   return (
-    <AppShell activeItem="map">
+    <AppShell activeItem="map" uploadInitialPlaceId={detailPlaceId ?? visibleSelectedPlaceId}>
       <div className="space-y-5">
         <details className="group rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_14px_34px_rgba(39,34,27,0.08)] lg:hidden">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 marker:hidden">
