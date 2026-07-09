@@ -258,6 +258,17 @@ export function MapboxMap({
               duration: 650,
             });
           }
+        } else {
+          // A lone marker previously opened its place card with no camera
+          // movement at all, so the card (and its full-size photo) appeared
+          // instantly while the map camera stayed wherever it was - a jarring
+          // cut when that was still a zoomed-out view. Ease in to the place
+          // so selecting it always feels like a smooth zoom, never a jump cut.
+          map.easeTo({
+            center: [cluster.primaryPlace.lng, cluster.primaryPlace.lat],
+            zoom: Math.max(map.getZoom(), 13.5),
+            duration: 650,
+          });
         }
         onSelectPlace?.(cluster.primaryPlace.id);
       });
