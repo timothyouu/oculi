@@ -183,11 +183,9 @@ export function PlaceDetail({
                 photo={photo}
                 place={place}
                 photographer={photographer}
-                isSaved={isSaved}
                 isFollowed={followedUserIds.includes(photographer.id)}
                 isCurrentUser={photographer.id === currentUserId}
                 isLiked={likedPhotoIds.includes(photo.id)}
-                onToggleSaved={onToggleSaved}
                 onToggleFollow={toggleFollowUser}
                 onTogglePhotoLike={togglePhotoLike}
                 onOpenPlace={onOpenPlace ?? ((placeId) => router.push(`/places/${placeId}`))}

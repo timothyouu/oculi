@@ -9,11 +9,9 @@ type PhotoFeedProps = {
   photos: Photo[];
   placesById?: Record<string, Place | undefined>;
   usersById?: Record<string, User | undefined>;
-  savedPlaceIds?: string[];
   followedUserIds?: string[];
   likedPhotoIds?: string[];
   emptyLabel?: string;
-  onToggleSaved?: (placeId: string) => void;
   onToggleFollow?: (userId: string) => void;
   onTogglePhotoLike?: (photoId: string) => void;
   onOpenPlace?: (placeId: string) => void;
@@ -24,11 +22,9 @@ export function PhotoFeed({
   photos,
   placesById,
   usersById,
-  savedPlaceIds,
   followedUserIds,
   likedPhotoIds,
   emptyLabel = "No photos yet. Add the first Oculi post.",
-  onToggleSaved,
   onToggleFollow,
   onTogglePhotoLike,
   onOpenPlace,
@@ -38,7 +34,6 @@ export function PhotoFeed({
   const router = useRouter();
   const resolvedPlacesById = placesById ?? Object.fromEntries(demo.places.map((place) => [place.id, place]));
   const resolvedUsersById = usersById ?? Object.fromEntries(demo.users.map((user) => [user.id, user]));
-  const resolvedSavedPlaceIds = savedPlaceIds ?? demo.savedPlaceIds;
   const resolvedFollowedUserIds = followedUserIds ?? demo.followedUserIds;
   const resolvedLikedPhotoIds = likedPhotoIds ?? demo.likedPhotoIds;
   if (!photos.length) {
@@ -62,11 +57,9 @@ export function PhotoFeed({
             photo={photo}
             place={place}
             photographer={photographer}
-            isSaved={resolvedSavedPlaceIds.includes(place.id)}
             isFollowed={resolvedFollowedUserIds.includes(photographer.id)}
             isCurrentUser={photographer.id === demo.currentUserId}
             isLiked={resolvedLikedPhotoIds.includes(photo.id)}
-            onToggleSaved={onToggleSaved ?? demo.toggleSavedPlace}
             onToggleFollow={onToggleFollow ?? demo.toggleFollowUser}
             onTogglePhotoLike={onTogglePhotoLike ?? demo.togglePhotoLike}
             onOpenPlace={

@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, Heart, MapPin } from "lucide-react";
+import { Heart, MapPin } from "lucide-react";
 import type { Photo, Place, User } from "../lib/types";
 import { ResilientImage } from "./resilient-image";
 
@@ -8,11 +8,9 @@ type PhotoCardProps = {
   photo: Photo;
   place: Place;
   photographer: User;
-  isSaved?: boolean;
   isFollowed?: boolean;
   isCurrentUser?: boolean;
   isLiked?: boolean;
-  onToggleSaved?: (placeId: string) => void;
   onToggleFollow?: (userId: string) => void;
   onTogglePhotoLike?: (photoId: string) => void;
   onOpenPlace?: (placeId: string) => void;
@@ -28,11 +26,9 @@ export function PhotoCard({
   photo,
   place,
   photographer,
-  isSaved = false,
   isFollowed = false,
   isCurrentUser = false,
   isLiked = false,
-  onToggleSaved,
   onToggleFollow,
   onTogglePhotoLike,
   onOpenPlace,
@@ -87,7 +83,7 @@ export function PhotoCard({
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3 px-3 py-3">
+      <div className="flex items-center gap-3 px-3 py-3">
           <button
             type="button"
             className={cx(
@@ -99,18 +95,6 @@ export function PhotoCard({
           >
             <Heart className={cx("size-4", isLiked && "fill-current")} aria-hidden="true" />
             {photo.likeCount + (isLiked ? 1 : 0)}
-          </button>
-          <button
-            type="button"
-            className={cx(
-              "inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2",
-              isSaved ? "bg-zinc-950 text-white" : "border border-zinc-200 text-zinc-700 hover:bg-zinc-50",
-            )}
-            aria-label={isSaved ? `Remove ${place.name} from saved places` : `Save ${place.name}`}
-            onClick={() => onToggleSaved?.(place.id)}
-          >
-            <Bookmark className={cx("size-4", isSaved && "fill-current")} aria-hidden="true" />
-            {isSaved ? "Saved" : "Save"}
           </button>
       </div>
     </article>
