@@ -10,21 +10,17 @@ type SharePlaceButtonProps = {
   className?: string;
   triggerLabel?: string;
   icon: ReactNode;
-  align?: "left" | "right";
+  onStatusChange?: (message: string | null) => void;
 };
-
-function cx(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export function SharePlaceButton({
   place,
   className,
   triggerLabel,
   icon,
-  align = "right",
+  onStatusChange,
 }: SharePlaceButtonProps) {
-  const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle");
+  const [copied, setCopied] = useState(false);
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -40,43 +36,28 @@ export function SharePlaceButton({
     try {
       if (!navigator.clipboard?.writeText) throw new Error("Clipboard API unavailable");
       await navigator.clipboard.writeText(url);
-      setStatus("copied");
+      setCopied(true);
+      onStatusChange?.("Link copied to clipboard");
     } catch {
-      setStatus("failed");
+      setCopied(false);
+      onStatusChange?.("Couldn't copy link");
     }
 
     if (resetTimeoutRef.current) clearTimeout(resetTimeoutRef.current);
-    resetTimeoutRef.current = setTimeout(() => setStatus("idle"), 1800);
+    resetTimeoutRef.current = setTimeout(() => {
+      setCopied(false);
+      onStatusChange?.(null);
+    }, 1800);
   }
 
   return (
-    <span className="relative inline-block">
-      <button
-        type="button"
-        className={className}
-        aria-label={triggerLabel ?? `Copy link to ${place.name}`}
-        onClick={handleClick}
-      >
-        {status === "copied" ? <Check className="size-5" aria-hidden="true" /> : icon}
-      </button>
-      <span role="status" aria-live="polite" className="sr-only">
-        {status === "copied"
-          ? "Link copied to clipboard"
-          : status === "failed"
-            ? "Couldn't copy link"
-            : ""}
-      </span>
-      {status !== "idle" ? (
-        <span
-          className={cx(
-            "pointer-events-none absolute top-full z-20 mt-2 whitespace-nowrap rounded-md px-2.5 py-1 text-xs text-white shadow-[0_8px_20px_rgba(29,29,27,0.24)]",
-            align === "right" ? "right-0" : "left-0",
-            status === "copied" ? "bg-[var(--moss)]" : "bg-[var(--ink)]",
-          )}
-        >
-          {status === "copied" ? "Link copied" : "Couldn't copy link"}
-        </span>
-      ) : null}
-    </span>
+    <button
+      type="button"
+      className={className}
+      aria-label={triggerLabel ?? `Copy link to ${place.name}`}
+      onClick={handleClick}
+    >
+      {copied ? <Check className="size-5" aria-hidden="true" /> : icon}
+    </button>
   );
 }

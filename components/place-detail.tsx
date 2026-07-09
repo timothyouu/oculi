@@ -93,7 +93,7 @@ export function PlaceDetail({
               <SharePlaceButton
                 place={place}
                 icon={<Share className="size-5" />}
-                align="right"
+                onStatusChange={(message) => setActionStatus(message ?? "")}
                 className="grid size-14 place-items-center rounded-lg border border-[var(--line)] bg-white"
               />
               <button

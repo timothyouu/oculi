@@ -47,7 +47,7 @@ export function SelectedPlaceCard({
   onClose,
 }: SelectedPlaceCardProps) {
   const [view, setView] = useState<"overview" | "gallery">("overview");
-  const [saveNotice, setSaveNotice] = useState<string | null>(null);
+  const [cardNotice, setCardNotice] = useState<string | null>(null);
   const placePhotos = useMemo(
     () => photos.filter((photo) => photo.placeId === place.id),
     [photos, place.id],
@@ -57,18 +57,18 @@ export function SelectedPlaceCard({
 
   useEffect(() => {
     setView("overview");
-    setSaveNotice(null);
+    setCardNotice(null);
   }, [place.id]);
 
   useEffect(() => {
-    if (!saveNotice) return;
-    const timeout = setTimeout(() => setSaveNotice(null), 2000);
+    if (!cardNotice) return;
+    const timeout = setTimeout(() => setCardNotice(null), 2000);
     return () => clearTimeout(timeout);
-  }, [saveNotice]);
+  }, [cardNotice]);
 
   function handleToggleSaved() {
     onToggleSaved?.(place.id);
-    setSaveNotice(isSaved ? "Removed from saved" : "Saved to your places");
+    setCardNotice(isSaved ? "Removed from saved" : "Saved to your places");
   }
 
   if (view === "gallery") {
@@ -193,13 +193,13 @@ export function SelectedPlaceCard({
           <SharePlaceButton
             place={place}
             icon={<Send className="size-5" />}
-            align="right"
+            onStatusChange={setCardNotice}
             className="grid size-12 place-items-center rounded-lg border border-[var(--line)] bg-white text-[var(--ink)]"
           />
         </div>
-        {saveNotice ? (
+        {cardNotice ? (
           <p className="text-sm text-[var(--moss)]" aria-live="polite">
-            {saveNotice}
+            {cardNotice}
           </p>
         ) : null}
       </div>
