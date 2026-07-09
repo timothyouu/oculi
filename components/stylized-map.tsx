@@ -13,8 +13,10 @@ type StylizedMapProps = {
   users?: User[];
   selectedPlaceId?: string;
   savedPlaceIds?: string[];
+  likedPhotoIds?: string[];
   onSelectPlace?: (placeId: string) => void;
   onToggleSaved?: (placeId: string) => void;
+  onTogglePhotoLike?: (photoId: string) => void;
   onOpenPlace?: (placeId: string) => void;
   onCloseSelected?: () => void;
   showSelectedCard?: boolean;
@@ -49,8 +51,10 @@ export function StylizedMap({
   users = [],
   selectedPlaceId,
   savedPlaceIds = [],
+  likedPhotoIds = [],
   onSelectPlace,
   onToggleSaved,
+  onTogglePhotoLike,
   onOpenPlace,
   onCloseSelected,
   showSelectedCard = true,
@@ -170,7 +174,9 @@ export function StylizedMap({
             photos={photos}
             users={users}
             isSaved={savedPlaceIds.includes(selected.id)}
+            likedPhotoIds={likedPhotoIds}
             onToggleSaved={onToggleSaved}
+            onTogglePhotoLike={onTogglePhotoLike}
             onOpenPlace={onOpenPlace}
             onClose={handleCloseSelected}
           />

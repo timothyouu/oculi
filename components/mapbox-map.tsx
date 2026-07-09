@@ -16,8 +16,10 @@ type MapboxMapProps = {
   users?: User[];
   selectedPlaceId?: string;
   savedPlaceIds?: string[];
+  likedPhotoIds?: string[];
   onSelectPlace?: (placeId: string) => void;
   onToggleSaved?: (placeId: string) => void;
+  onTogglePhotoLike?: (photoId: string) => void;
   onOpenPlace?: (placeId: string) => void;
   onCloseSelected?: () => void;
   showSelectedCard?: boolean;
@@ -74,8 +76,10 @@ export function MapboxMap({
   users = [],
   selectedPlaceId,
   savedPlaceIds = [],
+  likedPhotoIds = [],
   onSelectPlace,
   onToggleSaved,
+  onTogglePhotoLike,
   onOpenPlace,
   onCloseSelected,
   showSelectedCard = true,
@@ -399,8 +403,10 @@ export function MapboxMap({
           users={users}
           selectedPlaceId={selectedPlaceId}
           savedPlaceIds={savedPlaceIds}
+          likedPhotoIds={likedPhotoIds}
           onSelectPlace={onSelectPlace}
           onToggleSaved={onToggleSaved}
+          onTogglePhotoLike={onTogglePhotoLike}
           onOpenPlace={onOpenPlace}
           onCloseSelected={onCloseSelected}
           showSelectedCard={showSelectedCard}
@@ -448,7 +454,9 @@ export function MapboxMap({
             photos={photos}
             users={users}
             isSaved={savedPlaceIds.includes(selected.id)}
+            likedPhotoIds={likedPhotoIds}
             onToggleSaved={onToggleSaved}
+            onTogglePhotoLike={onTogglePhotoLike}
             onOpenPlace={onOpenPlace}
             onClose={handleCloseSelected}
           />

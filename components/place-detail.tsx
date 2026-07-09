@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bookmark, Car, Map, MapPin, MoreHorizontal, Share, Star, Footprints } from "lucide-react";
+import { Bookmark, Car, Map, MapPin, Route, Share, Star, Footprints } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDemoState } from "@/lib/demo-state";
 import { formatPlaceLocation } from "@/lib/location-labels";
@@ -102,10 +102,17 @@ export function PlaceDetail({
               <button
                 type="button"
                 className="grid size-14 place-items-center rounded-lg border border-[var(--line)] bg-white"
-                aria-label={`Show more actions for ${place.name}`}
-                onClick={() => setActionStatus("Added to your next shoot-day options.")}
+                aria-label={`Add ${place.name} to your shoot-day route`}
+                onClick={() => {
+                  if (!isSaved) onToggleSaved?.(place.id);
+                  setActionStatus(
+                    isSaved
+                      ? "Already in your shoot-day route options — open Saved to build your route."
+                      : "Added to your shoot-day route options — open Saved to build your route.",
+                  );
+                }}
               >
-                <MoreHorizontal className="size-5" />
+                <Route className="size-5" aria-hidden="true" />
               </button>
           </div>
           {actionStatus ? <p className="text-sm text-[var(--moss)]">{actionStatus}</p> : null}

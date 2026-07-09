@@ -13,7 +13,9 @@ type SelectedPlaceCardProps = {
   photos?: Photo[];
   users?: User[];
   isSaved?: boolean;
+  likedPhotoIds?: string[];
   onToggleSaved?: (placeId: string) => void;
+  onTogglePhotoLike?: (photoId: string) => void;
   onOpenPlace?: (placeId: string) => void;
   onClose?: () => void;
 };
@@ -39,7 +41,9 @@ export function SelectedPlaceCard({
   photos = [],
   users = [],
   isSaved = false,
+  likedPhotoIds = [],
   onToggleSaved,
+  onTogglePhotoLike,
   onOpenPlace,
   onClose,
 }: SelectedPlaceCardProps) {
@@ -55,6 +59,7 @@ export function SelectedPlaceCard({
   const visiblePhotos = placePhotos.slice(0, 6);
   const activePhoto = visiblePhotos[selectedPhotoIndex];
   const activePhotographer = activePhoto ? usersById.get(activePhoto.userId) : undefined;
+  const isActivePhotoLiked = activePhoto ? likedPhotoIds.includes(activePhoto.id) : false;
 
   useEffect(() => {
     setView("overview");
@@ -107,37 +112,53 @@ export function SelectedPlaceCard({
           {visiblePhotos.length ? (
             visiblePhotos.map((photo, index) => {
               const photographer = usersById.get(photo.userId);
+              const isLiked = likedPhotoIds.includes(photo.id);
               return (
-                <button
+                <div
                   key={photo.id}
-                  type="button"
-                  className="flex w-full items-center gap-3 rounded-xl border border-transparent p-2 text-left transition hover:border-[var(--line)] hover:bg-white"
-                  aria-label={`View post: ${photo.caption || `Photo ${index + 1}`}`}
-                  onClick={() => {
-                    setSelectedPhotoIndex(index);
-                    setView("post");
-                  }}
+                  className="flex w-full items-center gap-3 rounded-xl border border-transparent p-2 transition hover:border-[var(--line)] hover:bg-white"
                 >
-                  <ResilientImage
-                    src={photo.imageUrl}
-                    alt={photo.caption}
-                    fallbackSrc={place.coverPhotoUrl}
-                    className="size-16 shrink-0 rounded-lg bg-[var(--chip)] object-cover"
-                  />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-base font-semibold text-[var(--ink)]">
-                      {photo.caption || `Photo ${index + 1}`}
+                  <button
+                    type="button"
+                    className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                    aria-label={`View post: ${photo.caption || `Photo ${index + 1}`}`}
+                    onClick={() => {
+                      setSelectedPhotoIndex(index);
+                      setView("post");
+                    }}
+                  >
+                    <ResilientImage
+                      src={photo.imageUrl}
+                      alt={photo.caption}
+                      fallbackSrc={place.coverPhotoUrl}
+                      className="size-16 shrink-0 rounded-lg bg-[var(--chip)] object-cover"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-base font-semibold text-[var(--ink)]">
+                        {photo.caption || `Photo ${index + 1}`}
+                      </span>
+                      <span className="mt-1 block truncate text-sm text-[var(--muted)]">
+                        {photographer ? `${photographer.name} · ` : ""}
+                        {formatPhotoDate(photo.createdAt)}
+                      </span>
                     </span>
-                    <span className="mt-1 block truncate text-sm text-[var(--muted)]">
-                      {photographer ? `${photographer.name} · ` : ""}
-                      {formatPhotoDate(photo.createdAt)}
-                    </span>
-                  </span>
-                  <span className="flex shrink-0 items-center gap-1 rounded-full border border-[var(--line)] bg-white px-2.5 py-1 text-[11px] text-[var(--muted)]">
-                    <Heart className="size-3" aria-hidden="true" />
-                    {photo.likeCount}
-                  </span>
-                </button>
+                  </button>
+                  <button
+                    type="button"
+                    className={cx(
+                      "flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] transition",
+                      isLiked
+                        ? "border-transparent bg-rose-50 text-rose-600"
+                        : "border-[var(--line)] bg-white text-[var(--muted)] hover:bg-zinc-50",
+                    )}
+                    aria-label={isLiked ? "Unlike photo" : "Like photo"}
+                    aria-pressed={isLiked}
+                    onClick={() => onTogglePhotoLike?.(photo.id)}
+                  >
+                    <Heart className={cx("size-3", isLiked && "fill-current")} aria-hidden="true" />
+                    {photo.likeCount + (isLiked ? 1 : 0)}
+                  </button>
+                </div>
               );
             })
           ) : (
@@ -239,10 +260,19 @@ export function SelectedPlaceCard({
             ) : null}
 
             <div className="flex items-center gap-4 text-sm text-[var(--muted)]">
-              <span className="flex items-center gap-1.5">
-                <Heart className="size-4" aria-hidden="true" />
-                {activePhoto.likeCount}
-              </span>
+              <button
+                type="button"
+                className={cx(
+                  "flex items-center gap-1.5 rounded-full px-2 py-1 transition",
+                  isActivePhotoLiked ? "text-rose-600" : "hover:text-[var(--ink)]",
+                )}
+                aria-label={isActivePhotoLiked ? "Unlike photo" : "Like photo"}
+                aria-pressed={isActivePhotoLiked}
+                onClick={() => onTogglePhotoLike?.(activePhoto.id)}
+              >
+                <Heart className={cx("size-4", isActivePhotoLiked && "fill-current")} aria-hidden="true" />
+                {activePhoto.likeCount + (isActivePhotoLiked ? 1 : 0)}
+              </button>
               <span>{formatPhotoDate(activePhoto.createdAt)}</span>
             </div>
 

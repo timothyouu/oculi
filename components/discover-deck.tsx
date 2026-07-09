@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  Bookmark,
   Compass,
-  Heart,
   Info,
   MapPin,
   RotateCcw,
@@ -193,7 +193,7 @@ export function DiscoverDeck({
               <h2 className="mt-1 text-xl font-semibold tracking-tight text-[var(--ink)]">Discover photo spots</h2>
               <div className="mt-4 grid gap-2 text-sm text-[var(--muted)] sm:grid-cols-3">
                 <div className="flex items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white/62 px-3 py-2 sm:justify-start">
-                  <Heart className="size-4 shrink-0 text-[var(--moss)]" aria-hidden="true" />
+                  <Bookmark className="size-4 shrink-0 text-[var(--moss)]" aria-hidden="true" />
                   <span>Swipe right to save</span>
                 </div>
                 <div className="flex items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white/62 px-3 py-2 sm:justify-start">
@@ -351,7 +351,7 @@ export function DiscoverDeck({
             onClick={saveAndAdvance}
             aria-label={`Save ${active.place.name} and show next`}
           >
-            <Heart className={cx("size-6 sm:size-8", isSaved && "fill-current")} aria-hidden="true" />
+            <Bookmark className={cx("size-6 sm:size-8", isSaved && "fill-current")} aria-hidden="true" />
           </button>
           <button
             type="button"
