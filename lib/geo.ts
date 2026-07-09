@@ -23,3 +23,35 @@ export function sortByDistanceFrom<T extends LatLng>(origin: LatLng, items: T[])
     (a, b) => haversineDistanceKm(origin, a) - haversineDistanceKm(origin, b),
   );
 }
+
+export type NearbyPlacesOptions = {
+  /** Places within this many km of the nearest one count as its surrounding area. */
+  radiusKm?: number;
+  /** Cap on how many nodes to surface, so the camera never zooms out to the whole globe. */
+  maxCount?: number;
+};
+
+/**
+ * Resolve the cluster of nodes to bring up for "Near me": the item closest to
+ * `origin` (the anchor) followed by the other items around it. "Around it" means
+ * within `radiusKm` of the anchor — i.e. the same metro/neighborhood — not merely
+ * the next-closest items to the user, which could be on another continent. If the
+ * anchor is isolated (nothing else within the radius), fall back to the nearest
+ * `maxCount` items to the origin so the map still fits more than a single pin.
+ *
+ * The anchor is always returned first, so callers can select it as the focused place.
+ */
+export function nearbyPlaces<T extends LatLng>(
+  origin: LatLng,
+  items: T[],
+  { radiusKm = 60, maxCount = 6 }: NearbyPlacesOptions = {},
+): T[] {
+  if (!items.length) return [];
+
+  const anchor = sortByDistanceFrom(origin, items)[0];
+  const aroundAnchor = sortByDistanceFrom(anchor, items);
+  const withinRadius = aroundAnchor.filter((item) => haversineDistanceKm(anchor, item) <= radiusKm);
+  const chosen = withinRadius.length >= 2 ? withinRadius : aroundAnchor;
+
+  return chosen.slice(0, Math.max(1, maxCount));
+}

@@ -9,6 +9,7 @@ import { buildSearchCorpus, getSearchCorrection, matchesCorrectedQuery } from "@
 import { rankSearchResults } from "@/lib/search-ranking";
 import { sortTopPlaces } from "@/lib/scoring";
 import { accessibilityForPlace, accessibilityOptions } from "@/lib/place-accessibility";
+import { nearbyPlaces, type LatLng } from "@/lib/geo";
 import { clearMapSelectedPlaceId, loadMapSelectedPlaceId, saveMapSelectedPlaceId } from "@/lib/storage";
 import {
   BookOpen,
@@ -107,6 +108,7 @@ export default function MapPage() {
   const [sceneFilters, setSceneFilters] = useState<string[]>([]);
   const [accessibilityFilters, setAccessibilityFilters] = useState<string[]>([]);
   const [nearStatus, setNearStatus] = useState("");
+  const [nearFocus, setNearFocus] = useState<{ placeIds: string[]; nonce: number } | undefined>(undefined);
   const popupHistoryRef = useRef(false);
   const placesById = useMemo(() => Object.fromEntries(topPlaces.map((place) => [place.id, place])), [topPlaces]);
   const areasById = useMemo(() => Object.fromEntries(areas.map((area) => [area.id, area])), [areas]);
@@ -265,6 +267,46 @@ export default function MapPage() {
     recordPlaceView(placeId);
   }
 
+  // Select the closest place and hand the map its surrounding-area nodes to
+  // fit the camera over, so "Near me" actually brings a neighborhood into view.
+  function focusNearby(origin: LatLng) {
+    const pool = mapPlaces.length ? mapPlaces : topPlaces;
+    const nearby = nearbyPlaces(origin, pool);
+    if (!nearby.length) return;
+
+    selectPlace(nearby[0].id);
+    setNearFocus((previous) => ({
+      placeIds: nearby.map((place) => place.id),
+      nonce: (previous?.nonce ?? 0) + 1,
+    }));
+  }
+
+  function handleNearMe() {
+    const pool = mapPlaces.length ? mapPlaces : topPlaces;
+    if (!pool.length) return;
+
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setNearStatus("Location isn't available here — showing a sample of nearby photo spots.");
+      focusNearby({ lat: pool[0].lat, lng: pool[0].lng });
+      return;
+    }
+
+    setNearStatus("Finding photo spots around you…");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setNearStatus("Showing photo spots around you.");
+        focusNearby({ lat: position.coords.latitude, lng: position.coords.longitude });
+      },
+      () => {
+        // Permission denied or unavailable — still bring up a neighborhood so
+        // the button never feels dead, just anchored on a demo spot instead.
+        setNearStatus("Couldn't get your location — showing a sample of nearby photo spots.");
+        focusNearby({ lat: pool[0].lat, lng: pool[0].lng });
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 },
+    );
+  }
+
   function closeSelectedPlace() {
     setSelectedPlaceId(undefined);
     clearMapSelectedPlaceId();
@@ -276,6 +318,7 @@ export default function MapPage() {
     setSceneFilters([]);
     setAccessibilityFilters([]);
     setNearStatus("");
+    setNearFocus(undefined);
   }
 
   const openPlace = useCallback((placeId: string) => {
@@ -405,11 +448,7 @@ export default function MapPage() {
                     ? "border-[var(--moss)] bg-[var(--chip)] text-[var(--moss-dark)]"
                     : "border-[var(--line)] bg-white text-[var(--ink)]",
                 )}
-                onClick={() => {
-                  setNearStatus("Showing the closest seeded photo spots for this demo.");
-                  const nearestPlaceId = mapPlaces[0]?.id ?? topPlaces[0]?.id;
-                  if (nearestPlaceId) selectPlace(nearestPlaceId);
-                }}
+                onClick={handleNearMe}
               >
                 <Navigation className="size-4" /> Near me
               </button>
@@ -598,11 +637,7 @@ export default function MapPage() {
                   ? "border-[var(--moss)] bg-[var(--chip)] text-[var(--moss-dark)]"
                   : "border-[var(--line)] bg-white text-[var(--ink)]",
               )}
-              onClick={() => {
-                setNearStatus("Showing the closest seeded photo spots for this demo.");
-                const nearestPlaceId = mapPlaces[0]?.id ?? topPlaces[0]?.id;
-                if (nearestPlaceId) selectPlace(nearestPlaceId);
-              }}
+              onClick={handleNearMe}
             >
               <Navigation className="size-5" /> Near me
             </button>
@@ -617,6 +652,7 @@ export default function MapPage() {
               onToggleSaved={toggleSavedPlace}
               onOpenPlace={openPlace}
               onCloseSelected={closeSelectedPlace}
+              focusRequest={nearFocus}
               showSelectedCard
               autoFocusSelected={Boolean(exactSearchPlace) || restoredFocusPending}
               className="h-full min-h-[560px] border-0 shadow-none lg:min-h-0"

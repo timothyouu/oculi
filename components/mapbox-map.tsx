@@ -21,6 +21,12 @@ type MapboxMapProps = {
   onCloseSelected?: () => void;
   showSelectedCard?: boolean;
   autoFocusSelected?: boolean;
+  /**
+   * Imperative request to smoothly fit the camera over a specific set of nearby
+   * places (used by "Near me"). `nonce` bumps on every request so clicking the
+   * button again re-runs the fit even if the same place ids are targeted.
+   */
+  focusRequest?: { placeIds: string[]; nonce: number };
   requireMapbox?: boolean;
   className?: string;
 };
@@ -72,6 +78,7 @@ export function MapboxMap({
   onCloseSelected,
   showSelectedCard = true,
   autoFocusSelected = true,
+  focusRequest,
   requireMapbox = false,
   className,
 }: MapboxMapProps) {
@@ -349,6 +356,26 @@ export function MapboxMap({
     }
     map.easeTo({ center: [selected.lng, selected.lat], zoom: Math.max(map.getZoom(), 12.8), duration: 650, essential: true });
   }, [autoFocusSelected, mapReady, selected]);
+
+  // "Near me": smoothly fit the camera over the requested nearby places so the
+  // surrounding-area nodes come into view together, rather than snapping to a
+  // single pin. Keyed on the request nonce so a repeat click re-runs the fit;
+  // `places` is read inside but intentionally left out of the deps so a resort
+  // (recordPlaceView bumping recentActivityScore) can't retrigger it. The
+  // one-shot autofocus is suppressed so selecting the anchor place below doesn't
+  // immediately zoom past this neighborhood view onto that single place.
+  const focusNonce = focusRequest?.nonce;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady || !focusRequest?.placeIds.length) return;
+
+    const focusPlaces = places.filter((place) => focusRequest.placeIds.includes(place.id));
+    if (!focusPlaces.length) return;
+
+    suppressNextAutoFocusRef.current = true;
+    fitPlaces(map, focusPlaces, showSelectedCard);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusNonce, mapReady, showSelectedCard]);
 
   // Dismissing the card leaves the camera zoomed in tight on just the one
   // place - back off a couple zoom levels so the surrounding spots that
