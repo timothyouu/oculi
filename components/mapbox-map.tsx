@@ -35,7 +35,12 @@ function fitPlaces(map: MapboxMapInstance, places: Place[], showSelectedCard: bo
   places.forEach((place) => bounds.extend([place.lng, place.lat]));
 
   if (places.length === 1) {
-    map.easeTo({ center: [places[0].lng, places[0].lat], zoom: 13.5, duration: 650 });
+    // `essential: true` keeps this an animated transition even when the
+    // browser reports prefers-reduced-motion, which Mapbox GL otherwise
+    // honors by jumping straight to the end state with no animation at all.
+    // This camera movement is core UX (showing the user where they landed),
+    // not decorative motion, so it stays animated either way.
+    map.easeTo({ center: [places[0].lng, places[0].lat], zoom: 13.5, duration: 650, essential: true });
     return;
   }
 
@@ -43,6 +48,7 @@ function fitPlaces(map: MapboxMapInstance, places: Place[], showSelectedCard: bo
     padding: showSelectedCard ? { top: 90, right: 420, bottom: 90, left: 90 } : 48,
     maxZoom: 13.2,
     duration: 800,
+    essential: true,
   });
 }
 
@@ -250,12 +256,13 @@ export function MapboxMap({
           // to a flat zoom step centered on the cluster so the click always
           // makes visible progress toward separating it.
           if (targetCamera?.zoom !== undefined && targetCamera.zoom > currentZoom + 0.5) {
-            map.fitBounds(clusterBounds, { ...fitOptions, duration: 650 });
+            map.fitBounds(clusterBounds, { ...fitOptions, duration: 650, essential: true });
           } else {
             map.easeTo({
               center: [cluster.lng, cluster.lat],
               zoom: Math.min(currentZoom + 3, 16),
               duration: 650,
+              essential: true,
             });
           }
         } else {
@@ -264,10 +271,17 @@ export function MapboxMap({
           // instantly while the map camera stayed wherever it was - a jarring
           // cut when that was still a zoomed-out view. Ease in to the place
           // so selecting it always feels like a smooth zoom, never a jump cut.
+          // `essential: true` on every camera call in this file keeps that
+          // animation playing even when the browser reports
+          // prefers-reduced-motion (Mapbox GL otherwise jumps straight to
+          // the end position with no animation at all in that case - this
+          // was reported working in local/Playwright testing, which doesn't
+          // set that media flag, but not in a real deployed browser).
           map.easeTo({
             center: [cluster.primaryPlace.lng, cluster.primaryPlace.lat],
             zoom: Math.max(map.getZoom(), 13.5),
             duration: 650,
+            essential: true,
           });
         }
         onSelectPlace?.(cluster.primaryPlace.id);
@@ -301,7 +315,7 @@ export function MapboxMap({
   useEffect(() => {
     const map = mapRef.current;
     if (!autoFocusSelected || !map || !mapReady || !selected) return;
-    map.easeTo({ center: [selected.lng, selected.lat], zoom: Math.max(map.getZoom(), 12.8), duration: 650 });
+    map.easeTo({ center: [selected.lng, selected.lat], zoom: Math.max(map.getZoom(), 12.8), duration: 650, essential: true });
   }, [autoFocusSelected, mapReady, selected]);
 
   if (shouldUseStylizedFallback) {
