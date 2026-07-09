@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Bookmark, Images, Send, X } from "lucide-react";
 import type { Photo, Place } from "@/lib/types";
 import { ResilientImage } from "./resilient-image";
-import { SharePlacePopover } from "./share-place-popover";
+import { SharePlaceButton } from "./share-place-button";
 
 type SelectedPlaceCardProps = {
   place: Place;
@@ -141,15 +141,6 @@ export function SelectedPlaceCard({
           <Images className="size-4" aria-hidden="true" />
           {photoCount} photo{photoCount === 1 ? "" : "s"}
         </button>
-        <button
-          type="button"
-          className="absolute right-4 top-0 grid size-11 place-items-center rounded-b-lg bg-[var(--gold)] text-white"
-          aria-label={isSaved ? `Unsave ${place.name}` : `Save ${place.name}`}
-          aria-pressed={isSaved}
-          onClick={handleToggleSaved}
-        >
-          <Bookmark className={cx("size-5", isSaved && "fill-current")} />
-        </button>
         {onClose ? (
           <button
             type="button"
@@ -199,7 +190,7 @@ export function SelectedPlaceCard({
             <Bookmark className={cx("size-4", isSaved && "fill-current")} aria-hidden="true" />
             {isSaved ? "Saved" : "Save"}
           </button>
-          <SharePlacePopover
+          <SharePlaceButton
             place={place}
             icon={<Send className="size-5" />}
             align="right"

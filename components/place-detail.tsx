@@ -10,7 +10,7 @@ import type { Photo, Place } from "../lib/types";
 import { BackButton } from "./back-button";
 import { MapboxMap } from "./mapbox-map";
 import { PhotoCard } from "./photo-card";
-import { SharePlacePopover } from "./share-place-popover";
+import { SharePlaceButton } from "./share-place-button";
 
 type PlaceDetailProps = {
   place: Place;
@@ -90,7 +90,7 @@ export function PlaceDetail({
                 <Bookmark className={cx("size-5", isSaved && "fill-current")} aria-hidden="true" />
                 {isSaved ? "Bookmarked" : "Bookmark"}
               </button>
-              <SharePlacePopover
+              <SharePlaceButton
                 place={place}
                 icon={<Share className="size-5" />}
                 align="right"
