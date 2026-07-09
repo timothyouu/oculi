@@ -451,14 +451,12 @@ export default function MapPage() {
 
         <div className="grid min-h-[560px] overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_24px_70px_rgba(39,34,27,0.10)] lg:h-[calc(100vh-184px)] lg:min-h-[520px] lg:grid-cols-[320px_minmax(0,1fr)]">
           <aside className="hidden min-h-0 overflow-y-auto border-r border-[var(--line)] bg-[rgba(255,253,248,0.9)] px-5 py-6 lg:block">
-            <div className="mb-5 flex items-start justify-between gap-4">
-              <div>
-                <p className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-[var(--moss)]">
-                  Explore
-                </p>
-                <h1 className="mt-1 text-2xl leading-tight text-[var(--ink)]">Find photo spots</h1>
-              </div>
-              <span className="rounded-full bg-[var(--chip)] px-3 py-1 font-sans text-sm text-[var(--muted)]">
+            <div className="mb-5">
+              <p className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-[var(--moss)]">
+                Explore
+              </p>
+              <h1 className="mt-1 text-2xl leading-tight text-[var(--ink)]">Find photo spots</h1>
+              <span className="mt-2 inline-block whitespace-nowrap rounded-full bg-[var(--chip)] px-3 py-1 font-sans text-xs text-[var(--muted)]">
                 {resultSummary}
               </span>
             </div>
