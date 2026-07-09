@@ -14,6 +14,7 @@ type StylizedMapProps = {
   onSelectPlace?: (placeId: string) => void;
   onToggleSaved?: (placeId: string) => void;
   onOpenPlace?: (placeId: string) => void;
+  onCloseSelected?: () => void;
   showSelectedCard?: boolean;
   className?: string;
 };
@@ -48,11 +49,12 @@ export function StylizedMap({
   onSelectPlace,
   onToggleSaved,
   onOpenPlace,
+  onCloseSelected,
   showSelectedCard = true,
   className,
 }: StylizedMapProps) {
   const [detailLevel, setDetailLevel] = useState(1);
-  const selected = places.find((place) => place.id === selectedPlaceId) || places[0];
+  const selected = places.find((place) => place.id === selectedPlaceId);
   const placeNodes = useMemo(() => buildPlacePhotoNodes(places, photos), [photos, places]);
   const placeClusters = useMemo(
     () =>
@@ -152,6 +154,7 @@ export function StylizedMap({
             isSaved={savedPlaceIds.includes(selected.id)}
             onToggleSaved={onToggleSaved}
             onOpenPlace={onOpenPlace}
+            onClose={onCloseSelected}
           />
         </div>
       ) : null}

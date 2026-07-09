@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Bookmark, Images, Send } from "lucide-react";
+import { ArrowLeft, Bookmark, Images, Send, X } from "lucide-react";
 import type { Photo, Place } from "@/lib/types";
 import { ResilientImage } from "./resilient-image";
 
@@ -11,6 +11,7 @@ type SelectedPlaceCardProps = {
   isSaved?: boolean;
   onToggleSaved?: (placeId: string) => void;
   onOpenPlace?: (placeId: string) => void;
+  onClose?: () => void;
 };
 
 function cx(...classes: Array<string | false | null | undefined>) {
@@ -42,6 +43,7 @@ export function SelectedPlaceCard({
   isSaved = false,
   onToggleSaved,
   onOpenPlace,
+  onClose,
 }: SelectedPlaceCardProps) {
   const [view, setView] = useState<"overview" | "gallery">("overview");
   const placePhotos = useMemo(
@@ -133,6 +135,16 @@ export function SelectedPlaceCard({
         >
           <Bookmark className={cx("size-5", isSaved && "fill-current")} />
         </button>
+        {onClose ? (
+          <button
+            type="button"
+            className="absolute left-3 top-3 grid size-9 place-items-center rounded-full border border-white/55 bg-[rgba(29,29,27,0.72)] text-white shadow-[0_8px_20px_rgba(29,29,27,0.24)] backdrop-blur"
+            aria-label={`Close ${place.name} card`}
+            onClick={onClose}
+          >
+            <X className="size-4" />
+          </button>
+        ) : null}
       </div>
       <div className="space-y-3 p-4">
         <div className="min-w-0">

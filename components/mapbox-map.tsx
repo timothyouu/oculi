@@ -17,6 +17,7 @@ type MapboxMapProps = {
   onSelectPlace?: (placeId: string) => void;
   onToggleSaved?: (placeId: string) => void;
   onOpenPlace?: (placeId: string) => void;
+  onCloseSelected?: () => void;
   showSelectedCard?: boolean;
   autoFocusSelected?: boolean;
   requireMapbox?: boolean;
@@ -61,6 +62,7 @@ export function MapboxMap({
   onSelectPlace,
   onToggleSaved,
   onOpenPlace,
+  onCloseSelected,
   showSelectedCard = true,
   autoFocusSelected = true,
   requireMapbox = false,
@@ -75,7 +77,7 @@ export function MapboxMap({
   const [mapZoom, setMapZoom] = useState(11.1);
   const [mapViewTick, setMapViewTick] = useState(0);
   const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-  const selected = places.find((place) => place.id === selectedPlaceId) || places[0];
+  const selected = places.find((place) => place.id === selectedPlaceId);
   const placeNodes = useMemo(() => buildPlacePhotoNodes(places, photos), [photos, places]);
   const shouldUseStylizedFallback = shouldFallbackToStylizedMap({
     requireMapbox,
@@ -230,12 +232,14 @@ export function MapboxMap({
       markerButton.append(countLabel);
       markerButton.addEventListener("click", () => {
         if (cluster.places.length > 1) {
-          const targetZoom = Math.min(Math.max(mapZoom + 2.4, 12.8), 15);
-          setMapZoom(targetZoom);
-          setMapViewTick((tick) => tick + 1);
-          map.easeTo({
-            center: [cluster.lng, cluster.lat],
-            zoom: targetZoom,
+          // Fit to the cluster's own bounding box (instead of a flat zoom
+          // step) so a click on a tight group of nodes zooms in exactly far
+          // enough to separate them, even if they're only a block apart.
+          const clusterBounds = new mapboxgl.LngLatBounds();
+          cluster.places.forEach((place) => clusterBounds.extend([place.lng, place.lat]));
+          map.fitBounds(clusterBounds, {
+            padding: 96,
+            maxZoom: 16,
             duration: 650,
           });
         }
@@ -274,6 +278,7 @@ export function MapboxMap({
           onSelectPlace={onSelectPlace}
           onToggleSaved={onToggleSaved}
           onOpenPlace={onOpenPlace}
+          onCloseSelected={onCloseSelected}
           showSelectedCard={showSelectedCard}
           className={className}
         />
@@ -320,6 +325,7 @@ export function MapboxMap({
             isSaved={savedPlaceIds.includes(selected.id)}
             onToggleSaved={onToggleSaved}
             onOpenPlace={onOpenPlace}
+            onClose={onCloseSelected}
           />
         </div>
       ) : null}

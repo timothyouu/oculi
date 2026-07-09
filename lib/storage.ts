@@ -3,6 +3,7 @@ import type { DemoState, Photo } from "./types";
 
 export const DEMO_STATE_STORAGE_KEY = "oculi:demo-state";
 export const DEMO_VISITOR_ID_STORAGE_KEY = "oculi:visitor-id";
+export const MAP_SELECTED_PLACE_STORAGE_KEY = "oculi:map-selected-place-id";
 
 export const starterUploadedPhotos: Photo[] = [
   {
@@ -208,6 +209,36 @@ export function resetLocalDemoState() {
     window.localStorage.removeItem(DEMO_STATE_STORAGE_KEY);
   } catch {
     // Ignore local reset failures; the in-memory reset still applies.
+  }
+}
+
+export function loadMapSelectedPlaceId(): string | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    return window.localStorage.getItem(MAP_SELECTED_PLACE_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function saveMapSelectedPlaceId(placeId: string) {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.setItem(MAP_SELECTED_PLACE_STORAGE_KEY, placeId);
+  } catch {
+    // The map still works with in-memory selection when storage is unavailable.
+  }
+}
+
+export function clearMapSelectedPlaceId() {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.removeItem(MAP_SELECTED_PLACE_STORAGE_KEY);
+  } catch {
+    // Ignore; nothing persisted to clear.
   }
 }
 

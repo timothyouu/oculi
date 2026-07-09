@@ -9,6 +9,7 @@ import { buildSearchCorpus, getSearchCorrection, matchesCorrectedQuery } from "@
 import { rankSearchResults } from "@/lib/search-ranking";
 import { sortTopPlaces } from "@/lib/scoring";
 import { accessibilityForPlace, accessibilityOptions } from "@/lib/place-accessibility";
+import { clearMapSelectedPlaceId, loadMapSelectedPlaceId, saveMapSelectedPlaceId } from "@/lib/storage";
 import {
   BookOpen,
   Building2,
@@ -99,7 +100,7 @@ function cx(...classes: Array<string | false | null | undefined>) {
 export default function MapPage() {
   const { areas, photos, places, state, toggleSavedPlace, recordPlaceView } = useDemoState();
   const topPlaces = useMemo(() => sortTopPlaces(places), [places]);
-  const [selectedPlaceId, setSelectedPlaceId] = useState(topPlaces[0]?.id);
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | undefined>(undefined);
   const [detailPlaceId, setDetailPlaceId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [lightFilter, setLightFilter] = useState("Any");
@@ -207,7 +208,10 @@ export default function MapPage() {
     return matchesQuery && matchesLight && matchesScene && matchesAccessibility;
   });
   const selectedIsVisible = mapPlaces.some((place) => place.id === selectedPlaceId);
-  const visibleSelectedPlaceId = exactSearchPlace?.id ?? (selectedIsVisible ? selectedPlaceId : mapPlaces[0]?.id);
+  // No fallback to `mapPlaces[0]` here: the place card should stay hidden
+  // until the visitor clicks a node (or a restored/searched selection kicks
+  // in above), not default to showing a random first place.
+  const visibleSelectedPlaceId = exactSearchPlace?.id ?? (selectedIsVisible ? selectedPlaceId : undefined);
   const activeFilterCount =
     (query.trim() ? 1 : 0) +
     (lightFilter !== "Any" ? 1 : 0) +
@@ -221,8 +225,27 @@ export default function MapPage() {
   useEffect(() => {
     if (!exactSearchPlace || selectedPlaceId === exactSearchPlace.id) return;
     setSelectedPlaceId(exactSearchPlace.id);
+    saveMapSelectedPlaceId(exactSearchPlace.id);
     recordPlaceView(exactSearchPlace.id);
   }, [exactSearchPlace, recordPlaceView, selectedPlaceId]);
+
+  // Restore whichever place card the visitor last had open, so returning to
+  // the map doesn't drop them back to a blank/default view. This only
+  // applies if they left the card open — closing it (the X on the card)
+  // clears the persisted id, so a fresh visit stays empty until a node is
+  // clicked, per the "no title card until a node is clicked" behavior below.
+  const hasRestoredSelectionRef = useRef(false);
+  const [restoredFocusPending, setRestoredFocusPending] = useState(false);
+  useEffect(() => {
+    if (hasRestoredSelectionRef.current || !topPlaces.length) return;
+    hasRestoredSelectionRef.current = true;
+
+    const persistedPlaceId = loadMapSelectedPlaceId();
+    if (persistedPlaceId && topPlaces.some((place) => place.id === persistedPlaceId)) {
+      setSelectedPlaceId(persistedPlaceId);
+      setRestoredFocusPending(true);
+    }
+  }, [topPlaces]);
 
   function toggleSceneFilter(filter: string) {
     setSceneFilters((filters) =>
@@ -238,7 +261,13 @@ export default function MapPage() {
 
   function selectPlace(placeId: string) {
     setSelectedPlaceId(placeId);
+    saveMapSelectedPlaceId(placeId);
     recordPlaceView(placeId);
+  }
+
+  function closeSelectedPlace() {
+    setSelectedPlaceId(undefined);
+    clearMapSelectedPlaceId();
   }
 
   function clearFilters() {
@@ -252,6 +281,7 @@ export default function MapPage() {
   const openPlace = useCallback((placeId: string) => {
     recordPlaceView(placeId);
     setSelectedPlaceId(placeId);
+    saveMapSelectedPlaceId(placeId);
     setDetailPlaceId(placeId);
 
     if (!popupHistoryRef.current) {
@@ -377,7 +407,8 @@ export default function MapPage() {
                 )}
                 onClick={() => {
                   setNearStatus("Showing the closest seeded photo spots for this demo.");
-                  setSelectedPlaceId(mapPlaces[0]?.id ?? topPlaces[0]?.id);
+                  const nearestPlaceId = mapPlaces[0]?.id ?? topPlaces[0]?.id;
+                  if (nearestPlaceId) selectPlace(nearestPlaceId);
                 }}
               >
                 <Navigation className="size-4" /> Near me
@@ -569,7 +600,8 @@ export default function MapPage() {
               )}
               onClick={() => {
                 setNearStatus("Showing the closest seeded photo spots for this demo.");
-                setSelectedPlaceId(mapPlaces[0]?.id ?? topPlaces[0]?.id);
+                const nearestPlaceId = mapPlaces[0]?.id ?? topPlaces[0]?.id;
+                if (nearestPlaceId) selectPlace(nearestPlaceId);
               }}
             >
               <Navigation className="size-5" /> Near me
@@ -584,8 +616,9 @@ export default function MapPage() {
               onSelectPlace={selectPlace}
               onToggleSaved={toggleSavedPlace}
               onOpenPlace={openPlace}
+              onCloseSelected={closeSelectedPlace}
               showSelectedCard
-              autoFocusSelected={Boolean(exactSearchPlace)}
+              autoFocusSelected={Boolean(exactSearchPlace) || restoredFocusPending}
               className="h-full min-h-[560px] border-0 shadow-none lg:min-h-0"
             />
           </div>
