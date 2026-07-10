@@ -71,6 +71,10 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
 - [ ] Create **Google OAuth credentials** (Google Cloud Console → OAuth client,
       redirect URL from Supabase dashboard → Auth → Providers → Google) and
       paste client id/secret into the Supabase Google provider config.
+- [ ] Mapbox dashboard: add **URL restrictions** to the access token (allow
+      your production domain + http://localhost:3000) and enable usage alerts —
+      the token is NEXT_PUBLIC_ (client-visible), so the restriction is the
+      real control; the proxy's rate limit is only abuse damping.
 
 ## Progress log (append-only)
 - 2026-07-09: Loop initialized. Branch `audit/demo-to-product` created off main
@@ -91,3 +95,10 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   self-clears on recovery). Subagent evidence covered terminal failure + manual
   Retry → 200. Known pre-existing double-write (persistStateNow + 350ms debounce)
   left for Task 6. Next: Task 7 (Mapbox) — Task 2 still blocked on Tim.
+- 2026-07-09: Task 7 (Mapbox proxy hardening) DONE, first try. lib/rate-limit.ts
+  (fixed-window limiter, 5 tests) + 300req/60s per-IP limit and cache-control
+  forwarding in app/api/mapbox/route.ts. Orchestrator verified: tsc 0, 58/58
+  tests, own burst test (300×200-path then 10×429, retry-after present,
+  no-store on errors), live map still renders through proxy. One map load ≈ 26
+  proxied requests (11x headroom). Tim's dashboard step added below. Next:
+  Task 8 (e2e coverage).
