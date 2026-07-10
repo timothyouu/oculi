@@ -86,10 +86,12 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
 - [x] Fix `~/oculi/.env` to use the remote Supabase project — checked by Codex
       2026-07-10; the file already contains the expected remote URL and a
       populated project anon JWT, so no edit was necessary.
-- [ ] Mapbox dashboard: add **URL restrictions** to the access token (allow
-      your production domain + http://localhost:3000) and enable usage alerts —
-      the token is NEXT_PUBLIC_ (client-visible), so the restriction is the
-      real control; the proxy's rate limit is only abuse damping.
+- [x] Mapbox dashboard: verified 2026-07-10 that the exact `oculi` token used
+      by `.env` is already URL-restricted to `https://oculi-demo.vercel.app/`
+      and `http://localhost:3000` (plus a localhost/127.0.0.1 entry). Mapbox's
+      current official billing documentation says configurable usage/spending
+      email or SMS alerts are not offered, so no alert exists to enable; use
+      the Statistics and Invoices pages for monitoring instead.
 
 ## Progress log (append-only)
 - 2026-07-09: Loop initialized. Branch `audit/demo-to-product` created off main
@@ -241,5 +243,7 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   exactly one owner-scoped row and survives reload; existing legitimate rows
   are preserved; granular relation writes and owner RLS remain unchanged.
   This is queued only (not dispatched) while the loop remains paused at its
-  budget stop rule. Mapbox URL restrictions/usage alerts remain the sole open
-  manual dashboard item.
+  budget stop rule. Mapbox follow-up then closed: the exact `.env` token was
+  already restricted to the production and localhost origins; Mapbox does not
+  currently offer configurable usage/spending alerts, per its official billing
+  documentation. All collected manual dashboard items are now resolved.
