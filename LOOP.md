@@ -65,12 +65,12 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
 - Budget: pause and report to Tim after task 6 (end of P0/P1) regardless.
 
 ## Tim's pending manual steps (collected as found)
-- [ ] `! npm install @supabase/ssr` (in ~/oculi) — needed before task 2 code compiles.
-- [ ] Enable **anonymous sign-ins**: Supabase dashboard → Authentication →
-      Sign In / Up → allow anonymous sign-ins (project xlzknvhiuhtcqmqrypqh).
-- [ ] Create **Google OAuth credentials** (Google Cloud Console → OAuth client,
-      redirect URL from Supabase dashboard → Auth → Providers → Google) and
-      paste client id/secret into the Supabase Google provider config.
+- [x] `npm install @supabase/ssr` — done by Tim 2026-07-09.
+- [x] Anonymous sign-ins enabled — verified 2026-07-09: POST /auth/v1/signup
+      with empty body returns a real anonymous session.
+- [x] Google OAuth configured — verified 2026-07-09: /auth/v1/settings reports
+      external.google=true. (Full login flow needs a human Google account;
+      automated verification asserts the redirect initiation only.)
 - [ ] Mapbox dashboard: add **URL restrictions** to the access token (allow
       your production domain + http://localhost:3000) and enable usage alerts —
       the token is NEXT_PUBLIC_ (client-visible), so the restriction is the
@@ -102,3 +102,10 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   no-store on errors), live map still renders through proxy. One map load ≈ 26
   proxied requests (11x headroom). Tim's dashboard step added below. Next:
   Task 8 (e2e coverage).
+- 2026-07-09: Task 8 (e2e coverage) DONE, first try. 5 new specs (map-fallback,
+  map-camera, discover-resume, share-place, saved-roundtrip) guarding the
+  CLAUDE.md regression history. Orchestrator ran the suite: 10 passed, 1
+  pre-existing failure in saved-route-planner.spec.ts (stale spec vs. 38f6d03
+  drag-reorder refactor, predates this loop) — split off as new Task 11 rather
+  than counting against Task 8. Auth prerequisites all verified done by Tim;
+  dispatching Task 2 (anonymous-first auth) next.
