@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bookmark, Car, Map, MapPin, Route, Share, Star, Footprints } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDemoState } from "@/lib/demo-state";
+import { kmToMiles, haversineDistanceKm } from "@/lib/geo";
 import { formatPlaceLocation } from "@/lib/location-labels";
 import { accessibilityForPlace } from "@/lib/place-accessibility";
 import { sceneLabelsFor } from "@/lib/place-taxonomy";
@@ -41,6 +42,7 @@ export function PlaceDetail({
 }: PlaceDetailProps) {
   const router = useRouter();
   const [actionStatus, setActionStatus] = useState("");
+  const [distanceMiles, setDistanceMiles] = useState<number | null>(null);
   const {
     followedUserIds,
     likedPhotoIds,
@@ -54,6 +56,39 @@ export function PlaceDetail({
   const heroPhotos = photos.slice(0, 4);
   const usersById = Object.fromEntries(users.map((user) => [user.id, user]));
   const placeLocation = formatPlaceLocation(place, areas);
+
+  // Real distance-to-place (docs/demo-to-product-audit.md item 7), replacing
+  // the previously-hardcoded "0.3 mi". Same geolocation pattern already used
+  // by the map's "Near me" button (app/map/page.tsx `handleNearMe`): ask for
+  // the visitor's position and compute the real haversine distance. Falls
+  // back to hiding the stat entirely (never a fabricated number) when
+  // geolocation is unavailable/denied/unsupported.
+  useEffect(() => {
+    setDistanceMiles(null);
+
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+
+    let cancelled = false;
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        if (cancelled) return;
+        const distanceKm = haversineDistanceKm(
+          { lat: position.coords.latitude, lng: position.coords.longitude },
+          { lat: place.lat, lng: place.lng },
+        );
+        setDistanceMiles(kmToMiles(distanceKm));
+      },
+      () => {
+        // Permission denied or unavailable -- leave distanceMiles null so
+        // the stat is simply omitted, never a fake placeholder.
+      },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 },
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [place.id, place.lat, place.lng]);
 
   return (
     <article className="space-y-7">
@@ -120,7 +155,12 @@ export function PlaceDetail({
             <span className="flex items-center gap-2"><Bookmark className="size-4" />{place.saveCount} saves</span>
             <span className="flex items-center gap-2"><Star className="size-4" />4.8</span>
             <span className="flex items-center gap-2"><Car className="size-4" />{accessibilityForPlace(place)}</span>
-            <span className="flex items-center gap-2"><Footprints className="size-4" />0.3 mi</span>
+            {distanceMiles !== null ? (
+              <span className="flex items-center gap-2">
+                <Footprints className="size-4" />
+                {distanceMiles < 10 ? distanceMiles.toFixed(1) : Math.round(distanceMiles)} mi
+              </span>
+            ) : null}
           </div>
           <section className="space-y-3">
             <h2 className="text-lg font-semibold">Shoot notes</h2>

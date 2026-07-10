@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { haversineDistanceKm, nearbyPlaces, sortByDistanceFrom } from "./geo";
+import { haversineDistanceKm, kmToMiles, nearbyPlaces, sortByDistanceFrom } from "./geo";
 
 describe("haversineDistanceKm", () => {
   it("returns 0 for identical coordinates", () => {
@@ -12,6 +12,20 @@ describe("haversineDistanceKm", () => {
     const distance = haversineDistanceKm(sf, la);
     expect(distance).toBeGreaterThan(550);
     expect(distance).toBeLessThan(570);
+  });
+});
+
+describe("kmToMiles", () => {
+  it("converts 0 km to 0 miles", () => {
+    expect(kmToMiles(0)).toBe(0);
+  });
+
+  it("converts a known distance (1.609344 km) to 1 mile", () => {
+    expect(kmToMiles(1.609344)).toBeCloseTo(1, 10);
+  });
+
+  it("converts 8.04672 km (~5 miles) correctly", () => {
+    expect(kmToMiles(8.04672)).toBeCloseTo(5, 10);
   });
 });
 

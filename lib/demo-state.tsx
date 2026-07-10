@@ -13,16 +13,23 @@ import { currentUserId } from "./data";
 import { createRetryScheduler, type PersistenceStatus, type RetryScheduler } from "./persistence-status";
 import {
   isRemoteStateEnabled,
+  loadLegacyRelationsFromStateRow,
   loadRemoteDemoCatalog,
   loadRemoteDemoState,
+  loadRemoteUserRelations,
+  markPhotoViewedRemote,
   resetRemoteDemoState,
   saveRemoteCatalogPhoto,
   saveRemoteDemoState,
   seedCatalog,
+  setFollowedUserRemote,
+  setLikedPhotoRemote,
+  setSavedPlaceRemote,
   uploadPhotoFile,
+  type UserRelations,
 } from "./remote-state";
 import { sortTopPlaces } from "./scoring";
-import { mergeDemoStates } from "./state-merge";
+import { mergeDemoStates, unionPreserveOrder } from "./state-merge";
 import {
   createInitialDemoState,
   getDemoVisitorId,
@@ -118,6 +125,60 @@ function recordPlaceViewInState(
   };
 }
 
+// --- Relation reconciliation helpers (docs/demo-to-product-audit.md item 6) ---
+//
+// Saves/follows/likes/photo-views moved out of the whole-state blob into
+// their own per-entity tables (20260710000600_normalize_user_relations.sql)
+// so a toggle is a single row insert/delete instead of a whole-state upsert,
+// and two tabs/devices touching different relations can't clobber each
+// other. `DemoState` still carries these four arrays (nothing downstream
+// had to change how it reads them), but on bootstrap they're reconciled from
+// every place they might still live -- local storage, either identity's
+// legacy state-blob copy from before this migration, and either identity's
+// new per-entity table rows -- unioned together so nothing already
+// saved/followed/liked/viewed is lost.
+
+function relationsFromState(state: DemoState): UserRelations {
+  return {
+    savedPlaceIds: state.savedPlaceIds,
+    followedUserIds: state.followedUserIds,
+    likedPhotoIds: state.likedPhotoIds,
+    viewedPhotoIds: state.viewedPhotoIds,
+  };
+}
+
+function unionAllRelations(sources: UserRelations[]): UserRelations {
+  return sources.reduce<UserRelations>(
+    (acc, next) => ({
+      savedPlaceIds: unionPreserveOrder(acc.savedPlaceIds, next.savedPlaceIds),
+      followedUserIds: unionPreserveOrder(acc.followedUserIds, next.followedUserIds),
+      likedPhotoIds: unionPreserveOrder(acc.likedPhotoIds, next.likedPhotoIds),
+      viewedPhotoIds: unionPreserveOrder(acc.viewedPhotoIds, next.viewedPhotoIds),
+    }),
+    { savedPlaceIds: [], followedUserIds: [], likedPhotoIds: [], viewedPhotoIds: [] },
+  );
+}
+
+/** Migrate-up: makes sure every reconciled relation id is durably present in
+ * the owner's per-entity tables (idempotent upserts/no-ops for ids already
+ * there), so future loads read the same data straight from the tables
+ * without needing this reconciliation pass again. Fire-and-forget -- each
+ * underlying call already swallows its own errors with a console.warn. */
+function reconcileOwnedRelations(ownerId: string, merged: UserRelations, existing: UserRelations) {
+  merged.savedPlaceIds
+    .filter((id) => !existing.savedPlaceIds.includes(id))
+    .forEach((placeId) => setSavedPlaceRemote(ownerId, placeId, true));
+  merged.followedUserIds
+    .filter((id) => !existing.followedUserIds.includes(id))
+    .forEach((userId) => setFollowedUserRemote(ownerId, userId, true));
+  merged.likedPhotoIds
+    .filter((id) => !existing.likedPhotoIds.includes(id))
+    .forEach((photoId) => setLikedPhotoRemote(ownerId, photoId, true));
+  merged.viewedPhotoIds
+    .filter((id) => !existing.viewedPhotoIds.includes(id))
+    .forEach((photoId) => markPhotoViewedRemote(ownerId, photoId));
+}
+
 type PersistPayload = { state: DemoState; ownerId: string };
 
 export function DemoStateProvider({ children }: { children: React.ReactNode }) {
@@ -145,6 +206,12 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
     return () => scheduler?.dispose();
   }, []);
 
+  // Tracks the exact state object last handed to a save (immediate or
+  // debounced) so the two paths can't both fire for the same change --
+  // see the `persistStateNow` / debounce-effect note below
+  // (docs/demo-to-product-audit.md item 6's folded-in double-write bug).
+  const lastPersistedStateRef = useRef<DemoState | null>(null);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -167,20 +234,31 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       if (!session) {
         // Auth bootstrap itself failed (e.g. anonymous sign-in rejected) -
         // fall back to the pre-auth visitor-id-keyed remote flow so
-        // persistence still degrades gracefully instead of breaking.
+        // persistence still degrades gracefully instead of breaking. Still
+        // reconciles relations from the per-entity tables (unioned with
+        // whatever the legacy state blob has) for the same reason the
+        // authenticated branch below does.
         const visitorId = getDemoVisitorId();
         setStateOwnerId(visitorId);
         setAuthUser(null);
-        loadRemoteDemoState(visitorId)
-          .catch((error) => {
+        Promise.all([
+          loadRemoteDemoState(visitorId).catch((error) => {
             console.warn("Unable to hydrate Oculi state from Supabase.", error);
             return createInitialDemoState();
-          })
-          .then((remoteState) => {
-            if (cancelled) return;
-            setState(remoteState);
-            setHasLoadedRemoteState(true);
+          }),
+          loadRemoteUserRelations(visitorId),
+        ]).then(([remoteState, tableRelations]) => {
+          if (cancelled) return;
+          const mergedRelations = unionAllRelations([relationsFromState(remoteState), tableRelations]);
+          setState({
+            ...remoteState,
+            savedPlaceIds: mergedRelations.savedPlaceIds,
+            followedUserIds: mergedRelations.followedUserIds,
+            likedPhotoIds: mergedRelations.likedPhotoIds,
+            viewedPhotoIds: mergedRelations.viewedPhotoIds,
           });
+          setHasLoadedRemoteState(true);
+        });
       } else {
         const ownerId = session.user.id;
         setStateOwnerId(ownerId);
@@ -191,15 +269,29 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         // by the legacy client-generated `visitor-<uuid>` id.
         const legacyVisitorId = getDemoVisitorId();
         const localState = loadLocalDemoState();
+        const hasLegacyVisitor = Boolean(legacyVisitorId && legacyVisitorId !== ownerId);
 
-        const [ownedRemoteState, legacyRemoteState] = await Promise.all([
+        const [
+          ownedRemoteState,
+          legacyRemoteState,
+          ownedTableRelations,
+          legacyTableRelations,
+          ownedLegacyBlobRelations,
+          legacyBlobRelations,
+        ] = await Promise.all([
           loadRemoteDemoState(ownerId).catch((error) => {
             console.warn("Unable to hydrate Oculi state from Supabase.", error);
             return createInitialDemoState();
           }),
-          legacyVisitorId && legacyVisitorId !== ownerId
+          hasLegacyVisitor
             ? loadRemoteDemoState(legacyVisitorId).catch(() => createInitialDemoState())
             : Promise.resolve(createInitialDemoState()),
+          loadRemoteUserRelations(ownerId),
+          hasLegacyVisitor ? loadRemoteUserRelations(legacyVisitorId) : Promise.resolve(relationsFromState(createInitialDemoState())),
+          loadLegacyRelationsFromStateRow(ownerId),
+          hasLegacyVisitor
+            ? loadLegacyRelationsFromStateRow(legacyVisitorId)
+            : Promise.resolve(relationsFromState(createInitialDemoState())),
         ]);
 
         if (cancelled) return;
@@ -207,11 +299,33 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         const priorState = mergeDemoStates(localState, legacyRemoteState);
         const mergedState = mergeDemoStates(priorState, ownedRemoteState);
 
-        setState(mergedState);
+        const mergedRelations = unionAllRelations([
+          relationsFromState(localState),
+          relationsFromState(legacyRemoteState),
+          relationsFromState(ownedRemoteState),
+          legacyBlobRelations,
+          ownedLegacyBlobRelations,
+          legacyTableRelations,
+          ownedTableRelations,
+        ]);
+
+        const finalState: DemoState = {
+          ...mergedState,
+          savedPlaceIds: mergedRelations.savedPlaceIds,
+          followedUserIds: mergedRelations.followedUserIds,
+          likedPhotoIds: mergedRelations.likedPhotoIds,
+          viewedPhotoIds: mergedRelations.viewedPhotoIds,
+        };
+
+        setState(finalState);
         setHasLoadedRemoteState(true);
 
-        if (JSON.stringify(mergedState) !== JSON.stringify(ownedRemoteState)) {
-          saveRemoteDemoState(mergedState, ownerId).catch((error) => {
+        // Make the reconciled relations durable in the owner's per-entity
+        // tables going forward (idempotent, fire-and-forget).
+        reconcileOwnedRelations(ownerId, mergedRelations, ownedTableRelations);
+
+        if (JSON.stringify(finalState) !== JSON.stringify(ownedRemoteState)) {
+          saveRemoteDemoState(finalState, ownerId).catch((error) => {
             console.warn("Unable to persist merged Oculi state to Supabase.", error);
           });
         }
@@ -233,10 +347,20 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Debounced whole-state save (for the remaining scalar/session fields --
+  // relations are now persisted via their own granular calls, see the
+  // toggle/record actions below). Skips re-saving a `state` object that
+  // `persistStateNow` already just saved synchronously, so the two paths
+  // never both fire for the same change (docs/demo-to-product-audit.md item
+  // 6's folded-in double-write bug: previously `persistStateNow` plus this
+  // effect both fired for the same state transition, writing the same
+  // payload to Supabase twice).
   useEffect(() => {
     if (!hasLoadedRemoteState) return;
+    if (lastPersistedStateRef.current === state) return;
 
     const timeout = window.setTimeout(() => {
+      lastPersistedStateRef.current = state;
       saveLocalDemoState(state);
       if (isRemoteStateEnabled()) schedulerRef.current?.run({ state, ownerId: stateOwnerId });
     }, 350);
@@ -246,6 +370,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<DemoContextValue>(() => {
     const persistStateNow = (next: DemoState) => {
+      lastPersistedStateRef.current = next;
       saveLocalDemoState(next);
       if (isRemoteStateEnabled()) schedulerRef.current?.run({ state: next, ownerId: stateOwnerId });
     };
@@ -295,7 +420,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         const freshState = await loadRemoteDemoState(ownerId).catch(() => createInitialDemoState());
         setState(freshState);
       },
-      recordPhotoView: (photo, discoveryActiveIndex) =>
+      recordPhotoView: (photo, discoveryActiveIndex) => {
         update((prev) => {
           const next = recordPlaceViewInState(prev, photo.placeId, discoveryActiveIndex);
           return {
@@ -304,20 +429,30 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
               ? next.viewedPhotoIds
               : [...next.viewedPhotoIds, photo.id],
           };
-        }),
+        });
+        // Upserts one (user, photo) row -- `viewed_at` bumps on repeat views
+        // instead of an ever-growing array (docs/demo-to-product-audit.md item 6).
+        if (isRemoteStateEnabled()) markPhotoViewedRemote(stateOwnerId, photo.id);
+      },
       recordPlaceView: (placeId, discoveryActiveIndex) =>
         update((prev) => recordPlaceViewInState(prev, placeId, discoveryActiveIndex)),
       toggleSavedPlace: (placeId) => {
-        const next = { ...state, savedPlaceIds: toggleId(state.savedPlaceIds, placeId) };
-        setState(next);
-        persistStateNow(next);
+        const nextSaved = !state.savedPlaceIds.includes(placeId);
+        update((prev) => ({ ...prev, savedPlaceIds: toggleId(prev.savedPlaceIds, placeId) }));
+        // Single row insert/delete, not a whole-state upsert.
+        if (isRemoteStateEnabled()) setSavedPlaceRemote(stateOwnerId, placeId, nextSaved);
       },
       toggleFollowUser: (userId) => {
         if (userId === currentUserId) return;
+        const nextFollowed = !state.followedUserIds.includes(userId);
         update((prev) => ({ ...prev, followedUserIds: toggleId(prev.followedUserIds, userId) }));
+        if (isRemoteStateEnabled()) setFollowedUserRemote(stateOwnerId, userId, nextFollowed);
       },
-      togglePhotoLike: (photoId) =>
-        update((prev) => ({ ...prev, likedPhotoIds: toggleId(prev.likedPhotoIds, photoId) })),
+      togglePhotoLike: (photoId) => {
+        const nextLiked = !state.likedPhotoIds.includes(photoId);
+        update((prev) => ({ ...prev, likedPhotoIds: toggleId(prev.likedPhotoIds, photoId) }));
+        if (isRemoteStateEnabled()) setLikedPhotoRemote(stateOwnerId, photoId, nextLiked);
+      },
       updateProfile: (profile) =>
         update((prev) => ({
           ...prev,

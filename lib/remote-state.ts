@@ -13,6 +13,11 @@ const STATE_TABLE = "oculi_demo_states";
 const CATALOG_TABLE = "oculi_demo_catalog_items";
 const PHOTOS_TABLE = "photos";
 const PHOTO_BUCKET = "oculi-photos";
+const SAVED_PLACES_TABLE = "saved_places";
+const LIKED_PHOTOS_TABLE = "liked_photos";
+const FOLLOWED_USERS_TABLE = "followed_users";
+const VIEWED_PHOTOS_TABLE = "viewed_photos";
+const PLACE_SAVE_COUNTS_FN = "place_save_counts";
 
 type StateRow = {
   user_id: string;
@@ -111,9 +116,32 @@ export function isRemoteStateEnabled() {
   return Boolean(getSupabaseBrowserClient());
 }
 
+// The four relation arrays (saves/follows/likes/photo-views) are no longer
+// the source of truth in the uploaded state blob (docs/demo-to-product-audit.md
+// item 6) -- they live in their own per-entity tables (see
+// 20260710000600_normalize_user_relations.sql) so a toggle is a single row
+// insert/delete instead of a whole-state upsert, and so two tabs/devices
+// saving different things can't clobber each other's unrelated changes.
+// `durableStateForRemote` strips them (plus in-memory-only blob: uploads)
+// before every write to `oculi_demo_states`; old rows may still carry stale
+// copies of these fields from before this migration, which
+// `lib/demo-state.tsx`'s bootstrap reconciles into the new tables once and
+// then ignores going forward.
 function durableStateForRemote(state: DemoState): DemoState {
+  const {
+    savedPlaceIds: _savedPlaceIds,
+    followedUserIds: _followedUserIds,
+    likedPhotoIds: _likedPhotoIds,
+    viewedPhotoIds: _viewedPhotoIds,
+    ...scalarState
+  } = state;
+
   return {
-    ...state,
+    ...scalarState,
+    savedPlaceIds: [],
+    followedUserIds: [],
+    likedPhotoIds: [],
+    viewedPhotoIds: [],
     uploadedPhotos: state.uploadedPhotos.filter(
       (photo) => !photo.imageUrl.startsWith("blob:") && !photo.imageUrl.startsWith("data:"),
     ),
@@ -138,11 +166,188 @@ export async function loadRemoteDemoState(stateOwnerId = currentUserId): Promise
   return normalizeDemoState(data?.state);
 }
 
+// --- Per-entity relation tables (docs/demo-to-product-audit.md item 6) ---
+
+export type UserRelations = {
+  savedPlaceIds: string[];
+  followedUserIds: string[];
+  likedPhotoIds: string[];
+  viewedPhotoIds: string[];
+};
+
+function emptyUserRelations(): UserRelations {
+  return { savedPlaceIds: [], followedUserIds: [], likedPhotoIds: [], viewedPhotoIds: [] };
+}
+
+function asStringColumn(rows: unknown, column: string): string[] {
+  if (!Array.isArray(rows)) return [];
+  return rows
+    .map((row) => (row && typeof row === "object" ? (row as Record<string, unknown>)[column] : undefined))
+    .filter((value): value is string => typeof value === "string");
+}
+
+type RelationQueryResult = { data: unknown; error: { message: string } | null };
+
+/** Runs a relation-table query and never rejects -- a network-level failure
+ * (e.g. offline, or a misconfigured Supabase URL) becomes a warned, empty
+ * result instead of an unhandled rejection that would otherwise sink the
+ * whole `Promise.all` this is called from and silently hang bootstrap. */
+async function queryRelationRows(query: PromiseLike<RelationQueryResult>, label: string): Promise<unknown> {
+  try {
+    const { data, error } = await query;
+    if (error) {
+      console.warn(`Unable to load ${label} from Supabase.`, error.message);
+      return [];
+    }
+    return data;
+  } catch (error) {
+    console.warn(`Unable to load ${label} from Supabase.`, error);
+    return [];
+  }
+}
+
+/** Loads a user's saved places / follows / likes / photo-view receipts from
+ * their dedicated tables -- the durable source of truth going forward. */
+export async function loadRemoteUserRelations(ownerId: string): Promise<UserRelations> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return emptyUserRelations();
+
+  const [savedRows, followedRows, likedRows, viewedRows] = await Promise.all([
+    queryRelationRows(supabase.from(SAVED_PLACES_TABLE).select("place_id").eq("user_id", ownerId), "saved places"),
+    queryRelationRows(
+      supabase.from(FOLLOWED_USERS_TABLE).select("followed_user_id").eq("user_id", ownerId),
+      "followed users",
+    ),
+    queryRelationRows(supabase.from(LIKED_PHOTOS_TABLE).select("photo_id").eq("user_id", ownerId), "liked photos"),
+    queryRelationRows(supabase.from(VIEWED_PHOTOS_TABLE).select("photo_id").eq("user_id", ownerId), "viewed photos"),
+  ]);
+
+  return {
+    savedPlaceIds: asStringColumn(savedRows, "place_id"),
+    followedUserIds: asStringColumn(followedRows, "followed_user_id"),
+    likedPhotoIds: asStringColumn(likedRows, "photo_id"),
+    viewedPhotoIds: asStringColumn(viewedRows, "photo_id"),
+  };
+}
+
+function asLegacyStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+/**
+ * One-time migration helper: reads whatever relation arrays are still
+ * embedded in a (possibly pre-migration) `oculi_demo_states.state` JSON blob
+ * for `stateOwnerId`, defensively, without assuming the `DemoState` type
+ * still declares those fields. Used only by `lib/demo-state.tsx`'s bootstrap
+ * reconciliation so saves/follows/likes/views recorded before this table
+ * split aren't silently dropped.
+ */
+export async function loadLegacyRelationsFromStateRow(stateOwnerId: string): Promise<UserRelations> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return emptyUserRelations();
+
+  try {
+    const { data, error } = await supabase
+      .from(STATE_TABLE)
+      .select("state")
+      .eq("user_id", stateOwnerId)
+      .maybeSingle<{ state: Record<string, unknown> | null }>();
+
+    if (error || !data?.state) return emptyUserRelations();
+
+    return {
+      savedPlaceIds: asLegacyStringArray(data.state.savedPlaceIds),
+      followedUserIds: asLegacyStringArray(data.state.followedUserIds),
+      likedPhotoIds: asLegacyStringArray(data.state.likedPhotoIds),
+      viewedPhotoIds: asLegacyStringArray(data.state.viewedPhotoIds),
+    };
+  } catch (error) {
+    console.warn("Unable to load legacy Oculi relations from Supabase.", error);
+    return emptyUserRelations();
+  }
+}
+
+/** Adds or removes a single (user, place) row -- one row op per toggle,
+ * never a whole-state upsert. */
+export async function setSavedPlaceRemote(ownerId: string, placeId: string, saved: boolean) {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return;
+
+  const { error } = saved
+    ? await supabase.from(SAVED_PLACES_TABLE).upsert({ user_id: ownerId, place_id: placeId })
+    : await supabase.from(SAVED_PLACES_TABLE).delete().eq("user_id", ownerId).eq("place_id", placeId);
+
+  if (error) console.warn("Unable to save the place toggle to Supabase.", error.message);
+}
+
+/** Adds or removes a single (user, followed user) row. */
+export async function setFollowedUserRemote(ownerId: string, followedUserId: string, followed: boolean) {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return;
+
+  const { error } = followed
+    ? await supabase.from(FOLLOWED_USERS_TABLE).upsert({ user_id: ownerId, followed_user_id: followedUserId })
+    : await supabase.from(FOLLOWED_USERS_TABLE).delete().eq("user_id", ownerId).eq("followed_user_id", followedUserId);
+
+  if (error) console.warn("Unable to save the follow toggle to Supabase.", error.message);
+}
+
+/** Adds or removes a single (user, photo) row. */
+export async function setLikedPhotoRemote(ownerId: string, photoId: string, liked: boolean) {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return;
+
+  const { error } = liked
+    ? await supabase.from(LIKED_PHOTOS_TABLE).upsert({ user_id: ownerId, photo_id: photoId })
+    : await supabase.from(LIKED_PHOTOS_TABLE).delete().eq("user_id", ownerId).eq("photo_id", photoId);
+
+  if (error) console.warn("Unable to save the like toggle to Supabase.", error.message);
+}
+
+/** Upserts a (user, photo) view receipt -- `viewed_at` is bumped on repeat
+ * views of the same photo instead of appending to an ever-growing array. */
+export async function markPhotoViewedRemote(ownerId: string, photoId: string) {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return;
+
+  const { error } = await supabase
+    .from(VIEWED_PHOTOS_TABLE)
+    .upsert({ user_id: ownerId, photo_id: photoId, viewed_at: new Date().toISOString() });
+
+  if (error) console.warn("Unable to record the photo view in Supabase.", error.message);
+}
+
+/**
+ * Real aggregate save counts (docs/demo-to-product-audit.md item 7) via the
+ * `place_save_counts()` SECURITY DEFINER function (see
+ * 20260710000700_fix_place_save_counts_security_definer.sql) -- a narrow
+ * public aggregate over the owner-scoped `saved_places` table, returning
+ * only place_id + count, never who saved what.
+ */
+export async function loadPlaceSaveCounts(): Promise<Record<string, number>> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return {};
+
+  const { data, error } = await supabase.rpc(PLACE_SAVE_COUNTS_FN);
+  if (error) {
+    console.warn("Unable to load Oculi place save counts from Supabase.", error.message);
+    return {};
+  }
+
+  const counts: Record<string, number> = {};
+  (data as Array<{ place_id: unknown; save_count: unknown }> | null)?.forEach((row) => {
+    if (typeof row.place_id === "string" && typeof row.save_count === "number") {
+      counts[row.place_id] = row.save_count;
+    }
+  });
+  return counts;
+}
+
 export async function loadRemoteDemoCatalog(): Promise<DemoCatalog> {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return seedCatalog;
 
-  const [catalogResult, photosResult] = await Promise.all([
+  const [catalogResult, photosResult, saveCounts] = await Promise.all([
     supabase
       .from(CATALOG_TABLE)
       .select("kind,item_id,payload")
@@ -152,6 +357,7 @@ export async function loadRemoteDemoCatalog(): Promise<DemoCatalog> {
       .from(PHOTOS_TABLE)
       .select("id,owner_id,place_id,caption,image_url,tags,shot_at_time_of_day,location_label,like_count,created_at,moderation_status")
       .returns<PhotoRow[]>(),
+    loadPlaceSaveCounts(),
   ]);
 
   if (catalogResult.error) {
@@ -198,10 +404,20 @@ export async function loadRemoteDemoCatalog(): Promise<DemoCatalog> {
     });
   }
 
+  const mergedPlaces = mergeById(seedCatalog.places, remoteCatalog.places);
+
   return {
     users: mergeById(seedCatalog.users, remoteCatalog.users),
     areas: mergeById(seedCatalog.areas, remoteCatalog.areas),
-    places: mergeById(seedCatalog.places, remoteCatalog.places),
+    // Real saveCount overlay (docs/demo-to-product-audit.md item 7): the
+    // seed/catalog value is a static demo baseline (e.g. 842); real saves
+    // recorded in `saved_places` are added on top so the number actually
+    // moves when someone saves/unsaves the place, while keeping the existing
+    // demo-flavor baseline and scoring order intact.
+    places: mergedPlaces.map((place) => ({
+      ...place,
+      saveCount: place.saveCount + (saveCounts[place.id] ?? 0),
+    })),
     photos: mergeById(seedCatalog.photos, remoteCatalog.photos).sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     ),
@@ -261,6 +477,13 @@ export async function resetRemoteDemoState(stateOwnerId = currentUserId) {
 
   const { error } = await supabase.from(STATE_TABLE).delete().eq("user_id", stateOwnerId);
   if (error) console.warn("Unable to reset Oculi state in Supabase.", error.message);
+
+  await Promise.all([
+    supabase.from(SAVED_PLACES_TABLE).delete().eq("user_id", stateOwnerId),
+    supabase.from(FOLLOWED_USERS_TABLE).delete().eq("user_id", stateOwnerId),
+    supabase.from(LIKED_PHOTOS_TABLE).delete().eq("user_id", stateOwnerId),
+    supabase.from(VIEWED_PHOTOS_TABLE).delete().eq("user_id", stateOwnerId),
+  ]).catch((error) => console.warn("Unable to reset Oculi user relations in Supabase.", error));
 }
 
 export async function uploadPhotoFile(file: File, photoId: string) {

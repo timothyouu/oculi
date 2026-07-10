@@ -1,6 +1,7 @@
 export type LatLng = { lat: number; lng: number };
 
 const EARTH_RADIUS_KM = 6371;
+const KM_PER_MILE = 1.609344;
 
 function toRadians(degrees: number) {
   return (degrees * Math.PI) / 180;
@@ -16,6 +17,13 @@ export function haversineDistanceKm(a: LatLng, b: LatLng): number {
     Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
 
   return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(h));
+}
+
+/** Converts kilometers to miles -- used to display real distance-to-place
+ * stats (docs/demo-to-product-audit.md item 7) in the imperial units the
+ * rest of the app's demo copy already uses ("0.3 mi"). */
+export function kmToMiles(km: number): number {
+  return km / KM_PER_MILE;
 }
 
 export function sortByDistanceFrom<T extends LatLng>(origin: LatLng, items: T[]): T[] {

@@ -86,6 +86,32 @@ async function mockSupabase(page: Page): Promise<SupabaseHarness> {
     await route.fulfill({ status: 204 });
   });
 
+  // The four per-entity relation tables (docs/demo-to-product-audit.md item
+  // 6) and the real saveCount RPC aren't exercised by this spec's
+  // assertions, but must still be intercepted -- this suite runs against a
+  // Playwright webServer whose NEXT_PUBLIC_SUPABASE_URL points at a
+  // non-existent local stack (127.0.0.1:54321, see playwright.config.ts), so
+  // leaving them unmocked means the client waits on real network calls to a
+  // host with nothing listening, which stalls the bootstrap Promise.all
+  // instead of failing fast and predictably.
+  for (const table of ["saved_places", "followed_users", "liked_photos", "viewed_photos"]) {
+    await page.route(`**/rest/v1/${table}**`, async (route) => {
+      if (route.request().method() === "GET") {
+        await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+        return;
+      }
+      await route.fulfill({ status: 204 });
+    });
+  }
+
+  await page.route("**/rest/v1/rpc/place_save_counts**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+
+  await page.route("**/rest/v1/oculi_demo_catalog_items**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+
   await page.route("**/storage/v1/object**", async (route) => {
     const request = route.request();
     const url = request.url();

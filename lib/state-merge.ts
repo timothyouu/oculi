@@ -9,7 +9,7 @@ import type { DemoState, PlaceView } from "./types";
 // which one is "primary" - array-valued fields are unioned, and scalar
 // fields defer to whichever state has more recent activity.
 
-function unionPreserveOrder(a: string[], b: string[]): string[] {
+export function unionPreserveOrder(a: string[], b: string[]): string[] {
   const seen = new Set<string>();
   const result: string[] = [];
   [...a, ...b].forEach((id) => {

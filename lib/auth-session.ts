@@ -1,6 +1,6 @@
 "use client";
 
-import type { Session } from "@supabase/supabase-js";
+import type { Session, SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseBrowserClient } from "./supabase";
 
 export type AuthUser = {
@@ -28,18 +28,18 @@ export function sessionToAuthUser(session: Session | null): AuthUser | null {
   };
 }
 
-/**
- * Returns the current Supabase auth session, creating a real anonymous
- * session (supabase.auth.signInAnonymously) if none exists yet. Every
- * visitor gets a session id this way with no login wall - see
- * docs/demo-to-product-audit.md item 1. Returns null only when Supabase
- * itself isn't configured or the anonymous sign-in request fails, in which
- * case callers should fall back to the legacy localStorage-only flow.
- */
-export async function ensureAuthSession(): Promise<Session | null> {
-  const supabase = getSupabaseBrowserClient();
-  if (!supabase) return null;
+// Single-flight guard for ensureAuthSession (docs/demo-to-product-audit.md
+// item 6's folded-in bug fix). React 18 StrictMode intentionally double-fires
+// effects in development, and DemoStateProvider's bootstrap effect calls
+// ensureAuthSession() directly from its effect body -- without this guard,
+// both fires would race past the `getSession()` check (neither sees a
+// session yet) and both call `supabase.auth.signInAnonymously()`, creating
+// two separate anonymous sessions for what should be a single visit. Any
+// other concurrent caller within the same tab (e.g. two components mounting
+// at once) shares the same in-flight request instead of firing its own.
+let inFlightEnsureAuthSession: Promise<Session | null> | null = null;
 
+async function ensureAuthSessionUncached(supabase: SupabaseClient): Promise<Session | null> {
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   if (sessionError) {
     console.warn("Unable to read the Supabase auth session.", sessionError.message);
@@ -52,6 +52,31 @@ export async function ensureAuthSession(): Promise<Session | null> {
     return null;
   }
   return data.session;
+}
+
+/**
+ * Returns the current Supabase auth session, creating a real anonymous
+ * session (supabase.auth.signInAnonymously) if none exists yet. Every
+ * visitor gets a session id this way with no login wall - see
+ * docs/demo-to-product-audit.md item 1. Returns null only when Supabase
+ * itself isn't configured or the anonymous sign-in request fails, in which
+ * case callers should fall back to the legacy localStorage-only flow.
+ *
+ * Single-flight: concurrent calls (e.g. React StrictMode's double effect
+ * fire) share one in-flight request instead of each independently racing
+ * `getSession()` and potentially both calling `signInAnonymously()`.
+ */
+export function ensureAuthSession(): Promise<Session | null> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return Promise.resolve(null);
+
+  if (!inFlightEnsureAuthSession) {
+    inFlightEnsureAuthSession = ensureAuthSessionUncached(supabase).finally(() => {
+      inFlightEnsureAuthSession = null;
+    });
+  }
+
+  return inFlightEnsureAuthSession;
 }
 
 export type GoogleUpgradeResult =

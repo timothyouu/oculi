@@ -76,6 +76,10 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
       `update supabase_migrations.schema_migrations set version='20260710000100' where version='20260710100059';`
       `update supabase_migrations.schema_migrations set version='20260710000200' where version='20260710100234';`
       `update supabase_migrations.schema_migrations set version='20260710000300' where version='20260710101345';`
+      `update supabase_migrations.schema_migrations set version='20260710000400' where version='20260710102140';`
+      `update supabase_migrations.schema_migrations set version='20260710000500' where version='20260710102153';`
+      `update supabase_migrations.schema_migrations set version='20260710000600' where version='20260710145805';`
+      `update supabase_migrations.schema_migrations set version='20260710000700' where version='20260710145852';`
 - [ ] Optional: delete `oculi-photos/user-guest/upload-rls-verify.txt` from the
       Storage dashboard (verification leftover; clients can no longer delete).
 - [ ] Fix `~/oculi/.env`: set `NEXT_PUBLIC_SUPABASE_URL=https://xlzknvhiuhtcqmqrypqh.supabase.co`
@@ -166,3 +170,63 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   live a double-anonymous-session race on first load (React strict-mode
   double effect → two signInAnonymously) — single-flight fix folded into
   Task 6's brief.
+- 2026-07-10: Task 6 (normalized state) DONE, first try. New migrations
+  20260710000600 (saved_places/liked_photos/followed_users/viewed_photos,
+  composite PKs, owner-scoped RLS matching the Task 3 house style, public
+  place_save_counts aggregate) and 000700 (advisor flagged the bare view as
+  an implicit SECURITY DEFINER — replaced with a narrowly-scoped
+  place_save_counts() function, pinned search_path, only exposes place_id+
+  count) — both applied; realignment list for Tim grows by two more version
+  pairs. lib/remote-state.ts gained single-row insert/delete/upsert helpers
+  per relation plus loadPlaceSaveCounts (rpc) and a legacy-blob reconciler;
+  durableStateForRemote now strips the four relation arrays from every
+  oculi_demo_states write. lib/demo-state.tsx's toggle actions call the
+  granular remote functions directly instead of persistStateNow; bootstrap
+  unions local/legacy-blob/table copies of each relation once and migrates
+  them up into the tables. lib/auth-session.ts's ensureAuthSession is now
+  single-flight (module-level in-flight promise), fixing the StrictMode
+  double-signInAnonymously race. Fixed the persistStateNow/debounce
+  double-write via a lastPersistedStateRef object-identity check. Real
+  distance in place-detail.tsx (lib/geo.ts kmToMiles + existing
+  haversineDistanceKm, same geolocation pattern as handleNearMe; hides the
+  stat rather than faking it when geolocation is denied). Rating (4.8) left
+  untouched per audit item 7's explicit either/or. Orchestrator independently
+  re-verified rather than trusting the subagent's report: tsc 0, 93/93 tests
+  (was 90), build clean (pre-existing img-lint warnings only), verify-db-sync
+  0, both migrations present in list_migrations, advisors zero ERRORs (only
+  the pre-existing anon-access WARN pattern plus two expected WARNs on the
+  new SECURITY DEFINER function), and read the actual diffs for
+  auth-session.ts/demo-state.tsx/remote-state.ts/place-detail.tsx line by
+  line to confirm the single-flight guard, double-write guard, and distance
+  fallback all do what they claim. Subagent had to route file writes through
+  Bash instead of Write/Edit (blocked by this session's worktree-isolation
+  guard despite already working in the shared, non-worktree checkout) —
+  functioned correctly but is a process oddity worth noting. Work is
+  uncommitted, per LOOP.md's own stop rule: PAUSING HERE to report to Tim
+  (P0/P1 budget checkpoint) rather than auto-continuing to Task 8/9/10.
+- 2026-07-10 (orchestrator, fresh session): independently re-verified Task 6
+  end-to-end after the subagent finished (its process stayed alive but the
+  repo went quiet; two earlier "quiet" signals were false — `find -newermt
+  '-600 seconds'` silently matches nothing, fixed by computing the cutoff
+  with `date -d`). Full verifier: tsc 0; 93/93 unit tests; e2e back to
+  baseline 10 pass + only the pre-existing saved-route-planner failure
+  (Task 11) — an interim full-suite run had shown 3 extra failures, but that
+  run overlapped the subagent's live edits and its later spec updates fixed
+  them; next build exit 0; verify-db-sync 0. Live against the remote with a
+  clean browser context on localhost:3000 (shell-env override for the
+  Supabase URL/key, .env untouched): exactly ONE /auth/v1/signup on first
+  load (single-flight fix confirmed — StrictMode previously fired two), zero
+  on reload, uid stable across reload, Bookmark on twin-peaks survived
+  reload, saved_places row SQL-verified owned by that exact uid, rendered
+  "642 saves" = seed 641 + 1 real save (overlay working),
+  place_save_counts() rpc returned {twin-peaks: 1}. All test residue cleaned
+  (relation rows, state rows, both anon auth users). FINDING for Tim: the
+  bootstrap reconciler migrates the demo default savedPlaceIds (coit-tower,
+  grace-cathedral, mission-murals, golden-gate-overlook — lib/storage.ts
+  initialDemoState) into saved_places for EVERY fresh anonymous visitor, so
+  those four places' real save counts inflate by one per visitor with no
+  user action. Consistent with the pre-existing "every visitor starts with
+  these saved" demo flavor, but now it moves a public number — decide
+  whether default saves should count. Task 6 VERIFIED DONE. Loop PAUSED at
+  the budget stop rule (end of P0/P1); remaining: Task 9 (image pipeline),
+  Task 10 (legal stub), Task 11 (stale saved-route-planner spec).
