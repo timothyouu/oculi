@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    name: Baseline verifiers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          # No .nvmrc in this repo; Node 20 matches the project's target runtime.
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Unit tests
+        run: npx vitest run
+
+      - name: Build
+        run: npx next build
+        # No env vars are set here: NEXT_PUBLIC_SUPABASE_URL/ANON_KEY and
+        # NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN are all read lazily (lib/supabase.ts,
+        # components/mapbox-map.tsx) and gate their own fallback behavior rather
+        # than being required at build/module-evaluation time. Verified locally
+        # that `npx next build` succeeds with no env vars present.
+
+      - name: Lint
+        run: npx next lint
+        # `next lint`'s default ESLint config only fails the process on lint
+        # errors, not warnings. This repo has known <img> "no-img-element"
+        # warnings (tracked, not yet fixed) that must keep passing CI.
+
+      - name: Verify seed-data / DB-sync (local checks only)
+        run: npx tsx scripts/verify-db-sync.mts
+        # scripts/verify-db-sync.mts is a locked verifier (see its header comment).
+        # Run with NO arguments, it only does local, offline checks: (1) confirms
+        # supabase/migrations/20260709000100_place_taxonomy_fields.sql is
+        # byte-identical to what would be regenerated from lib/data.ts, and
+        # (2) sanity-checks local entity counts. It never talks to Supabase.
+        #
+        # The script *also* supports `--sql-out <dir>`, which additionally emits
+        # SQL files that must be run by hand against the remote Supabase project
+        # (real credentials, network access, not safe/appropriate for CI) to
+        # check for drift against the live oculi_demo_catalog_items table. That
+        # remote-comparison step is intentionally NOT run here — it requires
+        # Supabase credentials that must never be committed to this repo — and
+        # stays a manual/local step per CLAUDE.md's Last Updated notes.
