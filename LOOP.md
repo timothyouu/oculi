@@ -154,3 +154,15 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   fault (ran next build while the dev server was live) — fixed by plain
   restart; rule: never build while the dev server runs. (3) Migration-version
   realignment SQL denied for both subagent and orchestrator — Tim's step below.
+- 2026-07-10: Task 5 (real photos table) DONE, first try. Migrations
+  20260710000400 (photos table: owner_id default auth.uid(), NOT NULL
+  place_id/image_url, moderation_status check, public SELECT / owner-scoped
+  writes) and 000500 (migrated the one legacy upload, catalog now fully
+  client-read-only) — both applied; realignment list for Tim grows by two.
+  lib/catalog-validation.ts guards hydration (25 tests; the malformed-row
+  crash shape is now rejected with a console.warn skip). Orchestrator
+  verified: tsc 0, 90/90 unit, verify-db-sync 0, photo-upload e2e 2/2, live
+  round-trip, photos REST contents + no-session insert 42501. NOTE: observed
+  live a double-anonymous-session race on first load (React strict-mode
+  double effect → two signInAnonymously) — single-flight fix folded into
+  Task 6's brief.
