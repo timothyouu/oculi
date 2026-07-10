@@ -71,8 +71,8 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
 - [x] Google OAuth configured — verified 2026-07-09: /auth/v1/settings reports
       external.google=true. (Full login flow needs a human Google account;
       automated verification asserts the redirect initiation only.)
-- [ ] Realign remote migration versions (denied for Claude twice — run in the
-      Supabase SQL editor for project xlzknvhiuhtcqmqrypqh):
+- [x] Realign remote migration versions — completed by Codex 2026-07-10 via
+      the Supabase Management API and verified all seven canonical versions:
       `update supabase_migrations.schema_migrations set version='20260710000100' where version='20260710100059';`
       `update supabase_migrations.schema_migrations set version='20260710000200' where version='20260710100234';`
       `update supabase_migrations.schema_migrations set version='20260710000300' where version='20260710101345';`
@@ -80,14 +80,12 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
       `update supabase_migrations.schema_migrations set version='20260710000500' where version='20260710102153';`
       `update supabase_migrations.schema_migrations set version='20260710000600' where version='20260710145805';`
       `update supabase_migrations.schema_migrations set version='20260710000700' where version='20260710145852';`
-- [ ] Optional: delete `oculi-photos/user-guest/upload-rls-verify.txt` from the
-      Storage dashboard (verification leftover; clients can no longer delete).
-- [ ] Fix `~/oculi/.env`: set `NEXT_PUBLIC_SUPABASE_URL=https://xlzknvhiuhtcqmqrypqh.supabase.co`
-      and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to the project's anon key (Supabase
-      dashboard → Settings → API). It currently points at a local stack
-      (127.0.0.1:54321) that isn't running, so a plain `npm run dev` gets
-      connection-refused on every Supabase call. (The loop's dev server is
-      running with shell-env overrides meanwhile.)
+- [x] Delete `oculi-photos/user-guest/upload-rls-verify.txt` — completed by
+      Codex 2026-07-10 through the Storage API; database verification returned
+      zero matching objects afterward.
+- [x] Fix `~/oculi/.env` to use the remote Supabase project — checked by Codex
+      2026-07-10; the file already contains the expected remote URL and a
+      populated project anon JWT, so no edit was necessary.
 - [ ] Mapbox dashboard: add **URL restrictions** to the access token (allow
       your production domain + http://localhost:3000) and enable usage alerts —
       the token is NEXT_PUBLIC_ (client-visible), so the restriction is the
@@ -230,3 +228,18 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   whether default saves should count. Task 6 VERIFIED DONE. Loop PAUSED at
   the budget stop rule (end of P0/P1); remaining: Task 9 (image pipeline),
   Task 10 (legal stub), Task 11 (stale saved-route-planner spec).
+- 2026-07-10 (Codex takeover): stopped the leftover verification dev server;
+  independently re-ran tsc and all 93 unit tests; committed Task 6 as 74f2460
+  and pushed `audit/demo-to-product` to origin. Realigned all seven remote
+  migration-history versions and deleted the Storage verification residue,
+  both with post-write verification. Confirmed `~/oculi/.env` was already
+  corrected to the remote project. TIM DECISION: queue a focused Task 6a for
+  Fable before the remaining P2 tasks: stop untouched demo-default saves from
+  being migrated into `saved_places` for every fresh anonymous visitor.
+  Acceptance: a fresh visitor who takes no save action creates no relation
+  rows/count increments for the four defaults; an explicit save still creates
+  exactly one owner-scoped row and survives reload; existing legitimate rows
+  are preserved; granular relation writes and owner RLS remain unchanged.
+  This is queued only (not dispatched) while the loop remains paused at its
+  budget stop rule. Mapbox URL restrictions/usage alerts remain the sole open
+  manual dashboard item.
