@@ -64,7 +64,7 @@ export function SavedPanel({
   onOpenPlace,
   onToggleSaved,
 }: SavedPanelProps) {
-  const { areas } = useDemoState();
+  const { areas, authUser } = useDemoState();
   const [query, setQuery] = useState("");
   const [lightFilter, setLightFilter] = useState("All");
   const [sceneFilter, setSceneFilter] = useState("All");
@@ -235,6 +235,9 @@ export function SavedPanel({
 
     try {
       const routePlanId = await saveRemoteRoutePlan({
+        // Route plans are RLS-scoped to the authenticated auth.uid(), not the
+        // fictional demo profile id, so this must be the real session owner.
+        userId: authUser?.id,
         kind: activeRoute.id,
         name: `${activeRoute.title} - ${new Date().toLocaleDateString()}`,
         stops: activeRoute.stops.map((stop, index) => ({

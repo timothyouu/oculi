@@ -71,6 +71,13 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
 - [x] Google OAuth configured — verified 2026-07-09: /auth/v1/settings reports
       external.google=true. (Full login flow needs a human Google account;
       automated verification asserts the redirect initiation only.)
+- [ ] Realign remote migration versions (denied for Claude twice — run in the
+      Supabase SQL editor for project xlzknvhiuhtcqmqrypqh):
+      `update supabase_migrations.schema_migrations set version='20260710000100' where version='20260710100059';`
+      `update supabase_migrations.schema_migrations set version='20260710000200' where version='20260710100234';`
+      `update supabase_migrations.schema_migrations set version='20260710000300' where version='20260710101345';`
+- [ ] Optional: delete `oculi-photos/user-guest/upload-rls-verify.txt` from the
+      Storage dashboard (verification leftover; clients can no longer delete).
 - [ ] Fix `~/oculi/.env`: set `NEXT_PUBLIC_SUPABASE_URL=https://xlzknvhiuhtcqmqrypqh.supabase.co`
       and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to the project's anon key (Supabase
       dashboard → Settings → API). It currently points at a local stack
@@ -129,3 +136,21 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   Tim's step added below. Legacy visitor-row remote merge will stop working
   once Task 3 makes SELECT owner-only — acceptable, the localStorage blob
   carries the same data for the same browser (documented trade-off).
+- 2026-07-10: Task 3 (RLS lockdown) DONE after one rescoped rerun. Three
+  applied migrations: owner-scoped policies on oculi_demo_states/route_plans/
+  route_plan_stops + upload-scoped catalog writes + bucket-listing drop +
+  rls_auto_enable revoke (000100), drop of all 11 always-true policies
+  (000200), and — after the orchestrator caught public-role UPDATE/DELETE
+  still open on storage.objects (rescoped miss) — upsert-aware owner-scoped
+  storage write policies (000300). Advisors: all flagged findings gone.
+  App change: saved-panel.tsx keys route plans on authUser.id (was hardcoded
+  "user-guest", would have broken under RLS). Orchestrator verified: advisors
+  clean, live anon save round-trip under RLS, tsc 0, 67/67, e2e baseline.
+  INCIDENTS: (1) subagent's REST test left a malformed photo row
+  (upload-verify-test-2) in the shared catalog which white-screened the whole
+  app (undefined.some) — orchestrator root-caused and deleted it; Task 5 brief
+  now includes defensive catalog-payload validation so one bad row can't take
+  the app down. (2) The earlier .next corruption was the orchestrator's own
+  fault (ran next build while the dev server was live) — fixed by plain
+  restart; rule: never build while the dev server runs. (3) Migration-version
+  realignment SQL denied for both subagent and orchestrator — Tim's step below.
