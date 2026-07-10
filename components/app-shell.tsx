@@ -5,6 +5,7 @@ import { Bookmark, Compass, Map, PlusCircle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDemoState } from "@/lib/demo-state";
 import type { User } from "../lib/types";
+import { PersistenceStatusBanner } from "./persistence-status-banner";
 import { TopNav } from "./top-nav";
 import { UploadModal } from "./upload-modal";
 
@@ -66,6 +67,7 @@ export function AppShell({
 
   return (
     <div className="min-h-screen text-[var(--ink)]">
+      <PersistenceStatusBanner />
       <TopNav
         areaLabel={areaLabel}
         activeItem={activeItem}

@@ -131,7 +131,12 @@ export async function saveRemoteDemoState(state: DemoState, stateOwnerId = curre
     updated_at: new Date().toISOString(),
   });
 
-  if (error) console.warn("Unable to save Oculi state to Supabase.", error.message);
+  if (error) {
+    console.warn("Unable to save Oculi state to Supabase.", error.message);
+    // Re-throw so callers (lib/persistence-status.ts's retry scheduler) can
+    // surface the failure to the user instead of it being silently swallowed.
+    throw error;
+  }
 }
 
 export async function saveRemoteCatalogPhoto(photo: Photo) {

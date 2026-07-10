@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { currentUserId } from "./data";
+import { createRetryScheduler, type PersistenceStatus, type RetryScheduler } from "./persistence-status";
 import {
   isRemoteStateEnabled,
   loadRemoteDemoCatalog,
@@ -36,6 +37,8 @@ type DemoContextValue = {
   likedPhotoIds: string[];
   isRemoteBacked: boolean;
   hasLoadedRemoteState: boolean;
+  persistenceStatus: PersistenceStatus | null;
+  retryPersistence: () => void;
   recordPhotoView: (photo: Photo, discoveryActiveIndex?: number) => void;
   recordPlaceView: (placeId: string, discoveryActiveIndex?: number) => void;
   toggleSavedPlace: (placeId: string) => void;
@@ -99,11 +102,31 @@ function recordPlaceViewInState(
   };
 }
 
+type PersistPayload = { state: DemoState; ownerId: string };
+
 export function DemoStateProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<DemoState>(() => createInitialDemoState());
   const [catalog, setCatalog] = useState(seedCatalog);
   const [hasLoadedRemoteState, setHasLoadedRemoteState] = useState(false);
   const [stateOwnerId, setStateOwnerId] = useState(currentUserId);
+  const [persistenceStatus, setPersistenceStatus] = useState<PersistenceStatus | null>(null);
+
+  // A single retry/backoff scheduler instance for the whole-state Supabase
+  // write, created once and reused across renders. It surfaces status
+  // ("saving"/"saved"/"retrying"/"failed") instead of the old silent
+  // console.warn-and-drop behavior (docs/demo-to-product-audit.md item 5).
+  const schedulerRef = useRef<RetryScheduler<PersistPayload> | null>(null);
+  if (!schedulerRef.current) {
+    schedulerRef.current = createRetryScheduler<PersistPayload>({
+      write: ({ state: payloadState, ownerId }) => saveRemoteDemoState(payloadState, ownerId),
+      onStatusChange: setPersistenceStatus,
+    });
+  }
+
+  useEffect(() => {
+    const scheduler = schedulerRef.current;
+    return () => scheduler?.dispose();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -150,7 +173,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
 
     const timeout = window.setTimeout(() => {
       saveLocalDemoState(state);
-      if (isRemoteStateEnabled()) saveRemoteDemoState(state, stateOwnerId);
+      if (isRemoteStateEnabled()) schedulerRef.current?.run({ state, ownerId: stateOwnerId });
     }, 350);
 
     return () => window.clearTimeout(timeout);
@@ -159,7 +182,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<DemoContextValue>(() => {
     const persistStateNow = (next: DemoState) => {
       saveLocalDemoState(next);
-      if (isRemoteStateEnabled()) saveRemoteDemoState(next, stateOwnerId);
+      if (isRemoteStateEnabled()) schedulerRef.current?.run({ state: next, ownerId: stateOwnerId });
     };
     const update = (fn: (state: DemoState) => DemoState) =>
       setState((prev) => {
@@ -188,6 +211,8 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       likedPhotoIds: state.likedPhotoIds,
       isRemoteBacked: isRemoteStateEnabled(),
       hasLoadedRemoteState,
+      persistenceStatus,
+      retryPersistence: () => schedulerRef.current?.retryNow(),
       recordPhotoView: (photo, discoveryActiveIndex) =>
         update((prev) => {
           const next = recordPlaceViewInState(prev, photo.placeId, discoveryActiveIndex);
@@ -266,7 +291,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         resetRemoteDemoState(stateOwnerId);
       }
     };
-  }, [catalog, hasLoadedRemoteState, state, stateOwnerId]);
+  }, [catalog, hasLoadedRemoteState, persistenceStatus, state, stateOwnerId]);
 
   return <DemoStateContext.Provider value={value}>{children}</DemoStateContext.Provider>;
 }

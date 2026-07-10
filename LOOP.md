@@ -82,3 +82,12 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   Orchestrator re-ran all five steps locally: exit 0 each. Task 2 (auth) is
   blocked on Tim's three manual steps (see checklist above); proceeding to
   Task 4 (visible persistence failures) meanwhile — independent of auth.
+- 2026-07-09: Task 4 (visible persistence failures) DONE, first try. Sonnet
+  subagent added lib/persistence-status.ts (retry scheduler, 2s/5s/10s backoff,
+  6 fake-timer tests) + persistence-status-banner.tsx in app-shell; writes in
+  demo-state.tsx routed through scheduler; saveRemoteDemoState re-throws.
+  Orchestrator verified: tsc 0, 53/53 tests, read full diff, and live Playwright
+  check (banner absent happy-path, appears on blocked oculi_demo_states writes,
+  self-clears on recovery). Subagent evidence covered terminal failure + manual
+  Retry → 200. Known pre-existing double-write (persistStateNow + 350ms debounce)
+  left for Task 6. Next: Task 7 (Mapbox) — Task 2 still blocked on Tim.
