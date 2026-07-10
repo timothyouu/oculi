@@ -1,0 +1,75 @@
+- generic [ref=f22e2]:
+  - banner [ref=f22e3]:
+    - generic [ref=f22e4]:
+      - button "Go to Oculi discover feed" [ref=f22e5] [cursor=pointer]:
+        - generic [ref=f22e7]: oculi
+      - navigation "Primary navigation" [ref=f22e8]:
+        - button "Discover" [ref=f22e9] [cursor=pointer]
+        - button "Map" [ref=f22e10] [cursor=pointer]: Map
+        - button "Saved" [ref=f22e12] [cursor=pointer]
+        - button "Add Photo" [ref=f22e13] [cursor=pointer]
+      - generic [ref=f22e14]:
+        - button "Notifications" [ref=f22e15] [cursor=pointer]:
+          - img [ref=f22e16]
+        - button "Open John Doe's profile" [ref=f22e20] [cursor=pointer]
+        - button "Open settings" [ref=f22e21] [cursor=pointer]:
+          - img [ref=f22e22]
+  - main [ref=f22e25]:
+    - region "Discover content" [ref=f22e26]:
+      - generic [ref=f22e28]:
+        - complementary [ref=f22e29]:
+          - generic [ref=f22e30]:
+            - generic [ref=f22e31]:
+              - paragraph [ref=f22e32]: Explore
+              - heading "Find photo spots" [level=1] [ref=f22e33]
+            - generic [ref=f22e34]: 61 places · 118 photos
+          - generic [ref=f22e35]:
+            - img [ref=f22e36]
+            - textbox "Search map places" [ref=f22e39]:
+              - /placeholder: Search city, scene, or mood
+          - generic [ref=f22e40]:
+            - heading "Start with" [level=2] [ref=f22e42]
+            - generic [ref=f22e43]:
+              - button "Golden light" [ref=f22e44] [cursor=pointer]:
+                - img [ref=f22e45]
+                - generic [ref=f22e50]: Golden light
+              - button "City views" [ref=f22e51] [cursor=pointer]:
+                - img [ref=f22e52]
+                - generic [ref=f22e56]: City views
+              - button "Waterfront" [ref=f22e57] [cursor=pointer]:
+                - img [ref=f22e58]
+                - generic [ref=f22e62]: Waterfront
+              - button "Easy access" [ref=f22e63] [cursor=pointer]:
+                - img [ref=f22e64]
+                - generic [ref=f22e67]: Easy access
+          - generic [ref=f22e68]:
+            - group [ref=f22e69]:
+              - generic "Best light" [ref=f22e70] [cursor=pointer]:
+                - generic [ref=f22e71]:
+                  - img [ref=f22e73]
+                  - text: Best light
+                - img [ref=f22e78]
+              - generic [ref=f22e81]:
+                - button "Any" [ref=f22e82] [cursor=pointer]
+                - button "Golden hour" [ref=f22e83] [cursor=pointer]
+                - button "Sunrise" [ref=f22e84] [cursor=pointer]
+                - button "Sunset" [ref=f22e85] [cursor=pointer]
+                - button "Blue hour" [ref=f22e86] [cursor=pointer]
+                - button "Daylight" [ref=f22e87] [cursor=pointer]
+                - button "Night" [ref=f22e88] [cursor=pointer]
+            - group [ref=f22e89]:
+              - generic "Scene type" [ref=f22e90] [cursor=pointer]:
+                - generic [ref=f22e91]:
+                  - img [ref=f22e93]
+                  - text: Scene type
+                - img [ref=f22e95]
+            - group [ref=f22e97]:
+              - generic "Ease of visit" [ref=f22e98] [cursor=pointer]:
+                - generic [ref=f22e99]:
+                  - img [ref=f22e101]
+                  - text: Ease of visit
+                - img [ref=f22e104]
+          - button "Near me" [ref=f22e106] [cursor=pointer]:
+            - img [ref=f22e107]
+            - text: Near me
+        - region "Live Mapbox map" [ref=f22e110]

@@ -1,0 +1,133 @@
+- generic [active] [ref=f17e1]:
+  - generic [ref=f17e2]:
+    - banner [ref=f17e3]:
+      - generic [ref=f17e4]:
+        - button "Go to Oculi discover feed" [ref=f17e5] [cursor=pointer]:
+          - generic [ref=f17e7]: oculi
+        - navigation "Primary navigation" [ref=f17e8]:
+          - button "Discover" [ref=f17e9] [cursor=pointer]
+          - button "Map" [ref=f17e10] [cursor=pointer]: Map
+          - button "Saved" [ref=f17e12] [cursor=pointer]
+          - button "Add Photo" [ref=f17e13] [cursor=pointer]
+        - generic [ref=f17e14]:
+          - button "Notifications" [ref=f17e15] [cursor=pointer]:
+            - img [ref=f17e16]
+          - button "Open John Doe's profile" [ref=f17e20] [cursor=pointer]
+          - button "Open settings" [ref=f17e21] [cursor=pointer]:
+            - img [ref=f17e22]
+    - main [ref=f17e25]:
+      - region "Discover content" [ref=f17e26]:
+        - generic [ref=f17e27]:
+          - group [ref=f17e28]:
+            - generic "Map filters 61 places · 118 photos" [ref=f17e29] [cursor=pointer]:
+              - generic [ref=f17e30]:
+                - generic [ref=f17e31]: Map filters
+                - text: 61 places · 118 photos
+              - img [ref=f17e33]
+          - region "Live Mapbox map" [ref=f17e36]:
+            - generic [ref=f17e37]:
+              - generic:
+                - region "Map" [ref=f17e38]
+                - img "Select Near the Presidio overlook cluster, 23 places, 42 photos" [ref=f17e149] [cursor=pointer]:
+                  - generic [ref=f17e150]: "42"
+                - img "Select East River bridge walkway cluster, 2 places, 4 photos" [ref=f17e151] [cursor=pointer]:
+                  - generic [ref=f17e152]: "4"
+                - img "Select Downtown river paths cluster, 2 places, 4 photos" [ref=f17e153] [cursor=pointer]:
+                  - generic [ref=f17e154]: "4"
+                - img "Select National Mall reflecting paths cluster, 2 places, 4 photos" [ref=f17e155] [cursor=pointer]:
+                  - generic [ref=f17e156]: "4"
+                - img "Select Queen Anne public overlook cluster, 2 places, 4 photos" [ref=f17e157] [cursor=pointer]:
+                  - generic [ref=f17e158]: "4"
+                - img "Select Clarion and Balmy alley area cluster, 2 places, 4 photos" [ref=f17e159] [cursor=pointer]:
+                  - generic [ref=f17e160]: "4"
+                - img "Select Eiffel Tower from Trocadero, 2 photos" [ref=f17e161] [cursor=pointer]:
+                  - generic [ref=f17e162]: "2"
+                - img "Select Grand Canyon South Rim, 2 photos" [ref=f17e163] [cursor=pointer]:
+                  - generic [ref=f17e164]: "2"
+                - img "Select Shibuya Crossing, 2 photos" [ref=f17e165] [cursor=pointer]:
+                  - generic [ref=f17e166]: "2"
+                - img "Select Pyramids of Giza, 2 photos" [ref=f17e167] [cursor=pointer]:
+                  - generic [ref=f17e168]: "2"
+                - img "Select Colosseum Exterior, 2 photos" [ref=f17e169] [cursor=pointer]:
+                  - generic [ref=f17e170]: "2"
+                - img "Select Griffith Observatory, 2 photos" [ref=f17e171] [cursor=pointer]:
+                  - generic [ref=f17e172]: "2"
+                - img "Select Monument Valley View, 2 photos" [ref=f17e173] [cursor=pointer]:
+                  - generic [ref=f17e174]: "2"
+                - img "Select Horseshoe Bend Overlook, 2 photos" [ref=f17e175] [cursor=pointer]:
+                  - generic [ref=f17e176]: "2"
+                - img "Select Grand Prismatic Spring, 2 photos" [ref=f17e177] [cursor=pointer]:
+                  - generic [ref=f17e178]: "2"
+                - img "Select Tower Bridge River Walk, 2 photos" [ref=f17e179] [cursor=pointer]:
+                  - generic [ref=f17e180]: "2"
+                - img "Select Muir Woods, 2 photos" [ref=f17e181] [cursor=pointer]:
+                  - generic [ref=f17e182]: "2"
+                - img "Select Dream Lake, 2 photos" [ref=f17e183] [cursor=pointer]:
+                  - generic [ref=f17e184]: "2"
+                - img "Select Zion Canyon Overlook Trail, 2 photos" [ref=f17e185] [cursor=pointer]:
+                  - generic [ref=f17e186]: "2"
+                - img "Select Schwabacher Landing, 2 photos" [ref=f17e187] [cursor=pointer]:
+                  - generic [ref=f17e188]: "2"
+                - img "Select Multnomah Falls, 2 photos" [ref=f17e189] [cursor=pointer]:
+                  - generic [ref=f17e190]: "2"
+                - img "Select Treasure Island Skyline, 2 photos" [ref=f17e191] [cursor=pointer]:
+                  - generic [ref=f17e192]: "2"
+                - img "Select Joshua Tree Rock Formations, 2 photos" [ref=f17e193] [cursor=pointer]:
+                  - generic [ref=f17e194]: "2"
+                - img "Select Bethesda Terrace, 2 photos" [ref=f17e195] [cursor=pointer]:
+                  - generic [ref=f17e196]: "2"
+                - img "Select Bryce Canyon Amphitheater, 2 photos" [ref=f17e197] [cursor=pointer]:
+                  - generic [ref=f17e198]: "2"
+                - img "Select Santa Monica Pier, 2 photos" [ref=f17e199] [cursor=pointer]:
+                  - generic [ref=f17e200]: "2"
+                - img "Select French Quarter Balconies, 2 photos" [ref=f17e201] [cursor=pointer]:
+                  - generic [ref=f17e202]: "2"
+                - img "Select South Beach Art Deco, 2 photos" [ref=f17e203] [cursor=pointer]:
+                  - generic [ref=f17e204]: "2"
+                - img "Select Portland Japanese Garden, 2 photos" [ref=f17e205] [cursor=pointer]:
+                  - generic [ref=f17e206]: "2"
+                - img "Select Broadway Neon, 2 photos" [ref=f17e207] [cursor=pointer]:
+                  - generic [ref=f17e208]: "2"
+                - img "Select Mori Point, 2 photos" [ref=f17e209] [cursor=pointer]:
+                  - generic [ref=f17e210]: "2"
+                - img "Select Philadelphia Museum Steps, 2 photos" [ref=f17e211] [cursor=pointer]:
+                  - generic [ref=f17e212]: "2"
+                - img "Select Acorn Street, 2 photos" [ref=f17e213] [cursor=pointer]:
+                  - generic [ref=f17e214]: "2"
+                - img "Select Everglades Anhinga Trail, 2 photos" [ref=f17e215] [cursor=pointer]:
+                  - generic [ref=f17e216]: "2"
+              - generic:
+                - generic [ref=f17e47]:
+                  - button "Zoom in" [ref=f17e48] [cursor=pointer]
+                  - button "Zoom out" [ref=f17e50] [cursor=pointer]
+                  - button "Reset bearing to north" [ref=f17e52]
+                - generic:
+                  - button "Toggle attribution" [ref=f17e55] [cursor=pointer]
+                  - link "Mapbox homepage" [ref=f17e58] [cursor=pointer]:
+                    - /url: https://www.mapbox.com/
+            - generic [ref=f17e82]:
+              - generic [ref=f17e83]:
+                - button "Show 4 photos from Golden Gate Bridge Overlook" [ref=f17e84] [cursor=pointer]:
+                  - img [ref=f17e85]
+                  - text: 4 photos
+                - button "Unsave Golden Gate Bridge Overlook" [ref=f17e90] [cursor=pointer]:
+                  - img [ref=f17e91]
+                - button "Close Golden Gate Bridge Overlook card" [ref=f17e93] [cursor=pointer]:
+                  - img [ref=f17e94]
+              - generic [ref=f17e97]:
+                - generic [ref=f17e98]:
+                  - heading "Golden Gate Bridge Overlook" [level=3] [ref=f17e99]
+                  - paragraph [ref=f17e100]: Near the Presidio overlook
+                - generic [ref=f17e101]:
+                  - generic [ref=f17e102]: bridge
+                  - generic [ref=f17e103]: fog
+                  - generic [ref=f17e104]: landscape
+                  - generic [ref=f17e105]: iconic
+                - paragraph [ref=f17e106]:
+                  - img [ref=f17e107]
+                  - text: 842 saves
+                - generic [ref=f17e109]:
+                  - button "Open place" [ref=f17e110] [cursor=pointer]
+                  - button [ref=f17e111] [cursor=pointer]:
+                    - img [ref=f17e112]
+  - alert [ref=f17e59]

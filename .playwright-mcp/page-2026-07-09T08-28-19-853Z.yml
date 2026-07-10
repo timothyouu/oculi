@@ -1,0 +1,65 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - button "Go to Oculi discover feed" [ref=e5] [cursor=pointer]:
+        - generic [ref=e7]: oculi
+      - navigation "Primary navigation" [ref=e8]:
+        - button "Discover" [ref=e9] [cursor=pointer]
+        - button "Map" [ref=e10] [cursor=pointer]: Map
+        - button "Saved" [ref=e12] [cursor=pointer]
+        - button "Add Photo" [ref=e13] [cursor=pointer]
+      - generic [ref=e14]:
+        - button "Notifications" [ref=e15] [cursor=pointer]:
+          - img [ref=e16]
+        - button "Open John Doe's profile" [ref=e20] [cursor=pointer]
+        - button "Open settings" [ref=e21] [cursor=pointer]:
+          - img [ref=e22]
+  - main [ref=e25]:
+    - region "Discover content" [ref=e26]:
+      - generic [ref=e27]:
+        - group [ref=e28]:
+          - generic "Map filters 61 places · 118 photos" [ref=e29] [cursor=pointer]:
+            - generic [ref=e30]:
+              - generic [ref=e31]: Map filters
+              - text: 61 places · 118 photos
+            - img [ref=e33]
+        - generic [ref=e36]:
+          - region "Map preview" [ref=e37]:
+            - generic [ref=e38]:
+              - button "Center map" [ref=e39] [cursor=pointer]:
+                - img [ref=e40]
+              - button "Show more specific photo groups" [ref=e42] [cursor=pointer]:
+                - img [ref=e43]
+              - button "Show broader photo groups" [ref=e44] [cursor=pointer]:
+                - img [ref=e45]
+            - generic [ref=e48]:
+              - generic [ref=e49]:
+                - paragraph [ref=e57]: Oculi Map
+                - paragraph [ref=e58]: City spots
+                - paragraph [ref=e59]:
+                  - text: Parks
+                  - text: "& trails"
+                - paragraph [ref=e60]: Waterfronts
+              - button "Select Near the Presidio overlook cluster, 36 places, 68 photos" [ref=e61] [cursor=pointer]:
+                - generic [ref=e62]: "68"
+              - button "Select East River bridge walkway cluster, 9 places, 18 photos" [ref=e63] [cursor=pointer]:
+                - generic [ref=e64]: "18"
+              - button "Select Yellowstone public boardwalk cluster, 6 places, 12 photos" [ref=e65] [cursor=pointer]:
+                - generic [ref=e66]: "12"
+              - button "Select Trocadero public terraces cluster, 2 places, 4 photos" [ref=e67] [cursor=pointer]:
+                - generic [ref=e68]: "4"
+              - button "Select Ocean Drive corridor cluster, 2 places, 4 photos" [ref=e69] [cursor=pointer]:
+                - generic [ref=e70]: "4"
+              - button "Select Shibuya Crossing, 2 photos" [ref=e71] [cursor=pointer]:
+                - generic [ref=e72]: "2"
+              - button "Select Pyramids of Giza, 2 photos" [ref=e73] [cursor=pointer]:
+                - generic [ref=e74]: "2"
+              - button "Select Colosseum Exterior, 2 photos" [ref=e75] [cursor=pointer]:
+                - generic [ref=e76]: "2"
+              - button "Select Santa Monica Pier, 2 photos" [ref=e77] [cursor=pointer]:
+                - generic [ref=e78]: "2"
+              - button "Select French Quarter Balconies, 2 photos" [ref=e79] [cursor=pointer]:
+                - generic [ref=e80]: "2"
+              - button "Select Broadway Neon, 2 photos" [ref=e81] [cursor=pointer]:
+                - generic [ref=e82]: "2"
+          - generic [ref=e83]: Add NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN to .env and restart the dev server to enable Mapbox.

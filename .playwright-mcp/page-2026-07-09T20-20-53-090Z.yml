@@ -1,0 +1,80 @@
+- generic [active] [ref=f1e1]:
+  - alert [ref=f1e53]
+  - generic [ref=f1e111]:
+    - banner [ref=f1e112]:
+      - generic [ref=f1e113]:
+        - button "Go to Oculi discover feed" [ref=f1e114] [cursor=pointer]:
+          - generic [ref=f1e116]: oculi
+        - navigation "Primary navigation" [ref=f1e117]:
+          - button "Discover" [ref=f1e118] [cursor=pointer]
+          - button "Map" [ref=f1e119] [cursor=pointer]
+          - button "Saved" [ref=f1e120] [cursor=pointer]
+          - button "Add Photo" [ref=f1e121] [cursor=pointer]
+        - generic [ref=f1e122]:
+          - button "Notifications" [ref=f1e123] [cursor=pointer]:
+            - img [ref=f1e124]
+          - button "Open John Doe's profile" [ref=f1e128] [cursor=pointer]
+          - button "Open settings" [ref=f1e129] [cursor=pointer]:
+            - img [ref=f1e130]
+    - main [ref=f1e133]:
+      - region "Discover content" [ref=f1e134]:
+        - generic [ref=f1e136]:
+          - generic [ref=f1e138]:
+            - generic [ref=f1e140]:
+              - paragraph [ref=f1e141]: Favorite tags
+              - generic [ref=f1e142]:
+                - generic [ref=f1e143]: fog
+                - generic [ref=f1e144]: bridge
+                - generic [ref=f1e145]: portraits
+                - generic [ref=f1e146]: golden hour
+            - generic [ref=f1e147]:
+              - generic [ref=f1e148]:
+                - heading "John Doe" [level=1] [ref=f1e149]
+                - paragraph [ref=f1e150]: "@john.doe"
+              - paragraph [ref=f1e151]: Guest photographer collecting public photo spots around the city.
+              - paragraph [ref=f1e152]:
+                - img [ref=f1e153]
+                - text: San Francisco
+              - generic [ref=f1e156]:
+                - generic [ref=f1e157]:
+                  - paragraph [ref=f1e158]: "0"
+                  - paragraph [ref=f1e159]: followers
+                - generic [ref=f1e160]:
+                  - paragraph [ref=f1e161]: "2"
+                  - paragraph [ref=f1e162]: following
+            - button "Edit profile" [ref=f1e164] [cursor=pointer]
+          - generic [ref=f1e165]:
+            - button "Photos" [ref=f1e166] [cursor=pointer]:
+              - img [ref=f1e167]
+              - text: Photos
+            - button "Saved" [ref=f1e169] [cursor=pointer]:
+              - img [ref=f1e170]
+              - text: Saved
+          - generic [ref=f1e172]:
+            - 'button "Open photo details: Testing the new location flow" [ref=f1e173] [cursor=pointer]':
+              - img "Testing the new location flow" [ref=f1e174]
+              - generic [ref=f1e175]: Fort Point, 0 likes
+            - 'button "Open photo details: Waited until the last warm strip hit the sand. The bridge tucked into fog just enough to make the frame feel quiet." [ref=f1e176] [cursor=pointer]':
+              - img "Waited until the last warm strip hit the sand. The bridge tucked into fog just enough to make the frame feel quiet." [ref=f1e177]
+              - generic [ref=f1e178]: Baker Beach, 27 likes
+            - 'button "Open photo details: Morning shade under the rotunda kept the columns soft and the lagoon reflections clean." [ref=f1e179] [cursor=pointer]':
+              - img "Morning shade under the rotunda kept the columns soft and the lagoon reflections clean." [ref=f1e180]
+              - generic [ref=f1e181]: Palace of Fine Arts, 19 likes
+            - 'button "Open photo details: Tried the early Telegraph Hill light. Clean bay layers before the glare." [ref=f1e182] [cursor=pointer]':
+              - img "Tried the early Telegraph Hill light. Clean bay layers before the glare." [ref=f1e183]
+              - generic [ref=f1e184]: Coit Tower / Telegraph Hill, 12 likes
+            - 'button "Open photo details: A six-minute fog break from the overlook. Good reminder that the best bridge frame is usually a patience test." [ref=f1e185] [cursor=pointer]':
+              - img "A six-minute fog break from the overlook. Good reminder that the best bridge frame is usually a patience test." [ref=f1e186]
+              - generic [ref=f1e187]: Golden Gate Bridge Overlook, 31 likes
+            - 'button "Open photo details: Soft stone texture and a simple stair composition." [ref=f1e188] [cursor=pointer]':
+              - img "Soft stone texture and a simple stair composition." [ref=f1e189]
+              - generic [ref=f1e190]: Grace Cathedral, 8 likes
+            - 'button "Open photo details: Flat sky day, so the mural color did the heavy lifting. Great portrait wall without needing direct sun." [ref=f1e191] [cursor=pointer]':
+              - img "Flat sky day, so the mural color did the heavy lifting. Great portrait wall without needing direct sun." [ref=f1e192]
+              - generic [ref=f1e193]: Mission Murals, 22 likes
+            - 'button "Open photo details: Ferry lights and glass reflections lined up right after sunset. This spot feels built for quick blue-hour walks." [ref=f1e194] [cursor=pointer]':
+              - img "Ferry lights and glass reflections lined up right after sunset. This spot feels built for quick blue-hour walks." [ref=f1e195]
+              - generic [ref=f1e196]: Embarcadero Waterfront, 17 likes
+            - 'button "Open photo details: Softer skyline angle than Twin Peaks, with warm grass foregrounds and fewer people in the way." [ref=f1e197] [cursor=pointer]':
+              - img "Softer skyline angle than Twin Peaks, with warm grass foregrounds and fewer people in the way." [ref=f1e198]
+              - generic [ref=f1e199]: Bernal Heights Park, 15 likes

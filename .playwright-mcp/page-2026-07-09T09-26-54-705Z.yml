@@ -1,0 +1,62 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e2]:
+    - banner [ref=f5e3]:
+      - generic [ref=f5e4]:
+        - button "Go to Oculi discover feed" [ref=f5e5] [cursor=pointer]:
+          - generic [ref=f5e7]: oculi
+        - navigation "Primary navigation" [ref=f5e8]:
+          - button "Discover" [ref=f5e9] [cursor=pointer]
+          - button "Map" [ref=f5e10] [cursor=pointer]: Map
+          - button "Saved" [ref=f5e12] [cursor=pointer]
+          - button "Add Photo" [ref=f5e13] [cursor=pointer]
+        - generic [ref=f5e14]:
+          - button "Notifications" [ref=f5e15] [cursor=pointer]:
+            - img [ref=f5e16]
+          - button "Open John Doe's profile" [ref=f5e20] [cursor=pointer]
+          - button "Open settings" [ref=f5e21] [cursor=pointer]:
+            - img [ref=f5e22]
+    - main [ref=f5e25]:
+      - region "Discover content" [ref=f5e26]:
+        - generic [ref=f5e27]:
+          - group [ref=f5e28]:
+            - generic "Map filters 61 places · 118 photos" [ref=f5e29] [cursor=pointer]:
+              - generic [ref=f5e30]:
+                - generic [ref=f5e31]: Map filters
+                - text: 61 places · 118 photos
+              - img [ref=f5e33]
+          - region "Live Mapbox map" [ref=f5e36]:
+            - generic [ref=f5e37]:
+              - region "Map" [ref=f5e38]
+              - generic:
+                - generic [ref=f5e39]:
+                  - button "Zoom in" [ref=f5e40] [cursor=pointer]
+                  - button "Zoom out" [ref=f5e42] [cursor=pointer]
+                  - button "Reset bearing to north" [ref=f5e44]
+                - link "Mapbox homepage" [ref=f5e47] [cursor=pointer]:
+                  - /url: https://www.mapbox.com/
+            - generic [ref=f5e48]:
+              - generic [ref=f5e49]:
+                - button "Show 2 photos from Shibuya Crossing" [ref=f5e50] [cursor=pointer]:
+                  - img [ref=f5e51]
+                  - text: 2 photos
+                - button "Save Shibuya Crossing" [ref=f5e56] [cursor=pointer]:
+                  - img [ref=f5e57]
+                - button "Close Shibuya Crossing card" [ref=f5e59] [cursor=pointer]:
+                  - img [ref=f5e60]
+              - generic [ref=f5e63]:
+                - generic [ref=f5e64]:
+                  - heading "Shibuya Crossing" [level=3] [ref=f5e65]
+                  - paragraph [ref=f5e66]: Shibuya public crossing
+                - generic [ref=f5e67]:
+                  - generic [ref=f5e68]: street
+                  - generic [ref=f5e69]: neon
+                  - generic [ref=f5e70]: night
+                  - generic [ref=f5e71]: cityscape
+                - paragraph [ref=f5e72]:
+                  - img [ref=f5e73]
+                  - text: 914 saves
+                - generic [ref=f5e75]:
+                  - button "Open place" [ref=f5e76] [cursor=pointer]
+                  - button [ref=f5e77] [cursor=pointer]:
+                    - img [ref=f5e78]
+  - alert [ref=f5e81]

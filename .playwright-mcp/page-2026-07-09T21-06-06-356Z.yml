@@ -1,0 +1,135 @@
+- generic [ref=f12e2]:
+  - banner [ref=f12e3]:
+    - generic [ref=f12e4]:
+      - button "Go to Oculi discover feed" [ref=f12e5] [cursor=pointer]:
+        - generic [ref=f12e7]: oculi
+      - navigation "Primary navigation" [ref=f12e8]:
+        - button "Discover" [ref=f12e9] [cursor=pointer]: Discover
+        - button "Map" [ref=f12e11] [cursor=pointer]
+        - button "Saved" [ref=f12e12] [cursor=pointer]
+        - button "Add Photo" [ref=f12e13] [cursor=pointer]
+      - generic [ref=f12e14]:
+        - button "Notifications" [ref=f12e15] [cursor=pointer]:
+          - img [ref=f12e16]
+        - button "Open John Doe's profile" [ref=f12e20] [cursor=pointer]
+        - button "Open settings" [ref=f12e21] [cursor=pointer]:
+          - img [ref=f12e22]
+  - main [ref=f12e25]:
+    - region "Discover content" [ref=f12e26]:
+      - article [ref=f12e27]:
+        - generic [ref=f12e28]:
+          - generic [ref=f12e29]:
+            - button "Back" [ref=f12e30] [cursor=pointer]:
+              - img [ref=f12e31]
+              - text: Back
+            - generic [ref=f12e33]:
+              - img "Golden Gate Bridge Overlook hero photo" [ref=f12e34]
+              - img [ref=f12e36]
+          - complementary [ref=f12e38]:
+            - generic [ref=f12e40]: Curated
+            - generic [ref=f12e41]:
+              - heading "Golden Gate Bridge Overlook" [level=1] [ref=f12e42]
+              - paragraph [ref=f12e43]:
+                - img [ref=f12e44]
+                - text: San Francisco, California
+              - paragraph [ref=f12e47]: Near the Presidio overlook
+            - generic [ref=f12e48]:
+              - button "Bookmarked" [ref=f12e49] [cursor=pointer]:
+                - img [ref=f12e50]
+                - text: Bookmarked
+              - button "Copy link to Golden Gate Bridge Overlook" [ref=f12e52] [cursor=pointer]:
+                - img [ref=f12e53]
+              - button "Add Golden Gate Bridge Overlook to your shoot-day route" [ref=f12e56] [cursor=pointer]:
+                - img [ref=f12e57]
+            - generic [ref=f12e61]:
+              - generic [ref=f12e62]:
+                - img [ref=f12e63]
+                - text: 842 saves
+              - generic [ref=f12e65]:
+                - img [ref=f12e66]
+                - text: "4.8"
+              - generic [ref=f12e68]:
+                - img [ref=f12e69]
+                - text: Easy
+              - generic [ref=f12e73]:
+                - img [ref=f12e74]
+                - text: 0.3 mi
+            - generic [ref=f12e77]:
+              - heading "Shoot notes" [level=2] [ref=f12e78]
+              - generic [ref=f12e79]:
+                - paragraph [ref=f12e80]: Classic bridge lines, fog layers, and warm cliff light from public overlooks.
+                - generic [ref=f12e81]:
+                  - generic [ref=f12e82]:
+                    - term [ref=f12e83]: Best light
+                    - definition [ref=f12e84]: Sunrise · Blue hour · Foggy mornings
+                  - generic [ref=f12e85]:
+                    - term [ref=f12e86]: Scene
+                    - definition [ref=f12e87]: Landscape · Bridge
+                  - generic [ref=f12e88]:
+                    - term [ref=f12e89]: Ease of visit
+                    - definition [ref=f12e90]: Easy
+                  - generic [ref=f12e91]:
+                    - term [ref=f12e92]: Good for
+                    - definition [ref=f12e93]: bridge · fog · landscape · iconic
+            - generic [ref=f12e94]:
+              - region "Live Mapbox map" [ref=f12e95]
+              - button "Open in Map" [ref=f12e97] [cursor=pointer]:
+                - img [ref=f12e98]
+                - text: Open in Map
+        - region "Photos from Golden Gate Bridge Overlook" [ref=f12e100]:
+          - generic [ref=f12e101]:
+            - heading "Photos here" [level=2] [ref=f12e102]
+            - button "Add photo" [ref=f12e103] [cursor=pointer]
+          - generic [ref=f12e104]:
+            - article [ref=f12e105]:
+              - generic [ref=f12e106]:
+                - button "Open Golden Gate Bridge Overlook detail" [ref=f12e107] [cursor=pointer]:
+                  - img "A six-minute fog break from the overlook. Good reminder that the best bridge frame is usually a patience test." [ref=f12e108]
+                - generic [ref=f12e109]:
+                  - button "by John Doe @john.doe" [ref=f12e110] [cursor=pointer]:
+                    - generic [ref=f12e111]: by John Doe @john.doe
+                  - button "Golden Gate Bridge Overlook" [ref=f12e112] [cursor=pointer]:
+                    - img [ref=f12e113]
+                    - generic [ref=f12e116]: Golden Gate Bridge Overlook
+              - button "Like photo" [ref=f12e118] [cursor=pointer]:
+                - img [ref=f12e119]
+                - text: "31"
+            - article [ref=f12e121]:
+              - generic [ref=f12e122]:
+                - button "Open Golden Gate Bridge Overlook detail" [ref=f12e123] [cursor=pointer]:
+                  - img "Fog lifted for maybe six minutes. Worth the early alarm." [ref=f12e124]
+                - generic [ref=f12e125]:
+                  - button "by Maya Chen @mayashoots" [ref=f12e126] [cursor=pointer]:
+                    - generic [ref=f12e127]: by Maya Chen @mayashoots
+                  - button "Golden Gate Bridge Overlook" [ref=f12e128] [cursor=pointer]:
+                    - img [ref=f12e129]
+                    - generic [ref=f12e132]: Golden Gate Bridge Overlook
+              - button "Like photo" [ref=f12e134] [cursor=pointer]:
+                - img [ref=f12e135]
+                - text: "184"
+            - article [ref=f12e137]:
+              - generic [ref=f12e138]:
+                - button "Open Golden Gate Bridge Overlook detail" [ref=f12e139] [cursor=pointer]:
+                  - img "Bridge tower vanished, then came back with a clean orange edge." [ref=f12e140]
+                - generic [ref=f12e141]:
+                  - button "by Sam Wilder @samwide" [ref=f12e142] [cursor=pointer]:
+                    - generic [ref=f12e143]: by Sam Wilder @samwide
+                  - button "Golden Gate Bridge Overlook" [ref=f12e144] [cursor=pointer]:
+                    - img [ref=f12e145]
+                    - generic [ref=f12e148]: Golden Gate Bridge Overlook
+              - button "Like photo" [ref=f12e150] [cursor=pointer]:
+                - img [ref=f12e151]
+                - text: "221"
+            - article [ref=f12e153]:
+              - generic [ref=f12e154]:
+                - button "Open Golden Gate Bridge Overlook detail" [ref=f12e155] [cursor=pointer]:
+                  - img "Layered headlands behind the south tower." [ref=f12e156]
+                - generic [ref=f12e157]:
+                  - button "by Nora Patel @nora.frames" [ref=f12e158] [cursor=pointer]:
+                    - generic [ref=f12e159]: by Nora Patel @nora.frames
+                  - button "Golden Gate Bridge Overlook" [ref=f12e160] [cursor=pointer]:
+                    - img [ref=f12e161]
+                    - generic [ref=f12e164]: Golden Gate Bridge Overlook
+              - button "Like photo" [ref=f12e166] [cursor=pointer]:
+                - img [ref=f12e167]
+                - text: "168"

@@ -1,0 +1,253 @@
+- generic [ref=f10e2]:
+  - banner [ref=f10e3]:
+    - generic [ref=f10e4]:
+      - button "Go to Oculi discover feed" [ref=f10e5] [cursor=pointer]:
+        - generic [ref=f10e7]: oculi
+      - navigation "Primary navigation" [ref=f10e8]:
+        - button "Discover" [ref=f10e9] [cursor=pointer]
+        - button "Map" [ref=f10e10] [cursor=pointer]
+        - button "Saved" [ref=f10e11] [cursor=pointer]: Saved
+        - button "Add Photo" [ref=f10e13] [cursor=pointer]
+      - generic [ref=f10e14]:
+        - button "Notifications" [ref=f10e15] [cursor=pointer]:
+          - img [ref=f10e16]
+        - button "Open John Doe's profile" [ref=f10e20] [cursor=pointer]
+        - button "Open settings" [ref=f10e21] [cursor=pointer]:
+          - img [ref=f10e22]
+  - main [ref=f10e25]:
+    - region "Discover content" [ref=f10e26]:
+      - generic [ref=f10e28]:
+        - generic [ref=f10e29]:
+          - generic [ref=f10e30]:
+            - heading "Saved places 4 saved" [level=1] [ref=f10e31]:
+              - text: Saved places
+              - generic [ref=f10e32]: 4 saved
+            - generic [ref=f10e33]:
+              - button "Recently saved" [ref=f10e34] [cursor=pointer]:
+                - text: Recently saved
+                - img [ref=f10e35]
+              - generic [ref=f10e37]:
+                - img
+                - textbox "Search saved places" [ref=f10e38]:
+                  - /placeholder: Search saved
+          - generic [ref=f10e39]:
+            - generic [ref=f10e40]:
+              - img [ref=f10e41]
+              - text: Filters
+            - generic [ref=f10e42]:
+              - img [ref=f10e44]
+              - generic [ref=f10e50]: Light
+              - combobox "Light filter" [ref=f10e51]:
+                - option "All" [selected]
+                - option "Golden hour"
+                - option "Blue hour"
+                - option "Sunrise"
+                - option "Sunset"
+                - option "Fog"
+              - img
+            - generic [ref=f10e52]:
+              - img [ref=f10e54]
+              - generic [ref=f10e56]: Scene
+              - combobox "Scene filter" [ref=f10e57]:
+                - option "All" [selected]
+                - option "Cityscape"
+                - option "Landscape"
+                - option "Coastal"
+                - option "Architecture"
+                - option "Street"
+                - option "Portraits"
+              - img
+            - generic [ref=f10e58]: All light · All scenes
+          - generic [ref=f10e59]:
+            - article [ref=f10e60]:
+              - button [ref=f10e61] [cursor=pointer]:
+                - img [ref=f10e63]
+              - generic [ref=f10e65]:
+                - generic [ref=f10e66]:
+                  - button "Golden Gate Bridge Overlook San Francisco, California" [ref=f10e67] [cursor=pointer]:
+                    - heading "Golden Gate Bridge Overlook" [level=2] [ref=f10e68]
+                    - paragraph [ref=f10e69]: San Francisco, California
+                  - button "Remove Golden Gate Bridge Overlook from saved places" [ref=f10e70] [cursor=pointer]:
+                    - img [ref=f10e71]
+                - generic [ref=f10e73]:
+                  - generic [ref=f10e74]: bridge
+                  - generic [ref=f10e75]: fog
+                  - generic [ref=f10e76]: landscape
+            - article [ref=f10e77]:
+              - button [ref=f10e78] [cursor=pointer]:
+                - img [ref=f10e80]
+              - generic [ref=f10e82]:
+                - generic [ref=f10e83]:
+                  - button "Coit Tower / Telegraph Hill San Francisco, California" [ref=f10e84] [cursor=pointer]:
+                    - heading "Coit Tower / Telegraph Hill" [level=2] [ref=f10e85]
+                    - paragraph [ref=f10e86]: San Francisco, California
+                  - button "Remove Coit Tower / Telegraph Hill from saved places" [ref=f10e87] [cursor=pointer]:
+                    - img [ref=f10e88]
+                - generic [ref=f10e90]:
+                  - generic [ref=f10e91]: skyline
+                  - generic [ref=f10e92]: architecture
+                  - generic [ref=f10e93]: street
+            - article [ref=f10e94]:
+              - button [ref=f10e95] [cursor=pointer]:
+                - img [ref=f10e97]
+              - generic [ref=f10e99]:
+                - generic [ref=f10e100]:
+                  - button "Grace Cathedral San Francisco, California" [ref=f10e101] [cursor=pointer]:
+                    - heading "Grace Cathedral" [level=2] [ref=f10e102]
+                    - paragraph [ref=f10e103]: San Francisco, California
+                  - button "Remove Grace Cathedral from saved places" [ref=f10e104] [cursor=pointer]:
+                    - img [ref=f10e105]
+                - generic [ref=f10e107]:
+                  - generic [ref=f10e108]: architecture
+                  - generic [ref=f10e109]: portraits
+                  - generic [ref=f10e110]: stairs
+            - article [ref=f10e111]:
+              - button [ref=f10e112] [cursor=pointer]:
+                - img [ref=f10e114]
+              - generic [ref=f10e116]:
+                - generic [ref=f10e117]:
+                  - button "Mission Murals San Francisco, California" [ref=f10e118] [cursor=pointer]:
+                    - heading "Mission Murals" [level=2] [ref=f10e119]
+                    - paragraph [ref=f10e120]: San Francisco, California
+                  - button "Remove Mission Murals from saved places" [ref=f10e121] [cursor=pointer]:
+                    - img [ref=f10e122]
+                - generic [ref=f10e124]:
+                  - generic [ref=f10e125]: street
+                  - generic [ref=f10e126]: color
+                  - generic [ref=f10e127]: portraits
+          - generic [ref=f10e129]: Showing 4 of 4 saved places
+        - complementary [ref=f10e130]:
+          - generic [ref=f10e131]:
+            - generic [ref=f10e132]:
+              - paragraph [ref=f10e133]: Saved itinerary
+              - heading "Plan a shoot day" [level=2] [ref=f10e134]
+            - button "Edit stops" [ref=f10e135] [cursor=pointer]:
+              - img [ref=f10e136]
+          - region "Live Mapbox map" [ref=f10e140]
+          - generic [ref=f10e142]:
+            - button "Sunrise / fog Morning route" [ref=f10e143] [cursor=pointer]:
+              - generic [ref=f10e144]:
+                - img [ref=f10e146]
+                - text: Sunrise / fog
+              - strong [ref=f10e152]: Morning route
+            - button "Golden hour Sunset route" [ref=f10e153] [cursor=pointer]:
+              - generic [ref=f10e154]:
+                - img [ref=f10e156]
+                - text: Golden hour
+              - strong [ref=f10e161]: Sunset route
+          - generic [ref=f10e162]:
+            - generic [ref=f10e165]:
+              - heading "Morning route" [level=3] [ref=f10e166]:
+                - img [ref=f10e167]
+                - text: Morning route
+              - paragraph [ref=f10e173]: 3 stops before the city gets busy
+            - generic [ref=f10e174]: Picked from saved places with Sunrise, Morning, Fog, distance, and recent photo activity.
+            - generic [ref=f10e175]:
+              - article [ref=f10e176]:
+                - generic [ref=f10e179]:
+                  - generic [ref=f10e181]:
+                    - generic [ref=f10e182]: "1"
+                    - generic [ref=f10e183]:
+                      - heading "Golden Gate Bridge Overlook" [level=4] [ref=f10e184]
+                      - paragraph [ref=f10e185]:
+                        - img [ref=f10e186]
+                        - text: Arrive 6:10 AM · Start here
+                  - generic [ref=f10e189]:
+                    - paragraph [ref=f10e190]: Best when fog starts breaking; keep the first stop flexible.
+                    - generic [ref=f10e191]:
+                      - paragraph [ref=f10e192]:
+                        - img [ref=f10e193]
+                        - generic [ref=f10e197]:
+                          - generic [ref=f10e198]: Golden Gate Bridge Overlook, Lincoln Blvd, San Francisco, CA
+                          - generic [ref=f10e199]: 37.80780,-122.47470
+                      - generic [ref=f10e200]:
+                        - button "Copy" [ref=f10e201] [cursor=pointer]:
+                          - img [ref=f10e202]
+                          - text: Copy
+                        - link "Google" [ref=f10e205] [cursor=pointer]:
+                          - /url: https://www.google.com/maps/search/?api=1&query=Golden%20Gate%20Bridge%20Overlook%2037.80780%2C-122.47470
+                          - img [ref=f10e206]
+                          - text: Google
+                          - img [ref=f10e208]
+                        - link "Apple" [ref=f10e212] [cursor=pointer]:
+                          - /url: https://maps.apple.com/?ll=37.8078,-122.4747&q=Golden%20Gate%20Bridge%20Overlook
+                          - img [ref=f10e213]
+                          - text: Apple
+                          - img [ref=f10e215]
+              - article [ref=f10e219]:
+                - generic [ref=f10e222]:
+                  - generic [ref=f10e224]:
+                    - generic [ref=f10e225]: "2"
+                    - generic [ref=f10e226]:
+                      - heading "Grace Cathedral" [level=4] [ref=f10e227]
+                      - paragraph [ref=f10e228]:
+                        - img [ref=f10e229]
+                        - text: Arrive 7:05 AM · 45 min window
+                  - generic [ref=f10e232]:
+                    - paragraph [ref=f10e233]: Soft early light keeps portraits and stone detail clean.
+                    - generic [ref=f10e234]:
+                      - paragraph [ref=f10e235]:
+                        - img [ref=f10e236]
+                        - generic [ref=f10e240]:
+                          - generic [ref=f10e241]: Grace Cathedral, 1100 California St, San Francisco, CA
+                          - generic [ref=f10e242]: 37.79190,-122.41320
+                      - generic [ref=f10e243]:
+                        - button "Copy" [ref=f10e244] [cursor=pointer]:
+                          - img [ref=f10e245]
+                          - text: Copy
+                        - link "Google" [ref=f10e248] [cursor=pointer]:
+                          - /url: https://www.google.com/maps/search/?api=1&query=Grace%20Cathedral%2037.79190%2C-122.41320
+                          - img [ref=f10e249]
+                          - text: Google
+                          - img [ref=f10e251]
+                        - link "Apple" [ref=f10e255] [cursor=pointer]:
+                          - /url: https://maps.apple.com/?ll=37.7919,-122.4132&q=Grace%20Cathedral
+                          - img [ref=f10e256]
+                          - text: Apple
+                          - img [ref=f10e258]
+              - article [ref=f10e262]:
+                - generic [ref=f10e265]:
+                  - generic [ref=f10e267]:
+                    - generic [ref=f10e268]: "3"
+                    - generic [ref=f10e269]:
+                      - heading "Mission Murals" [level=4] [ref=f10e270]
+                      - paragraph [ref=f10e271]:
+                        - img [ref=f10e272]
+                        - text: Arrive 8:10 AM · 35 min window
+                  - generic [ref=f10e275]:
+                    - paragraph [ref=f10e276]: Soft early light keeps portraits and stone detail clean.
+                    - generic [ref=f10e277]:
+                      - paragraph [ref=f10e278]:
+                        - img [ref=f10e279]
+                        - generic [ref=f10e283]:
+                          - generic [ref=f10e284]: Clarion Alley Murals, Clarion Alley, San Francisco, CA
+                          - generic [ref=f10e285]: 37.75240,-122.41250
+                      - generic [ref=f10e286]:
+                        - button "Copy" [ref=f10e287] [cursor=pointer]:
+                          - img [ref=f10e288]
+                          - text: Copy
+                        - link "Google" [ref=f10e291] [cursor=pointer]:
+                          - /url: https://www.google.com/maps/search/?api=1&query=Mission%20Murals%2037.75240%2C-122.41250
+                          - img [ref=f10e292]
+                          - text: Google
+                          - img [ref=f10e294]
+                        - link "Apple" [ref=f10e298] [cursor=pointer]:
+                          - /url: https://maps.apple.com/?ll=37.7524,-122.4125&q=Mission%20Murals
+                          - img [ref=f10e299]
+                          - text: Apple
+                          - img [ref=f10e301]
+          - paragraph [ref=f10e305]: 10 saved photo references attached.
+          - generic [ref=f10e306]:
+            - link "Google Maps" [ref=f10e307] [cursor=pointer]:
+              - /url: https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=37.7524%2C-122.4125&waypoints=37.8078%2C-122.4747%7C37.7919%2C-122.4132
+              - img [ref=f10e309]
+              - text: Google Maps
+            - link "Apple Maps" [ref=f10e311] [cursor=pointer]:
+              - /url: https://maps.apple.com/?daddr=37.8078,-122.4747&dirflg=d
+              - img [ref=f10e313]
+              - text: Apple Maps
+            - button "Regenerate route" [ref=f10e315] [cursor=pointer]:
+              - img [ref=f10e316]
+            - button "Save route plan" [ref=f10e321] [cursor=pointer]:
+              - img [ref=f10e323]
+              - text: Save route plan

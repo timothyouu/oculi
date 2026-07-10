@@ -1,0 +1,26 @@
+- generic [ref=f17e2]:
+  - banner [ref=f17e3]:
+    - generic [ref=f17e4]:
+      - button "Go to Oculi discover feed" [ref=f17e5] [cursor=pointer]:
+        - generic [ref=f17e7]: oculi
+      - navigation "Primary navigation" [ref=f17e8]:
+        - button "Discover" [ref=f17e9] [cursor=pointer]
+        - button "Map" [ref=f17e10] [cursor=pointer]: Map
+        - button "Saved" [ref=f17e12] [cursor=pointer]
+        - button "Add Photo" [ref=f17e13] [cursor=pointer]
+      - generic [ref=f17e14]:
+        - button "Notifications" [ref=f17e15] [cursor=pointer]:
+          - img [ref=f17e16]
+        - button "Open John Doe's profile" [ref=f17e20] [cursor=pointer]
+        - button "Open settings" [ref=f17e21] [cursor=pointer]:
+          - img [ref=f17e22]
+  - main [ref=f17e25]:
+    - region "Discover content" [ref=f17e26]:
+      - generic [ref=f17e27]:
+        - group [ref=f17e28]:
+          - generic "Map filters 61 places · 118 photos" [ref=f17e29] [cursor=pointer]:
+            - generic [ref=f17e30]:
+              - generic [ref=f17e31]: Map filters
+              - text: 61 places · 118 photos
+            - img [ref=f17e33]
+        - region "Live Mapbox map" [ref=f17e36]

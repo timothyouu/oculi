@@ -1,0 +1,39 @@
+- generic [active] [ref=f20e1]:
+  - generic [ref=f20e2]:
+    - banner [ref=f20e3]:
+      - generic [ref=f20e4]:
+        - button "Go to Oculi discover feed" [ref=f20e5] [cursor=pointer]:
+          - generic [ref=f20e7]: oculi
+        - navigation "Primary navigation" [ref=f20e8]:
+          - button "Discover" [ref=f20e9] [cursor=pointer]: Discover
+          - button "Map" [ref=f20e11] [cursor=pointer]
+          - button "Saved" [ref=f20e12] [cursor=pointer]
+          - button "Add Photo" [ref=f20e13] [cursor=pointer]
+        - generic [ref=f20e14]:
+          - button "Notifications" [ref=f20e15] [cursor=pointer]:
+            - img [ref=f20e16]
+          - button "Open John Doe's profile" [ref=f20e20] [cursor=pointer]
+          - button "Open settings" [ref=f20e21] [cursor=pointer]:
+            - img [ref=f20e22]
+    - main [ref=f20e25]:
+      - region "Discover content" [ref=f20e26]:
+        - generic [ref=f20e27]:
+          - region "Search places and profiles" [ref=f20e28]:
+            - generic [ref=f20e31]:
+              - generic "Choose what search looks through" [ref=f20e32]:
+                - button "Places" [pressed] [ref=f20e33] [cursor=pointer]:
+                  - img [ref=f20e34]
+                  - text: Places
+                - button "Profiles" [ref=f20e37] [cursor=pointer]:
+                  - img [ref=f20e38]
+                  - text: Profiles
+              - generic [ref=f20e41]:
+                - img [ref=f20e42]
+                - generic [ref=f20e45]: Search places
+                - textbox "Search places" [ref=f20e46]:
+                  - /placeholder: Search places by name, mood, light, or location
+          - generic [ref=f20e47]:
+            - img [ref=f20e48]
+            - heading "No photos to discover yet" [level=1] [ref=f20e51]
+            - paragraph [ref=f20e52]: Upload the first post to start the Oculi deck.
+  - alert [ref=f20e53]

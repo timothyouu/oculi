@@ -1,0 +1,172 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - button "Go to Oculi discover feed" [ref=e5] [cursor=pointer]:
+          - generic [ref=e7]: oculi
+        - navigation "Primary navigation" [ref=e8]:
+          - button "Discover" [ref=e9] [cursor=pointer]
+          - button "Map" [ref=e10] [cursor=pointer]: Map
+          - button "Saved" [ref=e12] [cursor=pointer]
+          - button "Add Photo" [ref=e13] [cursor=pointer]
+        - generic [ref=e14]:
+          - button "Notifications" [ref=e15] [cursor=pointer]:
+            - img [ref=e16]
+          - button "Open John Doe's profile" [ref=e20] [cursor=pointer]
+          - button "Open settings" [ref=e21] [cursor=pointer]:
+            - img [ref=e22]
+    - main [ref=e25]:
+      - region "Discover content" [ref=e26]:
+        - generic [ref=e27]:
+          - group [ref=e28]:
+            - generic "Map filters 61 places · 119 photos" [ref=e38] [cursor=pointer]:
+              - generic [ref=e30]:
+                - generic [ref=e31]: Map filters
+                - text: 61 places · 119 photos
+              - img [ref=e33]
+          - region "Live Mapbox map" [ref=e36]:
+            - generic [ref=e37]:
+              - generic:
+                - region "Map" [ref=e39]
+                - img "Select Near the Presidio overlook cluster, 4 places, 9 photos" [ref=e123] [cursor=pointer]:
+                  - generic [ref=e124]: "9"
+                - img "Select Ferry Building waterfront cluster, 4 places, 7 photos" [ref=e125] [cursor=pointer]:
+                  - generic [ref=e126]: "7"
+                - img "Select Downtown river paths cluster, 2 places, 4 photos" [ref=e127] [cursor=pointer]:
+                  - generic [ref=e128]: "4"
+                - img "Select Golden Gate Park garden paths cluster, 2 places, 4 photos" [ref=e129] [cursor=pointer]:
+                  - generic [ref=e130]: "4"
+                - img "Select Clarion and Balmy alley area cluster, 2 places, 4 photos" [ref=e131] [cursor=pointer]:
+                  - generic [ref=e132]: "4"
+                - img "Select Baker Beach, 3 photos" [ref=e133] [cursor=pointer]:
+                  - generic [ref=e134]: "3"
+                - img "Select Palace of Fine Arts, 3 photos" [ref=e135] [cursor=pointer]:
+                  - generic [ref=e136]: "3"
+                - img "Select Public coastal trail cluster, 2 places, 2 photos" [ref=e137] [cursor=pointer]:
+                  - generic [ref=e138]: "2"
+                - img "Select Eiffel Tower from Trocadero, 2 photos" [ref=e139] [cursor=pointer]:
+                  - generic [ref=e140]: "2"
+                - img "Select Grand Canyon South Rim, 2 photos" [ref=e141] [cursor=pointer]:
+                  - generic [ref=e142]: "2"
+                - img "Select Shibuya Crossing, 2 photos" [ref=e143] [cursor=pointer]:
+                  - generic [ref=e144]: "2"
+                - img "Select Pyramids of Giza, 2 photos" [ref=e145] [cursor=pointer]:
+                  - generic [ref=e146]: "2"
+                - img "Select Brooklyn Bridge Pedestrian Walkway, 2 photos" [ref=e147] [cursor=pointer]:
+                  - generic [ref=e148]: "2"
+                - img "Select Colosseum Exterior, 2 photos" [ref=e149] [cursor=pointer]:
+                  - generic [ref=e150]: "2"
+                - img "Select Battery Spencer, 2 photos" [ref=e151] [cursor=pointer]:
+                  - generic [ref=e152]: "2"
+                - img "Select Griffith Observatory, 2 photos" [ref=e153] [cursor=pointer]:
+                  - generic [ref=e154]: "2"
+                - img "Select Monument Valley View, 2 photos" [ref=e155] [cursor=pointer]:
+                  - generic [ref=e156]: "2"
+                - img "Select Horseshoe Bend Overlook, 2 photos" [ref=e157] [cursor=pointer]:
+                  - generic [ref=e158]: "2"
+                - img "Select Grand Prismatic Spring, 2 photos" [ref=e159] [cursor=pointer]:
+                  - generic [ref=e160]: "2"
+                - img "Select Tower Bridge River Walk, 2 photos" [ref=e161] [cursor=pointer]:
+                  - generic [ref=e162]: "2"
+                - img "Select Muir Woods, 2 photos" [ref=e163] [cursor=pointer]:
+                  - generic [ref=e164]: "2"
+                - img "Select Dream Lake, 2 photos" [ref=e165] [cursor=pointer]:
+                  - generic [ref=e166]: "2"
+                - img "Select Washington Monument Reflecting Pool, 2 photos" [ref=e167] [cursor=pointer]:
+                  - generic [ref=e168]: "2"
+                - img "Select Kerry Park Skyline, 2 photos" [ref=e169] [cursor=pointer]:
+                  - generic [ref=e170]: "2"
+                - img "Select Zion Canyon Overlook Trail, 2 photos" [ref=e171] [cursor=pointer]:
+                  - generic [ref=e172]: "2"
+                - img "Select Schwabacher Landing, 2 photos" [ref=e173] [cursor=pointer]:
+                  - generic [ref=e174]: "2"
+                - img "Select Twin Peaks, 2 photos" [ref=e175] [cursor=pointer]:
+                  - generic [ref=e176]: "2"
+                - img "Select Multnomah Falls, 2 photos" [ref=e177] [cursor=pointer]:
+                  - generic [ref=e178]: "2"
+                - img "Select Times Square Night Corners, 2 photos" [ref=e179] [cursor=pointer]:
+                  - generic [ref=e180]: "2"
+                - img "Select Treasure Island Skyline, 2 photos" [ref=e181] [cursor=pointer]:
+                  - generic [ref=e182]: "2"
+                - img "Select Lincoln Memorial Steps, 2 photos" [ref=e183] [cursor=pointer]:
+                  - generic [ref=e184]: "2"
+                - img "Select Joshua Tree Rock Formations, 2 photos" [ref=e185] [cursor=pointer]:
+                  - generic [ref=e186]: "2"
+                - img "Select Bethesda Terrace, 2 photos" [ref=e187] [cursor=pointer]:
+                  - generic [ref=e188]: "2"
+                - img "Select Bryce Canyon Amphitheater, 2 photos" [ref=e189] [cursor=pointer]:
+                  - generic [ref=e190]: "2"
+                - img "Select Santa Monica Pier, 2 photos" [ref=e191] [cursor=pointer]:
+                  - generic [ref=e192]: "2"
+                - img "Select French Quarter Balconies, 2 photos" [ref=e193] [cursor=pointer]:
+                  - generic [ref=e194]: "2"
+                - img "Select South Beach Art Deco, 2 photos" [ref=e195] [cursor=pointer]:
+                  - generic [ref=e196]: "2"
+                - img "Select Pike Place Market, 2 photos" [ref=e197] [cursor=pointer]:
+                  - generic [ref=e198]: "2"
+                - img "Select Portland Japanese Garden, 2 photos" [ref=e199] [cursor=pointer]:
+                  - generic [ref=e200]: "2"
+                - img "Select Broadway Neon, 2 photos" [ref=e201] [cursor=pointer]:
+                  - generic [ref=e202]: "2"
+                - img "Select Mori Point, 2 photos" [ref=e203] [cursor=pointer]:
+                  - generic [ref=e204]: "2"
+                - img "Select Philadelphia Museum Steps, 2 photos" [ref=e205] [cursor=pointer]:
+                  - generic [ref=e206]: "2"
+                - img "Select Coit Tower / Telegraph Hill, 2 photos" [ref=e207] [cursor=pointer]:
+                  - generic [ref=e208]: "2"
+                - img "Select Acorn Street, 2 photos" [ref=e209] [cursor=pointer]:
+                  - generic [ref=e210]: "2"
+                - img "Select 16th Avenue Tiled Steps, 2 photos" [ref=e211] [cursor=pointer]:
+                  - generic [ref=e212]: "2"
+                - img "Select Haight-Ashbury Storefronts, 2 photos" [ref=e213] [cursor=pointer]:
+                  - generic [ref=e214]: "2"
+                - img "Select Everglades Anhinga Trail, 2 photos" [ref=e215] [cursor=pointer]:
+                  - generic [ref=e216]: "2"
+                - img "Select Grace Cathedral, 2 photos" [ref=e217] [cursor=pointer]:
+                  - generic [ref=e218]: "2"
+                - img "Select Painted Ladies / Alamo Square, 1 photo" [ref=e219] [cursor=pointer]:
+                  - generic [ref=e220]: "1"
+                - img "Select Dolores Park, 1 photo" [ref=e221] [cursor=pointer]:
+                  - generic [ref=e222]: "1"
+                - img "Select Ocean Beach, 1 photo" [ref=e223] [cursor=pointer]:
+                  - generic [ref=e224]: "1"
+              - generic:
+                - generic [ref=e110]:
+                  - button "Zoom in" [ref=e111] [cursor=pointer]
+                  - button "Zoom out" [ref=e113] [cursor=pointer]
+                  - button "Reset bearing to north" [ref=e115]
+                - generic:
+                  - button "Toggle attribution" [ref=e118] [cursor=pointer]
+                  - link "Mapbox homepage" [ref=e121] [cursor=pointer]:
+                    - /url: https://www.mapbox.com/
+            - generic [ref=e226]:
+              - generic [ref=e259]:
+                - button "Back to photos" [ref=e303] [cursor=pointer]:
+                  - img [ref=e261]
+                - generic [ref=e263]:
+                  - heading "Post" [level=3] [ref=e304]
+                  - paragraph [ref=e265]: 1 of 4 · Golden Gate Bridge Overlook
+                - button "Close Golden Gate Bridge Overlook card and return to map" [ref=e305] [cursor=pointer]:
+                  - img [ref=e267]
+              - generic [ref=e270]:
+                - generic [ref=e306]:
+                  - img "A six-minute fog break from the overlook. Good reminder that the best bridge frame is usually a patience test." [ref=e307]
+                  - button "Previous photo" [ref=e308] [cursor=pointer]:
+                    - img [ref=e309]
+                  - button "Next photo" [ref=e311] [cursor=pointer]:
+                    - img [ref=e312]
+                - generic [ref=e314]:
+                  - generic [ref=e316]:
+                    - generic [ref=e317]: John Doe
+                    - generic [ref=e318]: "@john.doe"
+                  - paragraph [ref=e319]: A six-minute fog break from the overlook. Good reminder that the best bridge frame is usually a patience test.
+                  - generic [ref=e320]:
+                    - generic [ref=e321]:
+                      - img [ref=e322]
+                      - text: "31"
+                    - generic [ref=e324]: Jul 7, 6:52 AM
+                  - generic [ref=e325]:
+                    - generic [ref=e326]: bridge
+                    - generic [ref=e327]: fog
+                    - generic [ref=e328]: telephoto
+  - alert [ref=e122]

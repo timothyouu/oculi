@@ -1,0 +1,87 @@
+- generic [active] [ref=f17e1]:
+  - generic [ref=f17e2]:
+    - banner [ref=f17e3]:
+      - generic [ref=f17e4]:
+        - button "Go to Oculi discover feed" [ref=f17e5] [cursor=pointer]:
+          - generic [ref=f17e7]: oculi
+        - navigation "Primary navigation" [ref=f17e8]:
+          - button "Discover" [ref=f17e9] [cursor=pointer]
+          - button "Map" [ref=f17e10] [cursor=pointer]: Map
+          - button "Saved" [ref=f17e12] [cursor=pointer]
+          - button "Add Photo" [ref=f17e13] [cursor=pointer]
+        - generic [ref=f17e14]:
+          - button "Notifications" [ref=f17e15] [cursor=pointer]:
+            - img [ref=f17e16]
+          - button "Open John Doe's profile" [ref=f17e20] [cursor=pointer]
+          - button "Open settings" [ref=f17e21] [cursor=pointer]:
+            - img [ref=f17e22]
+    - main [ref=f17e25]:
+      - region "Discover content" [ref=f17e26]:
+        - generic [ref=f17e27]:
+          - group [ref=f17e28]:
+            - generic "Map filters 61 places · 118 photos" [ref=f17e29] [cursor=pointer]:
+              - generic [ref=f17e30]:
+                - generic [ref=f17e31]: Map filters
+                - text: 61 places · 118 photos
+              - img [ref=f17e33]
+          - region "Live Mapbox map" [ref=f17e36]:
+            - generic [ref=f17e37]:
+              - generic:
+                - region "Map" [ref=f17e38]
+                - img "Select Near the Presidio overlook cluster, 30 places, 56 photos" [ref=f17e60] [cursor=pointer]:
+                  - generic [ref=f17e61]: "56"
+                - img "Select East River bridge walkway cluster, 7 places, 14 photos" [ref=f17e62] [cursor=pointer]:
+                  - generic [ref=f17e63]: "14"
+                - img "Select South Rim viewpoints cluster, 6 places, 12 photos" [ref=f17e64] [cursor=pointer]:
+                  - generic [ref=f17e65]: "12"
+                - img "Select Queen Anne public overlook cluster, 4 places, 8 photos" [ref=f17e66] [cursor=pointer]:
+                  - generic [ref=f17e67]: "8"
+                - img "Select Trocadero public terraces cluster, 3 places, 6 photos" [ref=f17e68] [cursor=pointer]:
+                  - generic [ref=f17e69]: "6"
+                - img "Select Yellowstone public boardwalk cluster, 3 places, 6 photos" [ref=f17e70] [cursor=pointer]:
+                  - generic [ref=f17e71]: "6"
+                - img "Select Downtown river paths cluster, 3 places, 6 photos" [ref=f17e72] [cursor=pointer]:
+                  - generic [ref=f17e73]: "6"
+                - img "Select Ocean Drive corridor cluster, 2 places, 4 photos" [ref=f17e74] [cursor=pointer]:
+                  - generic [ref=f17e75]: "4"
+                - img "Select Shibuya Crossing, 2 photos" [ref=f17e76] [cursor=pointer]:
+                  - generic [ref=f17e77]: "2"
+                - img "Select Pyramids of Giza, 2 photos" [ref=f17e78] [cursor=pointer]:
+                  - generic [ref=f17e79]: "2"
+                - img "Select French Quarter Balconies, 2 photos" [ref=f17e80] [cursor=pointer]:
+                  - generic [ref=f17e81]: "2"
+              - generic:
+                - generic [ref=f17e47]:
+                  - button "Zoom in" [ref=f17e48] [cursor=pointer]
+                  - button "Zoom out" [ref=f17e50] [cursor=pointer]
+                  - button "Reset bearing to north" [ref=f17e52]
+                - generic:
+                  - button "Toggle attribution" [ref=f17e55] [cursor=pointer]
+                  - link "Mapbox homepage" [ref=f17e58] [cursor=pointer]:
+                    - /url: https://www.mapbox.com/
+            - generic [ref=f17e82]:
+              - generic [ref=f17e83]:
+                - button "Show 4 photos from Golden Gate Bridge Overlook" [ref=f17e84] [cursor=pointer]:
+                  - img [ref=f17e85]
+                  - text: 4 photos
+                - button "Unsave Golden Gate Bridge Overlook" [ref=f17e90] [cursor=pointer]:
+                  - img [ref=f17e91]
+                - button "Close Golden Gate Bridge Overlook card" [ref=f17e93] [cursor=pointer]:
+                  - img [ref=f17e94]
+              - generic [ref=f17e97]:
+                - generic [ref=f17e98]:
+                  - heading "Golden Gate Bridge Overlook" [level=3] [ref=f17e99]
+                  - paragraph [ref=f17e100]: Near the Presidio overlook
+                - generic [ref=f17e101]:
+                  - generic [ref=f17e102]: bridge
+                  - generic [ref=f17e103]: fog
+                  - generic [ref=f17e104]: landscape
+                  - generic [ref=f17e105]: iconic
+                - paragraph [ref=f17e106]:
+                  - img [ref=f17e107]
+                  - text: 842 saves
+                - generic [ref=f17e109]:
+                  - button "Open place" [ref=f17e110] [cursor=pointer]
+                  - button [ref=f17e111] [cursor=pointer]:
+                    - img [ref=f17e112]
+  - alert [ref=f17e59]

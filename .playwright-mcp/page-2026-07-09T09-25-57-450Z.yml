@@ -1,0 +1,37 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - banner [ref=f4e3]:
+      - generic [ref=f4e4]:
+        - button "Go to Oculi discover feed" [ref=f4e5] [cursor=pointer]:
+          - generic [ref=f4e7]: oculi
+        - navigation "Primary navigation" [ref=f4e8]:
+          - button "Discover" [ref=f4e9] [cursor=pointer]
+          - button "Map" [ref=f4e10] [cursor=pointer]: Map
+          - button "Saved" [ref=f4e12] [cursor=pointer]
+          - button "Add Photo" [ref=f4e13] [cursor=pointer]
+        - generic [ref=f4e14]:
+          - button "Notifications" [ref=f4e15] [cursor=pointer]:
+            - img [ref=f4e16]
+          - button "Open John Doe's profile" [ref=f4e20] [cursor=pointer]
+          - button "Open settings" [ref=f4e21] [cursor=pointer]:
+            - img [ref=f4e22]
+    - main [ref=f4e25]:
+      - region "Discover content" [ref=f4e26]:
+        - generic [ref=f4e27]:
+          - group [ref=f4e28]:
+            - generic "Map filters 61 places · 118 photos" [ref=f4e29] [cursor=pointer]:
+              - generic [ref=f4e30]:
+                - generic [ref=f4e31]: Map filters
+                - text: 61 places · 118 photos
+              - img [ref=f4e33]
+          - region "Live Mapbox map" [ref=f4e36]:
+            - generic [ref=f4e37]:
+              - region "Map" [ref=f4e38]
+              - generic:
+                - generic [ref=f4e39]:
+                  - button "Zoom in" [ref=f4e40] [cursor=pointer]
+                  - button "Zoom out" [ref=f4e42] [cursor=pointer]
+                  - button "Reset bearing to north" [ref=f4e44]
+                - link "Mapbox homepage" [ref=f4e47] [cursor=pointer]:
+                  - /url: https://www.mapbox.com/
+  - alert [ref=f4e48]
