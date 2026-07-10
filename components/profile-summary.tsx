@@ -30,11 +30,13 @@ export function ProfileSummary({
   onToggleFollow,
   onOpenPlace,
 }: ProfileSummaryProps) {
-  const { areas, photos: allPhotos, places, state, updateProfile } = useDemoState();
+  const { areas, photos: allPhotos, places, state, updateProfile, authUser, signInWithGoogle, signOutOfAccount } = useDemoState();
   const [activeTab, setActiveTab] = useState<"Photos" | "Saved">("Photos");
   const [status, setStatus] = useState("");
   const [editOpen, setEditOpen] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
+  const [accountStatus, setAccountStatus] = useState("");
+  const [accountBusy, setAccountBusy] = useState(false);
   const favoriteTags = useMemo(() => {
     if (isCurrentUser) return state.profile.favoriteTags;
 
@@ -131,6 +133,33 @@ export function ProfileSummary({
               {isCurrentUser ? "Edit profile" : "Share profile"}
             </button>
             {status ? <p className="text-sm text-[var(--moss)]">{status}</p> : null}
+            {isCurrentUser ? (
+              <AccountSection
+                authUser={authUser}
+                busy={accountBusy}
+                status={accountStatus}
+                onSignIn={async () => {
+                  setAccountBusy(true);
+                  setAccountStatus("");
+                  const result = await signInWithGoogle();
+                  setAccountBusy(false);
+                  if (!result.ok) {
+                    setAccountStatus(`Couldn't start Google sign-in: ${result.error}`);
+                    return;
+                  }
+                  if (result.usedFallback) {
+                    setAccountStatus("Redirecting to Google (fallback sign-in - state may not carry over)...");
+                  }
+                }}
+                onSignOut={async () => {
+                  setAccountBusy(true);
+                  setAccountStatus("");
+                  await signOutOfAccount();
+                  setAccountBusy(false);
+                  setAccountStatus("Signed out. You're browsing as a new anonymous visitor.");
+                }}
+              />
+            ) : null}
           </div>
         </div>
       </div>
@@ -319,6 +348,54 @@ function PhotoDetailModal({
           ) : null}
         </div>
       </div>
+    </div>
+  );
+}
+
+function AccountSection({
+  authUser,
+  busy,
+  status,
+  onSignIn,
+  onSignOut,
+}: {
+  authUser: { id: string; email: string | null; name: string | null; isAnonymous: boolean } | null;
+  busy: boolean;
+  status: string;
+  onSignIn: () => void;
+  onSignOut: () => void;
+}) {
+  const isGoogleLinked = Boolean(authUser && !authUser.isAnonymous);
+
+  return (
+    <div className="rounded-lg border border-[var(--line)] bg-[var(--paper)] p-3 text-sm">
+      {isGoogleLinked ? (
+        <>
+          <p className="font-semibold text-[var(--ink)]">{authUser?.name ?? "Google account"}</p>
+          {authUser?.email ? <p className="truncate text-[var(--muted)]">{authUser.email}</p> : null}
+          <button
+            type="button"
+            disabled={busy}
+            className="mt-2 inline-flex h-10 w-full items-center justify-center rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] text-sm outline-none transition hover:bg-[var(--chip)] disabled:opacity-60"
+            onClick={onSignOut}
+          >
+            Sign out
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="text-[var(--muted)]">Browsing anonymously. Sign in to keep this profile on any device.</p>
+          <button
+            type="button"
+            disabled={busy}
+            className="mt-2 inline-flex h-10 w-full items-center justify-center rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] text-sm outline-none transition hover:bg-[var(--chip)] disabled:opacity-60"
+            onClick={onSignIn}
+          >
+            Sign in with Google
+          </button>
+        </>
+      )}
+      {status ? <p className="mt-2 text-xs text-[var(--muted)]" aria-live="polite">{status}</p> : null}
     </div>
   );
 }

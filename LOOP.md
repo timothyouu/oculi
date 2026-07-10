@@ -71,6 +71,12 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
 - [x] Google OAuth configured — verified 2026-07-09: /auth/v1/settings reports
       external.google=true. (Full login flow needs a human Google account;
       automated verification asserts the redirect initiation only.)
+- [ ] Fix `~/oculi/.env`: set `NEXT_PUBLIC_SUPABASE_URL=https://xlzknvhiuhtcqmqrypqh.supabase.co`
+      and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to the project's anon key (Supabase
+      dashboard → Settings → API). It currently points at a local stack
+      (127.0.0.1:54321) that isn't running, so a plain `npm run dev` gets
+      connection-refused on every Supabase call. (The loop's dev server is
+      running with shell-env overrides meanwhile.)
 - [ ] Mapbox dashboard: add **URL restrictions** to the access token (allow
       your production domain + http://localhost:3000) and enable usage alerts —
       the token is NEXT_PUBLIC_ (client-visible), so the restriction is the
@@ -109,3 +115,17 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   drag-reorder refactor, predates this loop) — split off as new Task 11 rather
   than counting against Task 8. Auth prerequisites all verified done by Tim;
   dispatching Task 2 (anonymous-first auth) next.
+- 2026-07-10: Task 2 (anonymous-first auth) DONE, first try. New
+  lib/auth-session.ts (ensureAuthSession/signInWithGoogleUpgrade/signOut),
+  lib/state-merge.ts (pure merge, 9 tests), app/auth/callback/route.ts,
+  cookie-backed browser client via @supabase/ssr, account section on profile.
+  linkIdentity works directly (manual linking already enabled — no extra Tim
+  step). Orchestrator verified: tsc 0, 67/67 unit, e2e 10-pass baseline, build
+  0, and own clean-context live script: one anon uid, state writes owned by
+  that uid, uid stable across reload, save round-trips. FINDING: ~/oculi/.env
+  points NEXT_PUBLIC_SUPABASE_URL at 127.0.0.1:54321 (dead local stack) —
+  pre-existing, hook-blocked from reading/fixing; dev server for this loop now
+  runs with remote URL/anon key as shell-env overrides (never touched .env).
+  Tim's step added below. Legacy visitor-row remote merge will stop working
+  once Task 3 makes SELECT owner-only — acceptable, the localStorage blob
+  carries the same data for the same browser (documented trade-off).

@@ -1,6 +1,14 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ensureAuthSession,
+  sessionToAuthUser,
+  signInWithGoogleUpgrade,
+  signOutToFreshAnonymousSession,
+  type AuthUser,
+  type GoogleUpgradeResult,
+} from "./auth-session";
 import { currentUserId } from "./data";
 import { createRetryScheduler, type PersistenceStatus, type RetryScheduler } from "./persistence-status";
 import {
@@ -14,6 +22,7 @@ import {
   uploadPhotoFile,
 } from "./remote-state";
 import { sortTopPlaces } from "./scoring";
+import { mergeDemoStates } from "./state-merge";
 import {
   createInitialDemoState,
   getDemoVisitorId,
@@ -39,6 +48,13 @@ type DemoContextValue = {
   hasLoadedRemoteState: boolean;
   persistenceStatus: PersistenceStatus | null;
   retryPersistence: () => void;
+  /** The real Supabase auth identity backing state persistence (owner id of
+   * the `oculi_demo_states` row), distinct from the fictional demo profile
+   * (`currentUserId`/`currentUser` above). Null when Supabase isn't
+   * configured or auth bootstrap hasn't finished/failed. */
+  authUser: AuthUser | null;
+  signInWithGoogle: () => Promise<GoogleUpgradeResult>;
+  signOutOfAccount: () => Promise<void>;
   recordPhotoView: (photo: Photo, discoveryActiveIndex?: number) => void;
   recordPlaceView: (placeId: string, discoveryActiveIndex?: number) => void;
   toggleSavedPlace: (placeId: string) => void;
@@ -110,6 +126,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
   const [hasLoadedRemoteState, setHasLoadedRemoteState] = useState(false);
   const [stateOwnerId, setStateOwnerId] = useState(currentUserId);
   const [persistenceStatus, setPersistenceStatus] = useState<PersistenceStatus | null>(null);
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
 
   // A single retry/backoff scheduler instance for the whole-state Supabase
   // write, created once and reused across renders. It surfaces status
@@ -132,6 +149,8 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
 
     if (!isRemoteStateEnabled()) {
+      // Graceful degradation: no Supabase config at all, keep the original
+      // client-generated visitor id + localStorage-only flow untouched.
       setStateOwnerId(getDemoVisitorId());
       setState(loadLocalDemoState());
       setCatalog(seedCatalog);
@@ -139,29 +158,75 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const visitorId = getDemoVisitorId();
-    setStateOwnerId(visitorId);
+    (async () => {
+      // Anonymous-first bootstrap: every visitor gets a real Supabase auth
+      // session (anonymous if they haven't signed in), no login wall.
+      const session = await ensureAuthSession();
+      if (cancelled) return;
 
-    loadRemoteDemoState(visitorId)
-      .catch((error) => {
-        console.warn("Unable to hydrate Oculi state from Supabase.", error);
-        return createInitialDemoState();
-      })
-      .then((remoteState) => {
+      if (!session) {
+        // Auth bootstrap itself failed (e.g. anonymous sign-in rejected) -
+        // fall back to the pre-auth visitor-id-keyed remote flow so
+        // persistence still degrades gracefully instead of breaking.
+        const visitorId = getDemoVisitorId();
+        setStateOwnerId(visitorId);
+        setAuthUser(null);
+        loadRemoteDemoState(visitorId)
+          .catch((error) => {
+            console.warn("Unable to hydrate Oculi state from Supabase.", error);
+            return createInitialDemoState();
+          })
+          .then((remoteState) => {
+            if (cancelled) return;
+            setState(remoteState);
+            setHasLoadedRemoteState(true);
+          });
+      } else {
+        const ownerId = session.user.id;
+        setStateOwnerId(ownerId);
+        setAuthUser(sessionToAuthUser(session));
+
+        // Migrate any prior identity's state into the new auth-keyed row:
+        // the browser's localStorage blob, and/or a remote row still keyed
+        // by the legacy client-generated `visitor-<uuid>` id.
+        const legacyVisitorId = getDemoVisitorId();
+        const localState = loadLocalDemoState();
+
+        const [ownedRemoteState, legacyRemoteState] = await Promise.all([
+          loadRemoteDemoState(ownerId).catch((error) => {
+            console.warn("Unable to hydrate Oculi state from Supabase.", error);
+            return createInitialDemoState();
+          }),
+          legacyVisitorId && legacyVisitorId !== ownerId
+            ? loadRemoteDemoState(legacyVisitorId).catch(() => createInitialDemoState())
+            : Promise.resolve(createInitialDemoState()),
+        ]);
+
         if (cancelled) return;
-        setState(remoteState);
+
+        const priorState = mergeDemoStates(localState, legacyRemoteState);
+        const mergedState = mergeDemoStates(priorState, ownedRemoteState);
+
+        setState(mergedState);
         setHasLoadedRemoteState(true);
-      });
 
-    loadRemoteDemoCatalog()
-      .catch((error) => {
-        console.warn("Unable to hydrate Oculi catalog from Supabase.", error);
-        return seedCatalog;
-      })
-      .then((remoteCatalog) => {
-        if (cancelled) return;
-        setCatalog(remoteCatalog);
-      });
+        if (JSON.stringify(mergedState) !== JSON.stringify(ownedRemoteState)) {
+          saveRemoteDemoState(mergedState, ownerId).catch((error) => {
+            console.warn("Unable to persist merged Oculi state to Supabase.", error);
+          });
+        }
+      }
+
+      loadRemoteDemoCatalog()
+        .catch((error) => {
+          console.warn("Unable to hydrate Oculi catalog from Supabase.", error);
+          return seedCatalog;
+        })
+        .then((remoteCatalog) => {
+          if (cancelled) return;
+          setCatalog(remoteCatalog);
+        });
+    })();
 
     return () => {
       cancelled = true;
@@ -213,6 +278,23 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       hasLoadedRemoteState,
       persistenceStatus,
       retryPersistence: () => schedulerRef.current?.retryNow(),
+      authUser,
+      signInWithGoogle: () => {
+        const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : "";
+        return signInWithGoogleUpgrade(redirectTo);
+      },
+      signOutOfAccount: async () => {
+        const session = await signOutToFreshAnonymousSession();
+        if (!session) {
+          setAuthUser(null);
+          return;
+        }
+        const ownerId = session.user.id;
+        setStateOwnerId(ownerId);
+        setAuthUser(sessionToAuthUser(session));
+        const freshState = await loadRemoteDemoState(ownerId).catch(() => createInitialDemoState());
+        setState(freshState);
+      },
       recordPhotoView: (photo, discoveryActiveIndex) =>
         update((prev) => {
           const next = recordPlaceViewInState(prev, photo.placeId, discoveryActiveIndex);
@@ -291,7 +373,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         resetRemoteDemoState(stateOwnerId);
       }
     };
-  }, [catalog, hasLoadedRemoteState, persistenceStatus, state, stateOwnerId]);
+  }, [authUser, catalog, hasLoadedRemoteState, persistenceStatus, state, stateOwnerId]);
 
   return <DemoStateContext.Provider value={value}>{children}</DemoStateContext.Provider>;
 }
