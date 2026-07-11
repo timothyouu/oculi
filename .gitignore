@@ -25,6 +25,7 @@ Thumbs.db
 
 # local tool artifacts
 .playwright-cli/
+.playwright-mcp/
 playwright-report/
 test-results/
 .codex-tools/
