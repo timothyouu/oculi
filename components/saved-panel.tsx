@@ -77,6 +77,7 @@ export function SavedPanel({
     morning: [],
     sunset: [],
   });
+  const [placePendingRemoval, setPlacePendingRemoval] = useState<Place | null>(null);
   const hasActiveFilters = lightFilter !== "All" || sceneFilter !== "All";
 
   const savedPhotoTextByPlace = useMemo(
@@ -306,9 +307,6 @@ export function SavedPanel({
             <article key={place.id} className="overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_16px_42px_rgba(39,34,27,0.08)]">
               <button type="button" className="relative block w-full text-left" onClick={() => onOpenPlace?.(place.id)}>
                 <ResilientImage src={place.coverPhotoUrl} alt="" className="aspect-[4/3] w-full object-cover" />
-                <span className="absolute right-3 top-3 grid h-10 w-7 place-items-center rounded-b bg-[var(--gold)] text-white">
-                  <Bookmark className="size-4 fill-current" />
-                </span>
               </button>
               <div className="space-y-2 p-4">
                 <div className="flex items-start justify-between gap-3">
@@ -319,7 +317,7 @@ export function SavedPanel({
                   <button
                     type="button"
                     className="grid size-9 place-items-center rounded-md text-[var(--gold)] hover:bg-[var(--chip)]"
-                    onClick={() => onToggleSaved?.(place.id)}
+                    onClick={() => setPlacePendingRemoval(place)}
                     aria-label={`Remove ${place.name} from saved places`}
                   >
                     <Bookmark className="size-5 fill-current" />
@@ -376,7 +374,67 @@ export function SavedPanel({
         onRegenerateRoute={regenerateActiveRoute}
         onSaveRoutePlan={saveActiveRoutePlan}
       />
+      {placePendingRemoval ? (
+        <ConfirmRemoveSavedPlaceDialog
+          place={placePendingRemoval}
+          onCancel={() => setPlacePendingRemoval(null)}
+          onConfirm={() => {
+            onToggleSaved?.(placePendingRemoval.id);
+            setPlacePendingRemoval(null);
+          }}
+        />
+      ) : null}
     </section>
+  );
+}
+
+function ConfirmRemoveSavedPlaceDialog({
+  place,
+  onCancel,
+  onConfirm,
+}: {
+  place: Place;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 grid place-items-center bg-black/35 px-4 py-6 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-remove-saved-place-title"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onCancel();
+      }}
+    >
+      <div
+        className="w-full max-w-sm rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] p-5 text-[var(--ink)]"
+        style={{ boxShadow: "var(--elevated-shadow)" }}
+      >
+        <p id="confirm-remove-saved-place-title" className="text-lg font-semibold">
+          Remove {place.name} from saved?
+        </p>
+        <p className="mt-2 text-sm leading-5 text-[var(--muted)]">
+          It will no longer appear in your saved places or be available for shoot-day routes.
+        </p>
+        <div className="mt-5 flex justify-end gap-3">
+          <button
+            type="button"
+            className="inline-flex h-10 items-center rounded-lg border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] shadow-sm transition hover:bg-[var(--chip)]"
+            onClick={onCancel}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="inline-flex h-10 items-center rounded-lg bg-red-600 px-4 text-sm text-white shadow-sm transition hover:bg-red-700"
+            onClick={onConfirm}
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
