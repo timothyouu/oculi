@@ -154,13 +154,10 @@ test.describe("map camera persistence and cluster zoom", () => {
       )
       .not.toBeNull();
 
-    // A map marker (aria-label starts with "Select ") whose label mentions
-    // "places" is a genuine multi-place cluster (see components/mapbox-map.tsx
-    // marker labeling), so clicking it exercises the
+    // Multi-place cluster markers are labeled "Zoom into ..." (lone markers
+    // keep "Select ..."), so this exercises the
     // cameraForBounds-vs-flat-zoom-step logic, not the lone-marker branch.
-    // (The nav bar's unrelated "Open saved places, N saved" button also
-    // contains " places" - the "Select " prefix excludes it.)
-    const clusterMarker = page.locator('button[aria-label^="Select "][aria-label*=" places"]').first();
+    const clusterMarker = page.locator('button[aria-label^="Zoom into "]').first();
     await expect(clusterMarker).toBeVisible({ timeout: 15_000 });
     await clusterMarker.click();
 
@@ -173,5 +170,9 @@ test.describe("map camera persistence and cluster zoom", () => {
         { timeout: 15_000 },
       )
       .toBeGreaterThan(baselineZoom! + 0.1);
+
+    // A cluster click is a zoom gesture, not a selection: it must never open
+    // the SelectedPlaceCard (its share button is a reliable card fingerprint).
+    await expect(page.locator('button[aria-label^="Copy link to "]')).toHaveCount(0);
   });
 });

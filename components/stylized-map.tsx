@@ -145,13 +145,16 @@ export function StylizedMap({
                 isSelected ? "z-20 scale-110" : "z-10 hover:scale-105",
               )}
               style={{ left: `${cluster.position.left}%`, top: `${cluster.position.top}%` }}
-              aria-label={`Select ${clusterName}, ${cluster.photoCount} photo${cluster.photoCount === 1 ? "" : "s"}`}
+              aria-label={`${cluster.places.length > 1 ? "Zoom into" : "Select"} ${clusterName}, ${cluster.photoCount} photo${cluster.photoCount === 1 ? "" : "s"}`}
               title={`${clusterName} · ${cluster.photoCount} photo${cluster.photoCount === 1 ? "" : "s"}`}
               onClick={() => {
                 if (cluster.places.length > 1) {
+                  // A cluster click is a zoom-in gesture (step up the detail
+                  // level), not a selection - never open a place card for it.
                   setDetailLevel((level) => Math.min(level + 1, stylizedClusterRadii.length - 1));
+                } else {
+                  onSelectPlace?.(cluster.primaryPlace.id);
                 }
-                onSelectPlace?.(cluster.primaryPlace.id);
               }}
             >
               <span

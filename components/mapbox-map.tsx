@@ -263,7 +263,12 @@ export function MapboxMap({
 
       markerButton.type = "button";
       markerButton.style.zIndex = isSelected ? "25" : "20";
-      markerButton.setAttribute("aria-label", `Select ${clusterName}, ${photoLabel}`);
+      // Multi-place clusters zoom in on click instead of selecting a place,
+      // so their label must promise "Zoom into", not "Select".
+      markerButton.setAttribute(
+        "aria-label",
+        cluster.places.length > 1 ? `Zoom into ${clusterName}, ${photoLabel}` : `Select ${clusterName}, ${photoLabel}`,
+      );
       markerButton.title = `${clusterName} · ${photoLabel}`;
       markerButton.className = cx(
         "inline-grid h-11 min-w-11 place-items-center rounded-full border-2 px-3 font-sans text-sm font-semibold leading-none shadow-[0_8px_18px_rgba(29,29,27,0.24)] transition hover:scale-105",
@@ -305,6 +310,10 @@ export function MapboxMap({
               essential: true,
             });
           }
+          // Do NOT select a place here: a cluster click is a zoom gesture,
+          // not a choice of any one place, so opening the primary place's
+          // card would be arbitrary and jarring. Only lone-marker clicks
+          // (the branch below) open the SelectedPlaceCard.
         } else {
           // A lone marker previously opened its place card with no camera
           // movement at all, so the card (and its full-size photo) appeared
@@ -323,8 +332,8 @@ export function MapboxMap({
             duration: 650,
             essential: true,
           });
+          onSelectPlace?.(cluster.primaryPlace.id);
         }
-        onSelectPlace?.(cluster.primaryPlace.id);
       });
 
       return new mapboxgl.Marker({ element: markerButton, anchor: "center" }).setLngLat([cluster.lng, cluster.lat]).addTo(map);
