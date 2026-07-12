@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createInitialDemoState } from "./storage";
-import { mergeDemoStates } from "./state-merge";
+import { createInitialDemoState, DEFAULT_SAVED_PLACE_IDS } from "./storage";
+import { mergeDemoStates, selectSavedPlaceIdsToMigrate } from "./state-merge";
 import type { DemoState } from "./types";
 
 function baseState(overrides: Partial<DemoState> = {}): DemoState {
@@ -155,5 +155,67 @@ describe("mergeDemoStates", () => {
     const merged = mergeDemoStates(legacyLocalState, freshAuthState);
 
     expect(merged.savedPlaceIds).toContain("marshall-beach");
+  });
+});
+
+describe("selectSavedPlaceIdsToMigrate", () => {
+  it("does not migrate seed-default saved places for a fresh visitor with no durable proof", () => {
+    // A brand-new anonymous visitor: mergedSavedPlaceIds only contains the
+    // fabricated defaults (from loadLocalDemoState/createInitialDemoState
+    // fallbacks), and no durable source (owned table or any other legacy
+    // durable source) has ever seen them.
+    const toMigrate = selectSavedPlaceIdsToMigrate([...DEFAULT_SAVED_PLACE_IDS], [], []);
+
+    expect(toMigrate).toEqual([]);
+  });
+
+  it("migrates a default id once it's proven by the owner's own durable table (kept, not re-written as new)", () => {
+    // Simulates a returning visitor: "coit-tower" is already a real row in
+    // their saved_places table, so it's excluded (already durable -- no-op),
+    // while the other three defaults (never proven) stay excluded.
+    const toMigrate = selectSavedPlaceIdsToMigrate(
+      [...DEFAULT_SAVED_PLACE_IDS],
+      ["coit-tower"],
+      [],
+    );
+
+    expect(toMigrate).toEqual([]);
+  });
+
+  it("migrates a default id proven only by another durable legacy source", () => {
+    // e.g. a pre-migration state-blob row (loadLegacyRelationsFromStateRow)
+    // or another identity's per-entity table rows genuinely had "coit-tower"
+    // saved -- that's real proof of intent, distinct from the fabricated
+    // fallback default, so it should migrate up.
+    const toMigrate = selectSavedPlaceIdsToMigrate(
+      [...DEFAULT_SAVED_PLACE_IDS],
+      [],
+      ["coit-tower"],
+    );
+
+    expect(toMigrate).toEqual(["coit-tower"]);
+  });
+
+  it("always migrates non-default ids regardless of durable proof", () => {
+    const toMigrate = selectSavedPlaceIdsToMigrate(["marshall-beach", "twin-peaks"], [], []);
+
+    expect(toMigrate).toEqual(["marshall-beach", "twin-peaks"]);
+  });
+
+  it("excludes non-default ids already present in the owner's durable table (no-op, not a re-write)", () => {
+    const toMigrate = selectSavedPlaceIdsToMigrate(
+      ["marshall-beach", "twin-peaks"],
+      ["marshall-beach"],
+      [],
+    );
+
+    expect(toMigrate).toEqual(["twin-peaks"]);
+  });
+
+  it("handles a mix of proven defaults, unproven defaults, and non-default ids in one pass", () => {
+    const merged = [...DEFAULT_SAVED_PLACE_IDS, "marshall-beach"];
+    const toMigrate = selectSavedPlaceIdsToMigrate(merged, [], ["grace-cathedral"]);
+
+    expect(toMigrate.sort()).toEqual(["grace-cathedral", "marshall-beach"]);
   });
 });

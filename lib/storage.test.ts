@@ -5,23 +5,40 @@ import {
   loadMapCameraView,
   loadMapDetailLevel,
   loadMapSelectedPlaceId,
+  DEFAULT_SAVED_PLACE_IDS,
   normalizeDemoState,
   saveMapCameraView,
   saveMapDetailLevel,
   saveMapSelectedPlaceId,
-  starterUploadedPhotos,
 } from "./storage";
+import type { Photo } from "./types";
+
+function photoWithId(id: string): Photo {
+  return {
+    id,
+    placeId: "baker-beach",
+    userId: "u",
+    imageUrl: "https://example.com/x.jpg",
+    caption: "c",
+    locationLabel: "l",
+    tags: [],
+    createdAt: "2026-07-01T00:00:00.000Z",
+    likeCount: 0,
+  };
+}
 
 describe("normalizeDemoState", () => {
-  it("uses starter saved places and uploaded photos when no persisted state exists", () => {
+  it("starts a brand-new account/guest with no saved places and no posts", () => {
     const normalized = normalizeDemoState(null);
     const initial = createInitialDemoState();
 
-    expect(normalized.savedPlaceIds).toEqual(initial.savedPlaceIds);
-    expect(normalized.uploadedPhotos).toEqual(initial.uploadedPhotos);
+    expect(normalized.savedPlaceIds).toEqual([]);
+    expect(normalized.uploadedPhotos).toEqual([]);
+    expect(initial.savedPlaceIds).toEqual([]);
+    expect(initial.uploadedPhotos).toEqual([]);
   });
 
-  it("respects persisted saved places instead of re-adding starter places", () => {
+  it("preserves real persisted saved places, deduplicated", () => {
     const normalized = normalizeDemoState({
       savedPlaceIds: ["baker-beach", "baker-beach", "twin-peaks"],
       uploadedPhotos: [],
@@ -30,14 +47,22 @@ describe("normalizeDemoState", () => {
     expect(normalized.savedPlaceIds).toEqual(["baker-beach", "twin-peaks"]);
   });
 
-  it("respects an explicit persisted uploaded photo list", () => {
+  it("scrubs legacy demo-flavor default saves from a pre-change blob, keeping real saves", () => {
     const normalized = normalizeDemoState({
-      savedPlaceIds: [],
+      savedPlaceIds: [...DEFAULT_SAVED_PLACE_IDS, "twin-peaks"],
       uploadedPhotos: [],
     });
 
-    expect(normalized.uploadedPhotos).toEqual([]);
-    expect(normalized.uploadedPhotos).not.toEqual(starterUploadedPhotos);
+    expect(normalized.savedPlaceIds).toEqual(["twin-peaks"]);
+  });
+
+  it("scrubs legacy starter-upload posts from a pre-change blob, keeping real uploads", () => {
+    const normalized = normalizeDemoState({
+      savedPlaceIds: [],
+      uploadedPhotos: [photoWithId("starter-upload-baker-beach"), photoWithId("upload-abc123")],
+    });
+
+    expect(normalized.uploadedPhotos.map((photo) => photo.id)).toEqual(["upload-abc123"]);
   });
 });
 

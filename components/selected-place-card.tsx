@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Bookmark, ChevronLeft, ChevronRight, Heart, Images, Send, X } from "lucide-react";
 import type { Photo, Place, User } from "@/lib/types";
 import { accessibilityForPlace } from "@/lib/place-accessibility";
+import { attributionForImageUrl } from "@/lib/image-attribution";
 import { sceneLabelsFor } from "@/lib/place-taxonomy";
 import { ResilientImage } from "./resilient-image";
 import { SharePlaceButton } from "./share-place-button";
@@ -173,6 +174,7 @@ export function SelectedPlaceCard({
 
   if (view === "post" && activePhoto) {
     const hasMultiple = visiblePhotos.length > 1;
+    const activeAttribution = attributionForImageUrl(activePhoto.imageUrl);
     const goToPhoto = (index: number) => {
       setSelectedPhotoIndex((index + visiblePhotos.length) % visiblePhotos.length);
     };
@@ -288,6 +290,19 @@ export function SelectedPlaceCard({
                 ))}
               </div>
             ) : null}
+
+            {activeAttribution ? (
+              <p className="text-xs text-[var(--ink)]/50">
+                <a
+                  href={activeAttribution.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-dotted underline-offset-2 hover:text-[var(--ink)]/80"
+                >
+                  {activeAttribution.label}
+                </a>
+              </p>
+            ) : null}
           </div>
         </div>
       </div>
@@ -297,7 +312,7 @@ export function SelectedPlaceCard({
   return (
     <>
       <div className="relative">
-        <ResilientImage src={place.coverPhotoUrl} alt="" className="aspect-[16/9] w-full object-cover" />
+        <ResilientImage src={place.coverPhotoUrl} alt="" priority className="aspect-[16/9] w-full object-cover" />
         <button
           type="button"
           className="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full border border-white/55 bg-[rgba(29,29,27,0.72)] px-3 py-2 text-sm text-white shadow-[0_8px_20px_rgba(29,29,27,0.24)] backdrop-blur"

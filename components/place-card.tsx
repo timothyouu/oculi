@@ -2,6 +2,7 @@
 
 import { Bookmark, Clock, MapPin, Sparkles } from "lucide-react";
 import type { Place } from "../lib/types";
+import { ResilientImage } from "./resilient-image";
 
 type PlaceCardProps = {
   place: Place;
@@ -26,7 +27,7 @@ export function PlaceCard({ place, rank, isSaved = false, compact = false, reaso
         onClick={() => onOpenPlace?.(place.id)}
       >
         <div className="relative">
-          <img
+          <ResilientImage
             src={place.coverPhotoUrl}
             alt={`${place.name} photo spot`}
             className={cx("w-full bg-zinc-100 object-cover transition duration-300 group-hover:scale-[1.02]", compact ? "aspect-[5/3]" : "aspect-[4/3]")}

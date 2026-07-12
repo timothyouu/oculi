@@ -1,3 +1,4 @@
+import { DEFAULT_SAVED_PLACE_IDS } from "./storage";
 import type { DemoState, PlaceView } from "./types";
 
 // Pure merge for the anonymous->auth identity migration (see
@@ -48,6 +49,46 @@ function mergePlaceViews(a: PlaceView[], b: PlaceView[]): PlaceView[] {
 
 function latestActivityAt(state: DemoState): number {
   return state.placeViews.reduce((max, view) => Math.max(max, new Date(view.viewedAt).getTime()), 0);
+}
+
+/**
+ * Decides which reconciled saved-place ids should be migrated up into the
+ * durable `saved_places` table on bootstrap (docs/demo-to-product-audit.md
+ * follow-up: default-save inflation). `mergedSavedPlaceIds` is every id
+ * unioned in from all reconciliation sources, but some of those sources
+ * (a fresh `loadLocalDemoState()`/`createInitialDemoState()` fallback)
+ * fabricate the seed-default saved places for every brand-new visitor with
+ * zero real user action -- migrating those would create a `saved_places`
+ * row (and inflate that place's public save count) for someone who never
+ * clicked Save.
+ *
+ * Non-default ids always migrate: a non-default id can only appear in
+ * `mergedSavedPlaceIds` via a real toggle (`setSavedPlaceRemote`), a real
+ * legacy state-blob row, or a real per-entity table row -- there's no
+ * fallback path that fabricates them.
+ *
+ * A default id only migrates if it's independently proven by a *durable*
+ * source: already present in the owner's own `saved_places` rows
+ * (`alreadyDurableSavedPlaceIds`), or in any other durable source
+ * (`otherDurableSavedPlaceIds` -- another identity's per-entity table rows,
+ * or a pre-migration state-blob row read via
+ * `loadLegacyRelationsFromStateRow`, which returns an empty result rather
+ * than fabricating defaults when there's no row). Ids already durable are
+ * filtered out either way since writing them again would be a no-op.
+ */
+export function selectSavedPlaceIdsToMigrate(
+  mergedSavedPlaceIds: string[],
+  alreadyDurableSavedPlaceIds: string[],
+  otherDurableSavedPlaceIds: string[],
+  defaultSavedPlaceIds: readonly string[] = DEFAULT_SAVED_PLACE_IDS,
+): string[] {
+  const proven = new Set([...alreadyDurableSavedPlaceIds, ...otherDurableSavedPlaceIds]);
+
+  return mergedSavedPlaceIds.filter((id) => {
+    if (alreadyDurableSavedPlaceIds.includes(id)) return false;
+    if (!defaultSavedPlaceIds.includes(id)) return true;
+    return proven.has(id);
+  });
 }
 
 /** Merges two DemoState values with no ordering assumption between them. */

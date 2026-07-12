@@ -96,6 +96,8 @@ export function MapboxMap({
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState("");
   const [mapUnauthorized, setMapUnauthorized] = useState(false);
+  const [webglFailed, setWebglFailed] = useState(false);
+  const [mapInstance, setMapInstance] = useState<MapboxMapInstance | null>(null);
   const [mapZoom, setMapZoom] = useState(11.1);
   const [mapViewTick, setMapViewTick] = useState(0);
   const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -105,36 +107,47 @@ export function MapboxMap({
     requireMapbox,
     hasAccessToken: Boolean(accessToken),
     unauthorized: mapUnauthorized,
+    webglFailed,
   });
   const visiblePlaceClusters = useMemo(() => {
     void mapViewTick;
-    const map = mapRef.current;
     const clusterRadius = clusterSizeForZoom(mapZoom);
-    if (!map || !mapReady) return [];
+    if (!mapInstance || !mapReady) return [];
 
     return clusterProjectedPlacePhotoNodes(placeNodes, clusterRadius, (place) => {
-      const point = map.project([place.lng, place.lat]);
+      const point = mapInstance.project([place.lng, place.lat]);
       return { x: point.x, y: point.y };
     });
-  }, [mapReady, mapViewTick, mapZoom, placeNodes]);
+  }, [mapInstance, mapReady, mapViewTick, mapZoom, placeNodes]);
 
   useEffect(() => {
     if (!accessToken || shouldUseStylizedFallback || !containerRef.current || mapRef.current) return;
 
     setMapError("");
     mapboxgl.accessToken = accessToken;
-    const map = new mapboxgl.Map({
-      container: containerRef.current,
-      style: "mapbox://styles/mapbox/outdoors-v12",
-      center: [-122.454, 37.787],
-      zoom: 11.1,
-      pitch: 0,
-      attributionControl: false,
-      transformRequest: (url) => ({
-        url: proxiedMapboxUrl(url),
-        referrerPolicy: "origin",
-      }),
-    });
+    // The Map constructor throws synchronously when the browser can't create
+    // a WebGL context (old browsers, GPU-blocked/headless environments).
+    // Uncaught, that error unmounts the whole React tree — catch it and route
+    // into the stylized fallback instead, the exact case that fallback exists
+    // for.
+    let map: mapboxgl.Map;
+    try {
+      map = new mapboxgl.Map({
+        container: containerRef.current,
+        style: "mapbox://styles/mapbox/outdoors-v12",
+        center: [-122.454, 37.787],
+        zoom: 11.1,
+        pitch: 0,
+        attributionControl: false,
+        transformRequest: (url) => ({
+          url: proxiedMapboxUrl(url),
+          referrerPolicy: "origin",
+        }),
+      });
+    } catch {
+      setWebglFailed(true);
+      return;
+    }
 
     map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right");
     map.addControl(new mapboxgl.AttributionControl({ compact: true }), "bottom-left");
@@ -156,6 +169,7 @@ export function MapboxMap({
     map.on("error", handleError);
 
     mapRef.current = map;
+    setMapInstance(map);
 
     return () => {
       map.off("load", handleLoad);
@@ -164,6 +178,7 @@ export function MapboxMap({
       markersRef.current = [];
       map.remove();
       mapRef.current = null;
+      setMapInstance(null);
       setMapReady(false);
     };
   }, [accessToken, shouldUseStylizedFallback]);
@@ -175,6 +190,7 @@ export function MapboxMap({
     markersRef.current = [];
     mapRef.current.remove();
     mapRef.current = null;
+    setMapInstance(null);
     setMapReady(false);
   }, [shouldUseStylizedFallback]);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { PlaceDetail } from "@/components/place-detail";
@@ -8,11 +8,12 @@ import { UploadModal } from "@/components/upload-modal";
 import { useDemoState } from "@/lib/demo-state";
 import { topTierReason } from "@/lib/scoring";
 
-export default function PlacePage({ params }: { params: { placeId: string } }) {
+export default function PlacePage({ params }: { params: Promise<{ placeId: string }> }) {
+  const { placeId } = use(params);
   const { photos, places, state, toggleSavedPlace, addPhoto, recordPlaceView } = useDemoState();
   const [uploadOpen, setUploadOpen] = useState(false);
   const recordedPlaceRef = useRef<string | null>(null);
-  const place = places.find((item) => item.id === params.placeId);
+  const place = places.find((item) => item.id === placeId);
 
   useEffect(() => {
     if (!place) return;
@@ -40,7 +41,7 @@ export default function PlacePage({ params }: { params: { placeId: string } }) {
           initialPlaceId={place.id}
           onClose={() => setUploadOpen(false)}
           onSubmit={(input) => {
-            addPhoto({
+            return addPhoto({
               placeId: input.placeId,
               imageUrl: input.previewUrl,
               file: input.file,

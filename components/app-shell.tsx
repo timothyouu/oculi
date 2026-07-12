@@ -2,10 +2,12 @@
 
 import { useState, type ReactNode } from "react";
 import { Bookmark, Compass, Map, PlusCircle, UserRound } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDemoState } from "@/lib/demo-state";
 import type { User } from "../lib/types";
 import { PersistenceStatusBanner } from "./persistence-status-banner";
+import { ResilientImage } from "./resilient-image";
 import { TopNav } from "./top-nav";
 import { UploadModal } from "./upload-modal";
 
@@ -96,6 +98,18 @@ export function AppShell({
         ) : null}
       </main>
 
+      <footer className="mx-auto w-full max-w-[1320px] px-5 pb-24 text-xs text-[var(--ink)]/50 sm:px-8 lg:pb-6">
+        <div className="flex items-center gap-2">
+          <Link href="/terms" className="hover:text-[var(--ink)]/80 hover:underline">
+            Terms
+          </Link>
+          <span aria-hidden="true">·</span>
+          <Link href="/privacy" className="hover:text-[var(--ink)]/80 hover:underline">
+            Privacy
+          </Link>
+        </div>
+      </footer>
+
       <nav
         className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--line)] bg-[var(--mobile-nav-bg)] px-3 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-10px_30px_rgba(39,34,27,0.08)] backdrop-blur-xl md:hidden"
         aria-label="Mobile navigation"
@@ -131,7 +145,7 @@ export function AppShell({
                     aria-hidden="true"
                   >
                     {shellCurrentUser?.avatarUrl ? (
-                      <img src={shellCurrentUser.avatarUrl} alt="" className="size-full object-cover" />
+                      <ResilientImage src={shellCurrentUser.avatarUrl} alt="" priority className="size-full object-cover" />
                     ) : (
                       <Icon className="size-4" aria-hidden="true" />
                     )}
@@ -152,7 +166,7 @@ export function AppShell({
         onClose={() => setUploadOpen(false)}
         onSubmit={(input) => {
           const place = demo.places.find((item) => item.id === input.placeId);
-          demo.addPhoto({
+          return demo.addPhoto({
             placeId: input.placeId,
             imageUrl: input.previewUrl,
             file: input.file,

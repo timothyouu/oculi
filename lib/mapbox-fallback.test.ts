@@ -35,4 +35,26 @@ describe("shouldFallbackToStylizedMap", () => {
       shouldFallbackToStylizedMap({ requireMapbox: true, hasAccessToken: false, unauthorized: false }),
     ).toBe(false);
   });
+
+  it("falls back when WebGL initialization failed", () => {
+    expect(
+      shouldFallbackToStylizedMap({
+        requireMapbox: false,
+        hasAccessToken: true,
+        unauthorized: false,
+        webglFailed: true,
+      }),
+    ).toBe(true);
+  });
+
+  it("WebGL failure overrides requireMapbox — a live map that cannot construct must still fall back", () => {
+    expect(
+      shouldFallbackToStylizedMap({
+        requireMapbox: true,
+        hasAccessToken: true,
+        unauthorized: false,
+        webglFailed: true,
+      }),
+    ).toBe(true);
+  });
 });

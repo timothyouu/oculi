@@ -98,7 +98,7 @@ export function PlaceDetailPopup({ placeId, onClose, onOpenPlace }: PlaceDetailP
         initialPlaceId={place.id}
         onClose={() => setUploadOpen(false)}
         onSubmit={(input) => {
-          addPhoto({
+          return addPhoto({
             placeId: input.placeId,
             imageUrl: input.previewUrl,
             file: input.file,

@@ -1,17 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bookmark, Car, Map, MapPin, Route, Share, Star, Footprints } from "lucide-react";
+import { Bookmark, Car, Footprints, Map, MapPin, Route, Share } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDemoState } from "@/lib/demo-state";
 import { kmToMiles, haversineDistanceKm } from "@/lib/geo";
 import { formatPlaceLocation } from "@/lib/location-labels";
 import { accessibilityForPlace } from "@/lib/place-accessibility";
 import { sceneLabelsFor } from "@/lib/place-taxonomy";
+import { attributionForImageUrl } from "@/lib/image-attribution";
 import type { Photo, Place } from "../lib/types";
 import { BackButton } from "./back-button";
 import { MapboxMap } from "./mapbox-map";
 import { PhotoCard } from "./photo-card";
+import { ResilientImage } from "./resilient-image";
 import { SharePlaceButton } from "./share-place-button";
 
 type PlaceDetailProps = {
@@ -56,6 +58,8 @@ export function PlaceDetail({
   const heroPhotos = photos.slice(0, 4);
   const usersById = Object.fromEntries(users.map((user) => [user.id, user]));
   const placeLocation = formatPlaceLocation(place, areas);
+  const heroImageUrl = heroPhotos[0]?.imageUrl || place.coverPhotoUrl;
+  const heroAttribution = attributionForImageUrl(heroImageUrl);
 
   // Real distance-to-place (docs/demo-to-product-audit.md item 7), replacing
   // the previously-hardcoded "0.3 mi". Same geolocation pattern already used
@@ -96,10 +100,11 @@ export function PlaceDetail({
         <div className="space-y-6">
           {showBackButton ? <BackButton label="Back" fallbackHref="/" /> : null}
           <div className="relative overflow-hidden rounded-[12px]">
-            <img
-              src={heroPhotos[0]?.imageUrl || place.coverPhotoUrl}
+            <ResilientImage
+              src={heroImageUrl}
               alt={`${place.name} hero photo`}
               className="aspect-[16/9] w-full object-cover max-sm:aspect-[4/3]"
+              priority
             />
             {isSaved ? (
               <span className="absolute right-4 top-0 grid h-20 w-12 place-items-center rounded-b bg-[var(--gold)] text-white">
@@ -107,6 +112,18 @@ export function PlaceDetail({
               </span>
             ) : null}
           </div>
+          {heroAttribution ? (
+            <p className="text-xs text-[var(--ink)]/50">
+              <a
+                href={heroAttribution.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-dotted underline-offset-2 hover:text-[var(--ink)]/80"
+              >
+                {heroAttribution.label}
+              </a>
+            </p>
+          ) : null}
         </div>
 
         <aside className="space-y-5 lg:pt-14">
@@ -151,9 +168,8 @@ export function PlaceDetail({
               </button>
           </div>
           {actionStatus ? <p className="text-sm text-[var(--moss)]">{actionStatus}</p> : null}
-          <div className="grid grid-cols-4 gap-2 border-y border-[var(--line)] py-4 text-sm text-[var(--muted)]">
+          <div className="grid grid-cols-2 gap-2 border-y border-[var(--line)] py-4 text-sm text-[var(--muted)] sm:grid-cols-3">
             <span className="flex items-center gap-2"><Bookmark className="size-4" />{place.saveCount} saves</span>
-            <span className="flex items-center gap-2"><Star className="size-4" />4.8</span>
             <span className="flex items-center gap-2"><Car className="size-4" />{accessibilityForPlace(place)}</span>
             {distanceMiles !== null ? (
               <span className="flex items-center gap-2">
@@ -213,7 +229,7 @@ export function PlaceDetail({
           </button>
         </div>
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-          {photos.map((photo) => {
+          {photos.map((photo, index) => {
             const photographer = usersById[photo.userId];
             if (!photographer) return null;
 
@@ -226,6 +242,7 @@ export function PlaceDetail({
                 isFollowed={followedUserIds.includes(photographer.id)}
                 isCurrentUser={photographer.id === currentUserId}
                 isLiked={likedPhotoIds.includes(photo.id)}
+                priority={index === 0}
                 onToggleFollow={toggleFollowUser}
                 onTogglePhotoLike={togglePhotoLike}
                 onOpenPlace={onOpenPlace ?? ((placeId) => router.push(`/places/${placeId}`))}

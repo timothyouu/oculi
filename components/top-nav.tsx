@@ -5,6 +5,7 @@ import { Bell, Camera, Check, Moon, Plus, Settings, Sparkles, Sun, Tag, Type, Us
 import { useAppSettings } from "@/components/app-settings";
 import { useDemoState } from "@/lib/demo-state";
 import type { User } from "../lib/types";
+import { ResilientImage } from "./resilient-image";
 
 type NavItem = {
   id: string;
@@ -282,7 +283,7 @@ export function TopNav({
             onClick={() => currentUser && onOpenProfile?.(currentUser.id)}
           >
             {currentUser?.avatarUrl ? (
-              <img src={currentUser.avatarUrl} alt="" className="size-full object-cover" />
+              <ResilientImage src={currentUser.avatarUrl} alt="" priority className="size-full object-cover" />
             ) : (
               <UserRound className="size-4 text-[var(--muted)]" aria-hidden="true" />
             )}

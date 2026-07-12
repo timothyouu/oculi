@@ -468,7 +468,10 @@ export async function saveRemoteCatalogPhoto(photo: Photo) {
     created_at: photo.createdAt,
   });
 
-  if (error) console.warn("Unable to save Oculi photo to Supabase.", error.message);
+  if (error) {
+    console.warn("Unable to save Oculi photo to Supabase.", error.message);
+    throw error;
+  }
 }
 
 export async function resetRemoteDemoState(stateOwnerId = currentUserId) {
@@ -490,8 +493,14 @@ export async function uploadPhotoFile(file: File, photoId: string) {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return null;
 
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) {
+    console.warn("Unable to identify the Oculi photo owner.", userError?.message ?? "No active user.");
+    return null;
+  }
+
   const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
-  const path = `${currentUserId}/${photoId}.${extension}`;
+  const path = `${userData.user.id}/${photoId}.${extension}`;
   const { error } = await supabase.storage.from(PHOTO_BUCKET).upload(path, file, {
     cacheControl: "31536000",
     contentType: file.type || undefined,
@@ -504,5 +513,15 @@ export async function uploadPhotoFile(file: File, photoId: string) {
   }
 
   const { data } = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(path);
-  return data.publicUrl;
+  return { publicUrl: data.publicUrl, path };
+}
+
+export async function deleteUploadedPhotoFile(path: string) {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return;
+
+  const { error } = await supabase.storage.from(PHOTO_BUCKET).remove([path]);
+  if (error) {
+    console.warn("Unable to clean up an unpublished Oculi photo.", error.message);
+  }
 }

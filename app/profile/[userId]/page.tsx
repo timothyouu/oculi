@@ -1,17 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { PlaceDetailPopup } from "@/components/place-detail-popup";
 import { ProfileSummary } from "@/components/profile-summary";
 import { useDemoState } from "@/lib/demo-state";
 
-export default function ProfilePage({ params }: { params: { userId: string } }) {
+export default function ProfilePage({ params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = use(params);
   const { photos, places, users, currentUserId, savedPlaceIds, followedUserIds, toggleFollowUser, recordPlaceView } = useDemoState();
   const [detailPlaceId, setDetailPlaceId] = useState<string | null>(null);
   const popupHistoryRef = useRef(false);
-  const user = users.find((item) => item.id === params.userId);
+  const user = users.find((item) => item.id === userId);
   if (!user) notFound();
   const savedPlaces = user.id === currentUserId ? places.filter((place) => savedPlaceIds.includes(place.id)) : [];
   const openPlace = useCallback((placeId: string) => {

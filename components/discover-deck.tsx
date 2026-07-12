@@ -232,7 +232,7 @@ export function DiscoverDeck({
             )}
             aria-hidden="true"
           >
-            <ResilientImage src={item.photo.imageUrl} alt="" draggable={false} className="h-full w-full object-cover" />
+            <ResilientImage src={item.photo.imageUrl} alt="" draggable={false} priority className="h-full w-full object-cover" />
           </div>
         ))}
 
@@ -266,6 +266,7 @@ export function DiscoverDeck({
                 alt={active.photo.caption || `${active.place.name} preview`}
                 fallbackSrc={active.place.coverPhotoUrl}
                 draggable={false}
+                priority
                 className="aspect-[3/2] w-full object-cover transition duration-500 group-hover:scale-[1.01] max-sm:aspect-[4/5]"
               />
             </button>

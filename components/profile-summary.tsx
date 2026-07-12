@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { Bookmark, Check, Grid2X2, Heart, MapPin, X } from "lucide-react";
 import { useDemoState } from "@/lib/demo-state";
 import { formatPlaceLocation } from "@/lib/location-labels";
+import { attributionForImageUrl, shouldBypassImageOptimizer } from "@/lib/image-attribution";
 import type { EditableProfile } from "@/lib/types";
 import type { Photo, Place, User } from "../lib/types";
+import { ResilientImage } from "./resilient-image";
 
 type ProfileSummaryProps = {
   user: User;
@@ -84,9 +87,10 @@ export function ProfileSummary({
       <div className="rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] p-8 shadow-[0_16px_42px_rgba(39,34,27,0.08)]">
         <div className="grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)_170px]">
           <div className="space-y-6">
-            <img
+            <ResilientImage
               src={user.avatarUrl}
               alt=""
+              priority
               className="size-52 rounded-full bg-zinc-200 object-cover shadow-sm max-sm:size-32"
             />
             <FavoriteTags tags={favoriteTags} />
@@ -190,7 +194,7 @@ export function ProfileSummary({
               onClick={() => setSelectedPhotoId(photo.id)}
               aria-label={`Open photo details: ${photo.caption}`}
             >
-              <img
+              <ResilientImage
                 src={photo.imageUrl}
                 alt={photo.caption}
                 className="size-full object-cover transition duration-300 group-hover:scale-[1.03]"
@@ -211,7 +215,7 @@ export function ProfileSummary({
           <div className="grid gap-4 sm:grid-cols-2">
             {savedPlaces.map((place) => (
               <button key={place.id} type="button" className="grid grid-cols-[72px_minmax(0,1fr)_32px] items-center gap-4 rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] p-3 text-left" onClick={() => onOpenPlace?.(place.id)}>
-                <img src={place.coverPhotoUrl} alt="" className="aspect-[4/3] rounded object-cover" />
+                <ResilientImage src={place.coverPhotoUrl} alt="" className="aspect-[4/3] rounded object-cover" />
                 <span className="min-w-0">
                   <span className="block truncate text-base text-[var(--ink)]">{place.name}</span>
                   <span className="block truncate text-sm text-[var(--muted)]">{formatPlaceLocation(place, areas)}</span>
@@ -268,6 +272,7 @@ function PhotoDetailModal({
     day: "numeric",
     year: "numeric",
   }).format(new Date(photo.createdAt));
+  const photoAttribution = attributionForImageUrl(photo.imageUrl);
 
   return (
     <div
@@ -280,8 +285,40 @@ function PhotoDetailModal({
       }}
     >
       <div className="grid max-h-[min(860px,calc(100vh-3rem))] w-full max-w-5xl overflow-hidden rounded-lg bg-[var(--paper-strong)] text-[var(--ink)] shadow-[0_24px_70px_rgba(0,0,0,0.25)] md:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-        <div className="grid min-h-0 place-items-center bg-black">
-          <img src={photo.imageUrl} alt={photo.caption} className="max-h-[70vh] w-full object-contain md:max-h-[min(860px,calc(100vh-3rem))]" />
+        <div className="relative grid min-h-0 place-items-center bg-black">
+          {/*
+            object-contain (never crop, letterbox instead) needs a *definite*-height box for
+            next/image's `fill` mode, unlike the original <img> which sized itself off the
+            photo's own intrinsic aspect ratio (capped by max-h). We don't know each photo's
+            real dimensions, so this uses the previous max-height values as fixed heights --
+            photos shorter than that cap now get a bit more letterboxing than before instead of
+            shrinking the box. Documented tradeoff, see Task 9 image-pipeline migration notes.
+          */}
+          <div className="relative h-[70vh] w-full md:h-[min(860px,calc(100vh-3rem))]">
+            <Image
+              src={photo.imageUrl}
+              alt={photo.caption}
+              fill
+              sizes="(max-width: 768px) 100vw, 60vw"
+              // Wikimedia-hosted catalog photos must not route through /_next/image -- the
+              // optimizer's single server IP gets 429-rate-limited by Wikimedia's CDN. See
+              // shouldBypassImageOptimizer in lib/image-attribution.ts.
+              unoptimized={shouldBypassImageOptimizer(photo.imageUrl)}
+              className="object-contain"
+            />
+          </div>
+          {photoAttribution ? (
+            <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-white/60">
+              <a
+                href={photoAttribution.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-dotted underline-offset-2 hover:text-white/90"
+              >
+                {photoAttribution.label}
+              </a>
+            </p>
+          ) : null}
         </div>
         <div className="min-h-0 overflow-auto p-5">
           <div className="flex items-start justify-between gap-4">
@@ -469,7 +506,7 @@ function EditProfileModal({
 
         <div className="mt-6 grid gap-5 sm:grid-cols-[132px_minmax(0,1fr)]">
           <div className="space-y-3">
-            <img src={draft.avatarUrl} alt="" className="size-28 rounded-full bg-[var(--chip)] object-cover ring-1 ring-[var(--line)]" />
+            <ResilientImage src={draft.avatarUrl} alt="" className="size-28 rounded-full bg-[var(--chip)] object-cover ring-1 ring-[var(--line)]" />
             <p className="text-xs leading-5 text-[var(--muted)]">Paste an image URL to change the demo avatar.</p>
           </div>
           <div className="grid gap-3">

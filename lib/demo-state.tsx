@@ -12,6 +12,7 @@ import {
 import { currentUserId } from "./data";
 import { createRetryScheduler, type PersistenceStatus, type RetryScheduler } from "./persistence-status";
 import {
+  deleteUploadedPhotoFile,
   isRemoteStateEnabled,
   loadLegacyRelationsFromStateRow,
   loadRemoteDemoCatalog,
@@ -29,7 +30,7 @@ import {
   type UserRelations,
 } from "./remote-state";
 import { sortTopPlaces } from "./scoring";
-import { mergeDemoStates, unionPreserveOrder } from "./state-merge";
+import { mergeDemoStates, selectSavedPlaceIdsToMigrate, unionPreserveOrder } from "./state-merge";
 import {
   createInitialDemoState,
   getDemoVisitorId,
@@ -68,7 +69,7 @@ type DemoContextValue = {
   toggleFollowUser: (userId: string) => void;
   togglePhotoLike: (photoId: string) => void;
   updateProfile: (profile: EditableProfile) => void;
-  addPhoto: (input: AddPhotoInput) => Photo;
+  addPhoto: (input: AddPhotoInput) => Promise<Photo>;
   resetDemoState: () => void;
 };
 
@@ -84,10 +85,6 @@ function makeId(prefix: string) {
   }
 
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
-function isDurableImageUrl(url: string) {
-  return !url.startsWith("blob:") && !url.startsWith("data:");
 }
 
 function mergePhotos(uploadedPhotos: Photo[], catalogPhotos: Photo[]) {
@@ -163,11 +160,22 @@ function unionAllRelations(sources: UserRelations[]): UserRelations {
  * the owner's per-entity tables (idempotent upserts/no-ops for ids already
  * there), so future loads read the same data straight from the tables
  * without needing this reconciliation pass again. Fire-and-forget -- each
- * underlying call already swallows its own errors with a console.warn. */
-function reconcileOwnedRelations(ownerId: string, merged: UserRelations, existing: UserRelations) {
-  merged.savedPlaceIds
-    .filter((id) => !existing.savedPlaceIds.includes(id))
-    .forEach((placeId) => setSavedPlaceRemote(ownerId, placeId, true));
+ * underlying call already swallows its own errors with a console.warn.
+ *
+ * `otherDurableSavedPlaceIds` gates the seed-default saved places (see
+ * `lib/state-merge.ts` `selectSavedPlaceIdsToMigrate`) so a fresh visitor's
+ * fabricated "starts with 4 saves" demo flavor never gets written into the
+ * durable `saved_places` table -- only ids proven by a real durable source
+ * (existing table rows, either identity's) migrate up. */
+function reconcileOwnedRelations(
+  ownerId: string,
+  merged: UserRelations,
+  existing: UserRelations,
+  otherDurableSavedPlaceIds: string[] = [],
+) {
+  selectSavedPlaceIdsToMigrate(merged.savedPlaceIds, existing.savedPlaceIds, otherDurableSavedPlaceIds).forEach(
+    (placeId) => setSavedPlaceRemote(ownerId, placeId, true),
+  );
   merged.followedUserIds
     .filter((id) => !existing.followedUserIds.includes(id))
     .forEach((userId) => setFollowedUserRemote(ownerId, userId, true));
@@ -194,7 +202,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
   // ("saving"/"saved"/"retrying"/"failed") instead of the old silent
   // console.warn-and-drop behavior (docs/demo-to-product-audit.md item 5).
   const schedulerRef = useRef<RetryScheduler<PersistPayload> | null>(null);
-  if (!schedulerRef.current) {
+  if (schedulerRef.current === null) {
     schedulerRef.current = createRetryScheduler<PersistPayload>({
       write: ({ state: payloadState, ownerId }) => saveRemoteDemoState(payloadState, ownerId),
       onStatusChange: setPersistenceStatus,
@@ -321,8 +329,16 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         setHasLoadedRemoteState(true);
 
         // Make the reconciled relations durable in the owner's per-entity
-        // tables going forward (idempotent, fire-and-forget).
-        reconcileOwnedRelations(ownerId, mergedRelations, ownedTableRelations);
+        // tables going forward (idempotent, fire-and-forget). Seed-default
+        // saved places only migrate if some *other* durable source (not a
+        // fresh local/blob fallback) proves real save intent -- see
+        // `selectSavedPlaceIdsToMigrate`.
+        const otherDurableSavedPlaceIds = unionAllRelations([
+          legacyTableRelations,
+          ownedLegacyBlobRelations,
+          legacyBlobRelations,
+        ]).savedPlaceIds;
+        reconcileOwnedRelations(ownerId, mergedRelations, ownedTableRelations, otherDurableSavedPlaceIds);
 
         if (JSON.stringify(finalState) !== JSON.stringify(ownedRemoteState)) {
           saveRemoteDemoState(finalState, ownerId).catch((error) => {
@@ -464,42 +480,33 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
             ).slice(0, 8),
           },
         })),
-      addPhoto: (input) => {
+      addPhoto: async (input) => {
         const place = places.find((item) => item.id === input.placeId);
         const id = makeId("upload");
         const { file, ...photoInput } = input;
+        const uploadedFile = file ? await uploadPhotoFile(file, id) : null;
+        if (!uploadedFile) {
+          throw new Error("The photo could not be uploaded. Check your connection and try again.");
+        }
         const photo: Photo = {
           ...photoInput,
           id,
           userId: currentUserId,
+          imageUrl: uploadedFile.publicUrl,
           likeCount: 0,
           createdAt: new Date().toISOString(),
           locationLabel: input.locationLabel || place?.fuzzyLocationLabel || "Selected Oculi place",
           tags: input.tags ?? []
         };
+        try {
+          await saveRemoteCatalogPhoto(photo);
+        } catch (error) {
+          await deleteUploadedPhotoFile(uploadedFile.path);
+          throw error;
+        }
         const next = { ...state, uploadedPhotos: [photo, ...state.uploadedPhotos] };
         setState(next);
         persistStateNow(next);
-        if (isDurableImageUrl(photo.imageUrl)) {
-          saveRemoteCatalogPhoto(photo);
-        }
-        if (file) {
-          uploadPhotoFile(file, id).then((remoteUrl) => {
-            if (!remoteUrl) return;
-            const remotePhoto = { ...photo, imageUrl: remoteUrl };
-            setState((prev) => {
-              const nextState = {
-                ...prev,
-                uploadedPhotos: prev.uploadedPhotos.map((item) =>
-                  item.id === id ? { ...item, imageUrl: remoteUrl } : item,
-                ),
-              };
-              persistStateNow(nextState);
-              return nextState;
-            });
-            saveRemoteCatalogPhoto(remotePhoto);
-          });
-        }
         return photo;
       },
       resetDemoState: () => {

@@ -37,13 +37,10 @@ jobs:
         # that `npx next build` succeeds with no env vars present.
 
       - name: Lint
-        run: npx next lint
-        # `next lint`'s default ESLint config only fails the process on lint
-        # errors, not warnings. This repo has known <img> "no-img-element"
-        # warnings (tracked, not yet fixed) that must keep passing CI.
+        run: npm run lint
 
       - name: Verify seed-data / DB-sync (local checks only)
-        run: npx tsx scripts/verify-db-sync.mts
+        run: npm run verify:db-sync
         # scripts/verify-db-sync.mts is a locked verifier (see its header comment).
         # Run with NO arguments, it only does local, offline checks: (1) confirms
         # supabase/migrations/20260709000100_place_taxonomy_fields.sql is

@@ -1,6 +1,6 @@
 # Oculi
 
-Oculi is a photo-spot discovery app I built for the Codex summer challenge. It's a map-first experience for finding, saving, and planning photography shoots: browse places on a live Mapbox map, filter and search them, save your favorites, and let the app put together a shoot route for the day.
+Oculi is a map-first photo-spot discovery and shoot-planning product that originated as a Codex summer challenge demo. Browse places, filter and search a live map, save favorites, publish photos, and build a timed route for a morning or sunset shoot.
 
 I built this with Codex doing the heavy lifting on implementation. I set the product direction and made the calls on scope and design, and Codex wrote the majority of the app: the Next.js routes, the map integration, the Supabase-backed persistence, and the route planner logic.
 
@@ -12,7 +12,7 @@ The Saved page is the part I'm proudest of. It turns your saved places into a sh
 
 ## Stack
 
-- Next.js 14 (App Router) with React 18, functional components and hooks only
+- Next.js 16 (App Router) with React 19
 - Tailwind CSS
 - Mapbox GL JS for the live map, with a stylized SVG fallback when there's no token or Mapbox rejects auth
 - Supabase for persistence
@@ -29,19 +29,25 @@ The Saved page is the part I'm proudest of. It turns your saved places into a sh
 ## Running it locally
 
 ```bash
-npm install
+npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
-You'll need a Mapbox token for the live map. Copy `.env.example` to `.env.local` and fill in `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN`. Without it, the app falls back to a stylized map so the rest of the experience still works.
+Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` for authentication and persistence. Set `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` for the live map; without it, Oculi uses the stylized fallback so the rest of the product remains usable.
 
 ```bash
 npm run test:unit   # Vitest unit tests
 npm run test        # Playwright e2e tests
 npm run typecheck
 npm run lint
+npm run build
+npm run verify:db-sync
 ```
 
-## Notes on the build
+## Release notes
 
-A few of the numbers on the place detail page, like the star rating and distance, are hardcoded demo placeholders since there's no real rating or geolocation data source wired up yet. Everything else, like saved counts, photo counts, and the route planner, reads from real app state.
+- Saved counts come from owner-scoped relation tables and a public aggregate function; distance is calculated from browser geolocation when permission is granted.
+- New photo uploads remain pending and owner-visible until manually approved through the Supabase moderation field.
+- Seed catalog data is versioned in `lib/data.ts`, hydrated from Supabase at runtime, and guarded against drift by `npm run verify:db-sync`.
+- CI runs typecheck, unit tests, production build, lint, and catalog-sync verification. Playwright covers the high-risk browser flows locally.

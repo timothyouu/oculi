@@ -1,5 +1,15 @@
 # Oculi: Demo → Product Audit (2026-07-09)
 
+> Historical audit, updated July 11, 2026. The findings below describe the
+> original baseline. The implementation loop has since closed auth/RLS,
+> normalized relations, real upload ownership, persistence feedback, Mapbox
+> hardening, browser coverage, image handling/attribution, legal routes, and CI.
+> The final review also upgraded to Next.js 16/React 19, cleared the dependency
+> audit, removed the fabricated rating, made upload publication transactional,
+> and gated pending/rejected photos to their owner. Remaining launch operations
+> are an admin moderation workflow beyond the Supabase dashboard, external error
+> monitoring, and professional legal review.
+
 Baseline at audit time: `tsc --noEmit` clean, 47/47 unit tests pass, `next build`
 succeeds, lint has only `<img>` warnings. The catalog-sync issues found were fixed
 in this session's loop (see `LOOP.md`); one migration-history fix needs Tim

@@ -16,6 +16,7 @@ type PhotoCardProps = {
   onOpenPlace?: (placeId: string) => void;
   onOpenProfile?: (userId: string) => void;
   className?: string;
+  priority?: boolean;
 };
 
 function cx(...classes: Array<string | false | null | undefined>) {
@@ -34,6 +35,7 @@ export function PhotoCard({
   onOpenPlace,
   onOpenProfile,
   className,
+  priority = false,
 }: PhotoCardProps) {
   return (
     <article className={cx("overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_18px_48px_rgba(39,34,27,0.08)]", className)}>
@@ -48,6 +50,7 @@ export function PhotoCard({
             src={photo.imageUrl}
             alt={photo.caption || `Photo from ${place.name}`}
             fallbackSrc={place.coverPhotoUrl}
+            priority={priority}
             className="aspect-[3/2] w-full object-cover transition duration-500 group-hover:scale-[1.01]"
           />
         </button>

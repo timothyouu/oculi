@@ -33,6 +33,13 @@ test.describe("map camera persistence and cluster zoom", () => {
   // immediately before the restore effect could read it back.)
 
   test("panning and zooming the live map persists the camera across reload", async ({ page }) => {
+    // This test is network-bound end to end (live Mapbox tiles through the
+    // /api/mapbox proxy, twice — initial load and reload) and was observed
+    // running right at the default 30s budget: passing marginally on
+    // 2026-07-10 and timing out mid-wheel-loop on 2026-07-11 with no code
+    // change. Triple the budget; the assertions themselves are unchanged.
+    test.slow();
+
     await page.goto("/map");
 
     const canvas = page.locator(".mapboxgl-canvas");
@@ -68,16 +75,38 @@ test.describe("map camera persistence and cluster zoom", () => {
       await page.waitForTimeout(120);
     }
 
+    // Deterministically cancel any still-in-flight wheel-zoom easing before
+    // snapshotting: mapbox-gl stops camera animations whenever a new pointer
+    // gesture begins, so a click on the canvas guarantees no further moveend
+    // can fire after we read the camera. Without this, rAF starvation under
+    // parallel test load stalls the easing long enough that the camera looks
+    // settled, then the final easing tick persists a higher zoom during
+    // reload teardown — the restore then (correctly) brings back a value the
+    // test never saw (observed failing deterministically at HEAD on
+    // 2026-07-11: captured 3.2196, restored 3.7901).
+    // (A motionless down/up is not enough — the drag handler only engages,
+    // and only then stops the camera animation, once the pointer moves.)
+    await page.mouse.move(400, 300);
+    await page.mouse.down();
+    await page.mouse.move(406, 306, { steps: 3 });
+    await page.mouse.up();
+
+    // Now wait for the zoom to clear the threshold AND hold steady across
+    // two consecutive reads.
     let movedCamera: MapCamera | null = null;
+    let previousZoom = -Infinity;
     await expect
       .poll(
         async () => {
           movedCamera = await readCamera(page);
-          return movedCamera?.zoom ?? -Infinity;
+          const zoom = movedCamera?.zoom ?? -Infinity;
+          const settled = zoom > baselineZoom + 0.5 && zoom === previousZoom;
+          previousZoom = zoom;
+          return settled;
         },
-        { timeout: 15_000 },
+        { timeout: 15_000, intervals: [500] },
       )
-      .toBeGreaterThan(baselineZoom + 0.5);
+      .toBe(true);
 
     expect(movedCamera).not.toBeNull();
     const beforeReload = movedCamera!;
