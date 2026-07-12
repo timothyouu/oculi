@@ -24,6 +24,7 @@ export const DEFAULT_SAVED_PLACE_IDS: readonly string[] = [
 
 export const initialDemoState: DemoState = {
   savedPlaceIds: [],
+  itineraryPlaceIds: [],
   followedUserIds: ["user-maya", "user-eli"],
   likedPhotoIds: [],
   viewedPhotoIds: [],
@@ -46,6 +47,7 @@ export const initialDemoState: DemoState = {
 export function createInitialDemoState(): DemoState {
   return {
     savedPlaceIds: [...initialDemoState.savedPlaceIds],
+    itineraryPlaceIds: [...initialDemoState.itineraryPlaceIds],
     followedUserIds: [...initialDemoState.followedUserIds],
     likedPhotoIds: [],
     viewedPhotoIds: [],
@@ -85,6 +87,9 @@ export function normalizeDemoState(state?: Partial<DemoState> | null): DemoState
     savedPlaceIds: Array.isArray(state?.savedPlaceIds)
       ? Array.from(new Set(state.savedPlaceIds)).filter((id) => !DEFAULT_SAVED_PLACE_IDS.includes(id))
       : initial.savedPlaceIds,
+    itineraryPlaceIds: Array.isArray(state?.itineraryPlaceIds)
+      ? Array.from(new Set(state.itineraryPlaceIds))
+      : initial.itineraryPlaceIds,
     followedUserIds: state?.followedUserIds ?? initial.followedUserIds,
     likedPhotoIds: state?.likedPhotoIds ?? initial.likedPhotoIds,
     viewedPhotoIds: state?.viewedPhotoIds ?? initial.viewedPhotoIds,

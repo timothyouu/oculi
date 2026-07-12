@@ -50,6 +50,7 @@ type DemoContextValue = {
   currentUser: User;
   currentUserId: string;
   savedPlaceIds: string[];
+  itineraryPlaceIds: string[];
   followedUserIds: string[];
   likedPhotoIds: string[];
   isRemoteBacked: boolean;
@@ -66,6 +67,9 @@ type DemoContextValue = {
   recordPhotoView: (photo: Photo, discoveryActiveIndex?: number) => void;
   recordPlaceView: (placeId: string, discoveryActiveIndex?: number) => void;
   toggleSavedPlace: (placeId: string) => void;
+  addToItinerary: (placeId: string) => void;
+  removeFromItinerary: (placeId: string) => void;
+  reorderItinerary: (placeId: string, nextIndex: number) => void;
   toggleFollowUser: (userId: string) => void;
   togglePhotoLike: (photoId: string) => void;
   updateProfile: (profile: EditableProfile) => void;
@@ -413,6 +417,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       currentUser,
       currentUserId,
       savedPlaceIds: state.savedPlaceIds,
+      itineraryPlaceIds: state.itineraryPlaceIds,
       followedUserIds: state.followedUserIds,
       likedPhotoIds: state.likedPhotoIds,
       isRemoteBacked: isRemoteStateEnabled(),
@@ -458,6 +463,32 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         // Single row insert/delete, not a whole-state upsert.
         if (isRemoteStateEnabled()) setSavedPlaceRemote(stateOwnerId, placeId, nextSaved);
       },
+      // The itinerary is an ordered, session-style list kept in the state
+      // blob (like viewedPlaceIds/placeViews) -- not one of the four relation
+      // tables -- so these actions persist through the debounced whole-state
+      // save rather than a granular remote helper.
+      addToItinerary: (placeId) =>
+        update((prev) =>
+          prev.itineraryPlaceIds.includes(placeId)
+            ? prev
+            : { ...prev, itineraryPlaceIds: [...prev.itineraryPlaceIds, placeId] },
+        ),
+      removeFromItinerary: (placeId) =>
+        update((prev) => ({
+          ...prev,
+          itineraryPlaceIds: prev.itineraryPlaceIds.filter((id) => id !== placeId),
+        })),
+      reorderItinerary: (placeId, nextIndex) =>
+        update((prev) => {
+          const index = prev.itineraryPlaceIds.indexOf(placeId);
+          if (index < 0 || nextIndex < 0 || nextIndex >= prev.itineraryPlaceIds.length || index === nextIndex) {
+            return prev;
+          }
+          const itineraryPlaceIds = [...prev.itineraryPlaceIds];
+          const [moved] = itineraryPlaceIds.splice(index, 1);
+          itineraryPlaceIds.splice(nextIndex, 0, moved);
+          return { ...prev, itineraryPlaceIds };
+        }),
       toggleFollowUser: (userId) => {
         if (userId === currentUserId) return;
         const nextFollowed = !state.followedUserIds.includes(userId);

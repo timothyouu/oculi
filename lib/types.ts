@@ -85,6 +85,8 @@ export type PlaceView = {
 
 export type DemoState = {
   savedPlaceIds: string[];
+  /** Ordered place ids the user hand-picked for their saved itinerary. */
+  itineraryPlaceIds: string[];
   followedUserIds: string[];
   likedPhotoIds: string[];
   viewedPhotoIds: string[];

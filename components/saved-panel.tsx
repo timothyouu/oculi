@@ -1,25 +1,18 @@
 "use client";
-
-import { useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type PointerEvent, type ReactNode } from "react";
 import {
   Bookmark,
-  Check,
   ChevronRight,
-  Clock3,
-  CloudSun,
   Copy,
   ExternalLink,
   GripVertical,
   Map,
   MapPinned,
+  MoreHorizontal,
   Mountain,
   Navigation,
-  PencilLine,
-  Pin,
-  PinOff,
   Plus,
-  RefreshCw,
-  Save,
+  Route,
   Search,
   SlidersHorizontal,
   Sun,
@@ -30,23 +23,24 @@ import { MapboxMap } from "@/components/mapbox-map";
 import { ResilientImage } from "@/components/resilient-image";
 import { useDemoState } from "@/lib/demo-state";
 import { formatPlaceLocation } from "@/lib/location-labels";
-import type { Photo, Place } from "../lib/types";
-import { saveRemoteRoutePlan } from "../lib/remote-route-plans";
 import {
-  buildSavedRoutePlans,
-  createShootRouteStop,
-  rebuildShootRoutePlan,
-  type ShootRouteKind,
-  type ShootRoutePlan,
-  type ShootRouteStop,
-} from "../lib/saved-route-planner";
+  buildItinerary,
+  itineraryAppleMapsUrl,
+  itineraryGoogleMapsUrl,
+  type ItineraryStop,
+} from "@/lib/itinerary";
+import type { Photo, Place } from "../lib/types";
 
 type SavedPanelProps = {
   savedPlaces: Place[];
   savedPhotos?: Photo[];
   savedCount?: number;
+  itineraryPlaces?: Place[];
   onOpenPlace?: (placeId: string) => void;
   onToggleSaved?: (placeId: string) => void;
+  onAddToItinerary?: (placeId: string) => void;
+  onRemoveFromItinerary?: (placeId: string) => void;
+  onReorderItinerary?: (placeId: string, nextIndex: number) => void;
 };
 
 function cx(...classes: Array<string | false | null | undefined>) {
@@ -61,24 +55,25 @@ export function SavedPanel({
   savedPlaces,
   savedPhotos = [],
   savedCount = savedPlaces.length,
+  itineraryPlaces = [],
   onOpenPlace,
   onToggleSaved,
+  onAddToItinerary,
+  onRemoveFromItinerary,
+  onReorderItinerary,
 }: SavedPanelProps) {
-  const { areas, authUser } = useDemoState();
+  const { areas } = useDemoState();
   const [query, setQuery] = useState("");
   const [lightFilter, setLightFilter] = useState("All");
   const [sceneFilter, setSceneFilter] = useState("All");
   const [showAll, setShowAll] = useState(false);
-  const [activeRouteId, setActiveRouteId] = useState<ShootRouteKind>("morning");
-  const [routeStatus, setRouteStatus] = useState("");
-  const [isEditingRoute, setIsEditingRoute] = useState(false);
-  const [editedStopsByRoute, setEditedStopsByRoute] = useState<Partial<Record<ShootRouteKind, ShootRouteStop[]>>>({});
-  const [pinnedStopIdsByRoute, setPinnedStopIdsByRoute] = useState<Record<ShootRouteKind, string[]>>({
-    morning: [],
-    sunset: [],
-  });
   const [placePendingRemoval, setPlacePendingRemoval] = useState<Place | null>(null);
+  const [openMenuPlaceId, setOpenMenuPlaceId] = useState<string | null>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [itineraryStatus, setItineraryStatus] = useState("");
   const hasActiveFilters = lightFilter !== "All" || sceneFilter !== "All";
+
+  const itineraryPlaceIds = useMemo(() => new Set(itineraryPlaces.map((place) => place.id)), [itineraryPlaces]);
 
   const savedPhotoTextByPlace = useMemo(
     () =>
@@ -112,9 +107,7 @@ export function SavedPanel({
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
-      const matchesQuery =
-        !normalized ||
-        savedSearchText.includes(normalized);
+      const matchesQuery = !normalized || savedSearchText.includes(normalized);
       const matchesLight = lightFilter === "All" || place.bestTimes.some((time) => time.toLowerCase().includes(lightFilter.toLowerCase()));
       const matchesScene = sceneFilter === "All" || place.tags.some((tag) => tag.toLowerCase().includes(sceneFilter.toLowerCase()));
       return matchesQuery && matchesLight && matchesScene;
@@ -122,148 +115,52 @@ export function SavedPanel({
   }, [lightFilter, query, savedPhotoTextByPlace, savedPlaces, sceneFilter]);
 
   const visiblePlaces = showAll ? filteredPlaces : filteredPlaces.slice(0, 6);
-  const generatedRoutePlans = useMemo(() => buildSavedRoutePlans(filteredPlaces.length ? filteredPlaces : savedPlaces, savedPhotos), [filteredPlaces, savedPhotos, savedPlaces]);
-  const routePlans = useMemo(
-    () =>
-      generatedRoutePlans.map((plan) =>
-        editedStopsByRoute[plan.id] ? rebuildShootRoutePlan(plan.id, editedStopsByRoute[plan.id] ?? []) : plan,
-      ),
-    [editedStopsByRoute, generatedRoutePlans],
-  );
-  const activeRoute = routePlans.find((plan) => plan.id === activeRouteId) ?? routePlans[0];
-  const activeGeneratedRoute = generatedRoutePlans.find((plan) => plan.id === activeRouteId) ?? generatedRoutePlans[0];
-  const routePlaces = useMemo(() => {
-    const seen = new Set<string>();
-    const plannedPlaces: Place[] = [];
 
-    routePlans.forEach((plan) => {
-      plan.stops.forEach((stop) => {
-        if (seen.has(stop.place.id)) return;
-        seen.add(stop.place.id);
-        plannedPlaces.push(stop.place);
-      });
-    });
-
-    return plannedPlaces.length ? plannedPlaces : savedPlaces.slice(0, 5);
-  }, [routePlans, savedPlaces]);
-
-  const savedPhotosByPlace = useMemo(
-    () =>
-      savedPhotos.reduce<Record<string, Photo[]>>((groups, photo) => {
-        groups[photo.placeId] = [...(groups[photo.placeId] ?? []), photo];
-        return groups;
-      }, {}),
-    [savedPhotos],
+  // Places the user can still add to the itinerary: saved places not already in it.
+  const addableSavedPlaces = useMemo(
+    () => savedPlaces.filter((place) => !itineraryPlaceIds.has(place.id)),
+    [itineraryPlaceIds, savedPlaces],
   );
 
-  function updateActiveRouteStops(updater: (stops: ShootRouteStop[]) => ShootRouteStop[]) {
-    setEditedStopsByRoute((prev) => {
-      const currentStops = prev[activeRouteId] ?? activeRoute.stops;
-      return {
-        ...prev,
-        [activeRouteId]: updater(currentStops),
-      };
-    });
-  }
+  const itineraryStops = useMemo(() => buildItinerary(itineraryPlaces), [itineraryPlaces]);
 
-  function addStop(placeId: string) {
-    const place = savedPlaces.find((item) => item.id === placeId);
-    if (!place) return;
-
-    updateActiveRouteStops((stops) => {
-      if (stops.some((stop) => stop.place.id === place.id)) return stops;
-      const nextStop = createShootRouteStop(activeRouteId, place, savedPhotosByPlace[place.id] ?? [], stops.length);
-      return [...stops, nextStop];
-    });
-    setIsEditingRoute(true);
-    setRouteStatus(`Added ${place.name} to ${activeRoute.title}.`);
-  }
-
-  function removeStop(placeId: string) {
-    updateActiveRouteStops((stops) => stops.filter((stop) => stop.place.id !== placeId));
-    setPinnedStopIdsByRoute((prev) => ({
-      ...prev,
-      [activeRouteId]: prev[activeRouteId].filter((id) => id !== placeId),
-    }));
-    setRouteStatus("Removed stop from this route.");
-  }
-
-  function reorderStop(placeId: string, nextIndex: number) {
-    updateActiveRouteStops((stops) => {
-      const index = stops.findIndex((stop) => stop.place.id === placeId);
-      if (index < 0 || nextIndex < 0 || nextIndex >= stops.length || index === nextIndex) return stops;
-      const nextStops = [...stops];
-      const [movedStop] = nextStops.splice(index, 1);
-      nextStops.splice(nextIndex, 0, movedStop);
-      return nextStops;
-    });
-  }
-
-  function finishReorder() {
-    setIsEditingRoute(true);
-    setRouteStatus("Reordered route stops.");
-  }
-
-  function togglePinnedStop(placeId: string) {
-    setPinnedStopIdsByRoute((prev) => {
-      const current = prev[activeRouteId];
-      const next = current.includes(placeId) ? current.filter((id) => id !== placeId) : [...current, placeId];
-      return { ...prev, [activeRouteId]: next };
-    });
-    setIsEditingRoute(true);
-    setRouteStatus("Updated pinned stops for this route.");
-  }
-
-  function regenerateActiveRoute() {
-    const pinnedIds = pinnedStopIdsByRoute[activeRouteId];
-    const pinnedStops = pinnedIds
-      .map((placeId) => activeRoute.stops.find((stop) => stop.place.id === placeId) ?? activeGeneratedRoute.stops.find((stop) => stop.place.id === placeId))
-      .filter((stop): stop is ShootRouteStop => Boolean(stop));
-    const generatedStops = activeGeneratedRoute.stops.filter((stop) => !pinnedIds.includes(stop.place.id));
-
-    setEditedStopsByRoute((prev) => ({
-      ...prev,
-      [activeRouteId]: [...pinnedStops, ...generatedStops].slice(0, activeRouteId === "morning" ? 3 : 2),
-    }));
-    setRouteStatus(pinnedStops.length ? "Regenerated route while keeping pinned stops first." : "Regenerated route from current saved places.");
-  }
-
-  async function saveActiveRoutePlan() {
-    if (!activeRoute.stops.length) {
-      setRouteStatus("Add at least one stop before saving this route.");
-      return;
+  // Close an open card menu on outside click or Escape.
+  useEffect(() => {
+    if (!openMenuPlaceId) return;
+    function handlePointerDown(event: MouseEvent) {
+      const target = event.target;
+      if (target instanceof Element && target.closest("[data-card-menu]")) return;
+      setOpenMenuPlaceId(null);
     }
-
-    try {
-      const routePlanId = await saveRemoteRoutePlan({
-        // Route plans are RLS-scoped to the authenticated auth.uid(), not the
-        // fictional demo profile id, so this must be the real session owner.
-        userId: authUser?.id,
-        kind: activeRoute.id,
-        name: `${activeRoute.title} - ${new Date().toLocaleDateString()}`,
-        stops: activeRoute.stops.map((stop, index) => ({
-          placeId: stop.place.id,
-          position: index,
-          arrivalLabel: stop.arrivalLabel,
-          customNote: stop.note,
-        })),
-      });
-
-      setRouteStatus(routePlanId ? `Saved ${activeRoute.title} plan.` : "Route plan ready locally. Connect Supabase to persist it remotely.");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown route-plan save error.";
-      setRouteStatus(`Could not save route plan: ${message}`);
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpenMenuPlaceId(null);
     }
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [openMenuPlaceId]);
+
+  function addPlaceToItinerary(place: Place) {
+    if (itineraryPlaceIds.has(place.id)) return;
+    onAddToItinerary?.(place.id);
+    setItineraryStatus(`Added ${place.name} to your itinerary.`);
   }
 
-  async function copyAddress(stop: ShootRouteStop) {
+  function removePlaceFromItinerary(place: Place) {
+    onRemoveFromItinerary?.(place.id);
+    setItineraryStatus(`Removed ${place.name} from your itinerary.`);
+  }
+
+  async function copyAddress(stop: ItineraryStop) {
     const value = `${stop.place.name}\n${stop.address}\n${stop.coordinateLabel}`;
-
     try {
       await navigator.clipboard.writeText(value);
-      setRouteStatus(`Copied ${stop.place.name} address.`);
+      setItineraryStatus(`Copied ${stop.place.name} address.`);
     } catch {
-      setRouteStatus(`${stop.place.name}: ${stop.address}`);
+      setItineraryStatus(`${stop.place.name}: ${stop.address}`);
     }
   }
 
@@ -304,32 +201,19 @@ export function SavedPanel({
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {visiblePlaces.map((place) => (
-            <article key={place.id} className="overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_16px_42px_rgba(39,34,27,0.08)]">
-              <button type="button" className="relative block w-full text-left" onClick={() => onOpenPlace?.(place.id)}>
-                <ResilientImage src={place.coverPhotoUrl} alt="" className="aspect-[4/3] w-full object-cover" />
-              </button>
-              <div className="space-y-2 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <button type="button" className="min-w-0 text-left" onClick={() => onOpenPlace?.(place.id)}>
-                    <h2 className="truncate text-xl font-semibold text-[var(--ink)]">{place.name}</h2>
-                    <p className="mt-1 text-sm text-[var(--muted)]">{formatPlaceLocation(place, areas)}</p>
-                  </button>
-                  <button
-                    type="button"
-                    className="grid size-9 place-items-center rounded-md text-[var(--gold)] hover:bg-[var(--chip)]"
-                    onClick={() => setPlacePendingRemoval(place)}
-                    aria-label={`Remove ${place.name} from saved places`}
-                  >
-                    <Bookmark className="size-5 fill-current" />
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {place.tags.slice(0, 3).map((tag) => (
-                    <span key={tag} className="rounded-md bg-[var(--chip)] px-3 py-1.5 text-xs text-[var(--ink)]/80">{tag}</span>
-                  ))}
-                </div>
-              </div>
-            </article>
+            <SavedPlaceCard
+              key={place.id}
+              place={place}
+              areas={areas}
+              isInItinerary={itineraryPlaceIds.has(place.id)}
+              isMenuOpen={openMenuPlaceId === place.id}
+              onOpenPlace={onOpenPlace}
+              onToggleMenu={() => setOpenMenuPlaceId((current) => (current === place.id ? null : place.id))}
+              onCloseMenu={() => setOpenMenuPlaceId(null)}
+              onRequestRemoveSaved={() => setPlacePendingRemoval(place)}
+              onAddToItinerary={() => addPlaceToItinerary(place)}
+              onRemoveFromItinerary={() => removePlaceFromItinerary(place)}
+            />
           ))}
         </div>
         {!savedPlaces.length ? (
@@ -339,7 +223,7 @@ export function SavedPanel({
         ) : null}
         {savedPlaces.length && !filteredPlaces.length ? (
           <div className="rounded-[10px] border border-dashed border-[var(--line)] bg-[var(--paper-strong)] p-8 text-center text-[var(--muted)]">
-            No saved places match those filters. The planner is still using your full saved list.
+            No saved places match those filters.
           </div>
         ) : null}
         <div className="flex flex-wrap justify-center gap-5 text-[var(--muted)]">
@@ -351,28 +235,20 @@ export function SavedPanel({
           ) : null}
         </div>
       </div>
-      <ShootPlanner
-        routePlans={routePlans}
-        activeRoute={activeRoute}
-        activeRouteId={activeRouteId}
-        routePlaces={routePlaces}
-        savedPhotos={savedPhotos}
+      <ItineraryPanel
+        stops={itineraryStops}
         savedPlaces={savedPlaces}
-        routeStatus={routeStatus}
-        isEditingRoute={isEditingRoute}
-        pinnedStopIds={pinnedStopIdsByRoute[activeRouteId]}
-        onSetActiveRoute={setActiveRouteId}
-        onToggleEditing={() => setIsEditingRoute((value) => !value)}
+        savedPhotos={savedPhotos}
+        itineraryStatus={itineraryStatus}
         onOpenPlace={onOpenPlace}
         onToggleSaved={onToggleSaved}
+        onOpenAddDialog={() => setIsAddDialogOpen(true)}
+        onRemoveStop={(placeId) => {
+          const place = itineraryPlaces.find((item) => item.id === placeId);
+          if (place) removePlaceFromItinerary(place);
+        }}
+        onReorderStop={(placeId, nextIndex) => onReorderItinerary?.(placeId, nextIndex)}
         onCopyAddress={copyAddress}
-        onAddStop={addStop}
-        onRemoveStop={removeStop}
-        onReorderStop={reorderStop}
-        onFinishReorder={finishReorder}
-        onTogglePinnedStop={togglePinnedStop}
-        onRegenerateRoute={regenerateActiveRoute}
-        onSaveRoutePlan={saveActiveRoutePlan}
       />
       {placePendingRemoval ? (
         <ConfirmRemoveSavedPlaceDialog
@@ -384,7 +260,135 @@ export function SavedPanel({
           }}
         />
       ) : null}
+      {isAddDialogOpen ? (
+        <ItineraryAddDialog
+          places={addableSavedPlaces}
+          areas={areas}
+          onAdd={addPlaceToItinerary}
+          onClose={() => setIsAddDialogOpen(false)}
+        />
+      ) : null}
     </section>
+  );
+}
+
+function SavedPlaceCard({
+  place,
+  areas,
+  isInItinerary,
+  isMenuOpen,
+  onOpenPlace,
+  onToggleMenu,
+  onCloseMenu,
+  onRequestRemoveSaved,
+  onAddToItinerary,
+  onRemoveFromItinerary,
+}: {
+  place: Place;
+  areas: ReturnType<typeof useDemoState>["areas"];
+  isInItinerary: boolean;
+  isMenuOpen: boolean;
+  onOpenPlace?: (placeId: string) => void;
+  onToggleMenu: () => void;
+  onCloseMenu: () => void;
+  onRequestRemoveSaved: () => void;
+  onAddToItinerary: () => void;
+  onRemoveFromItinerary: () => void;
+}) {
+  return (
+    <article className="overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_16px_42px_rgba(39,34,27,0.08)]">
+      <button type="button" className="relative block w-full text-left" onClick={() => onOpenPlace?.(place.id)}>
+        <ResilientImage src={place.coverPhotoUrl} alt="" className="aspect-[4/3] w-full object-cover" />
+      </button>
+      <div className="space-y-2 p-4">
+        <div className="flex items-start justify-between gap-3">
+          <button type="button" className="min-w-0 text-left" onClick={() => onOpenPlace?.(place.id)}>
+            <h2 className="truncate text-xl font-semibold text-[var(--ink)]">{place.name}</h2>
+            <p className="mt-1 text-sm text-[var(--muted)]">{formatPlaceLocation(place, areas)}</p>
+          </button>
+          <div className="flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              className="grid size-9 place-items-center rounded-md text-[var(--gold)] hover:bg-[var(--chip)]"
+              onClick={onRequestRemoveSaved}
+              aria-label={`Remove ${place.name} from saved places`}
+            >
+              <Bookmark className="size-5 fill-current" />
+            </button>
+            <div className="relative" data-card-menu>
+              <button
+                type="button"
+                className="grid size-9 place-items-center rounded-md text-[var(--ink)] hover:bg-[var(--chip)]"
+                onClick={onToggleMenu}
+                aria-haspopup="menu"
+                aria-expanded={isMenuOpen}
+                aria-label={`More actions for ${place.name}`}
+              >
+                <MoreHorizontal className="size-5" />
+              </button>
+              {isMenuOpen ? (
+                <div
+                  role="menu"
+                  aria-label={`Actions for ${place.name}`}
+                  className="absolute right-0 top-11 z-20 w-52 overflow-hidden rounded-lg border border-[var(--line)] bg-white py-1 shadow-[0_16px_42px_rgba(39,34,27,0.18)]"
+                >
+                  {isInItinerary ? (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-[var(--ink)] hover:bg-[var(--chip)]"
+                      onClick={() => {
+                        onRemoveFromItinerary();
+                        onCloseMenu();
+                      }}
+                    >
+                      <Trash2 className="size-4 text-[var(--muted)]" />
+                      Remove from itinerary
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-[var(--ink)] hover:bg-[var(--chip)]"
+                      onClick={() => {
+                        onAddToItinerary();
+                        onCloseMenu();
+                      }}
+                    >
+                      <Plus className="size-4 text-[var(--moss)]" />
+                      Add to itinerary
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-[var(--ink)] hover:bg-[var(--chip)]"
+                    onClick={() => {
+                      onOpenPlace?.(place.id);
+                      onCloseMenu();
+                    }}
+                  >
+                    <MapPinned className="size-4 text-[var(--muted)]" />
+                    Open place
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {isInItinerary ? (
+            <span className="inline-flex items-center gap-1.5 rounded-md bg-[var(--moss)]/12 px-3 py-1.5 text-xs font-medium text-[var(--moss)]">
+              <Route className="size-3.5" />
+              In itinerary
+            </span>
+          ) : null}
+          {place.tags.slice(0, isInItinerary ? 2 : 3).map((tag) => (
+            <span key={tag} className="rounded-md bg-[var(--chip)] px-3 py-1.5 text-xs text-[var(--ink)]/80">{tag}</span>
+          ))}
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -415,7 +419,7 @@ function ConfirmRemoveSavedPlaceDialog({
           Remove {place.name} from saved?
         </p>
         <p className="mt-2 text-sm leading-5 text-[var(--muted)]">
-          It will no longer appear in your saved places or be available for shoot-day routes.
+          It will no longer appear in your saved places or be available for your itinerary.
         </p>
         <div className="mt-5 flex justify-end gap-3">
           <button
@@ -438,71 +442,55 @@ function ConfirmRemoveSavedPlaceDialog({
   );
 }
 
-function ShootPlanner({
-  routePlans,
-  activeRoute,
-  activeRouteId,
-  routePlaces,
-  savedPhotos,
+function ItineraryPanel({
+  stops,
   savedPlaces,
-  routeStatus,
-  isEditingRoute,
-  pinnedStopIds,
-  onSetActiveRoute,
-  onToggleEditing,
+  savedPhotos,
+  itineraryStatus,
   onOpenPlace,
   onToggleSaved,
-  onCopyAddress,
-  onAddStop,
+  onOpenAddDialog,
   onRemoveStop,
   onReorderStop,
-  onFinishReorder,
-  onTogglePinnedStop,
-  onRegenerateRoute,
-  onSaveRoutePlan,
+  onCopyAddress,
 }: {
-  routePlans: ShootRoutePlan[];
-  activeRoute: ShootRoutePlan;
-  activeRouteId: ShootRouteKind;
-  routePlaces: Place[];
-  savedPhotos: Photo[];
+  stops: ItineraryStop[];
   savedPlaces: Place[];
-  routeStatus: string;
-  isEditingRoute: boolean;
-  pinnedStopIds: string[];
-  onSetActiveRoute: (routeId: ShootRouteKind) => void;
-  onToggleEditing: () => void;
+  savedPhotos: Photo[];
+  itineraryStatus: string;
   onOpenPlace?: (placeId: string) => void;
   onToggleSaved?: (placeId: string) => void;
-  onCopyAddress: (stop: ShootRouteStop) => void;
-  onAddStop: (placeId: string) => void;
+  onOpenAddDialog: () => void;
   onRemoveStop: (placeId: string) => void;
   onReorderStop: (placeId: string, nextIndex: number) => void;
-  onFinishReorder: () => void;
-  onTogglePinnedStop: (placeId: string) => void;
-  onRegenerateRoute: () => void;
-  onSaveRoutePlan: () => void;
+  onCopyAddress: (stop: ItineraryStop) => void;
 }) {
-  const previewPlaces = activeRoute.stops.length ? activeRoute.stops.map((stop) => stop.place) : routePlaces;
-  const addablePlaces = savedPlaces.filter((place) => !activeRoute.stops.some((stop) => stop.place.id === place.id));
+  const itineraryPlaces = stops.map((stop) => stop.place);
+  const previewPlaces = itineraryPlaces.length ? itineraryPlaces : savedPlaces.slice(0, 5);
+  const googleMapsUrl = itineraryGoogleMapsUrl(itineraryPlaces);
+  const appleMapsUrl = itineraryAppleMapsUrl(itineraryPlaces);
 
   return (
     <aside className="overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] shadow-[0_16px_42px_rgba(39,34,27,0.08)] xl:sticky xl:top-24 xl:self-start">
       <div className="flex items-start justify-between gap-4 px-6 py-5">
         <div>
-          <p className="mb-1 text-sm text-[var(--muted)]">Saved itinerary</p>
-          <h2 className="text-2xl font-semibold">Plan a shoot day</h2>
+          <p className="mb-1 text-sm text-[var(--muted)]">Saved</p>
+          <h2 className="flex items-center gap-2 text-2xl font-semibold">
+            <Route className="size-6 text-[var(--moss)]" />
+            Itinerary
+          </h2>
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            {stops.length ? `${stops.length} stop${stops.length === 1 ? "" : "s"}` : "No stops yet"}
+          </p>
         </div>
         <button
           type="button"
-          className={cx(
-            "grid size-10 place-items-center rounded-lg border border-[var(--line)] text-[var(--ink)] shadow-sm transition hover:bg-[var(--chip)]",
-            isEditingRoute ? "bg-[var(--chip)] text-[var(--moss)]" : "bg-white",
-          )}
-          onClick={onToggleEditing}
-          aria-label="Edit stops"
+          className="inline-flex h-10 items-center gap-2 rounded-lg bg-[var(--moss)] px-3.5 text-sm text-white shadow-sm transition hover:bg-[var(--moss-dark)]"
+          onClick={onOpenAddDialog}
+          aria-label="Add saved place to itinerary"
         >
-          <PencilLine className="size-5" />
+          <Plus className="size-4" />
+          Add
         </button>
       </div>
 
@@ -510,7 +498,7 @@ function ShootPlanner({
         <MapboxMap
           places={previewPlaces}
           photos={savedPhotos}
-          selectedPlaceId={activeRoute.stops[0]?.place.id}
+          selectedPlaceId={stops[0]?.place.id}
           savedPlaceIds={savedPlaces.map((place) => place.id)}
           onSelectPlace={onOpenPlace}
           onToggleSaved={onToggleSaved}
@@ -522,62 +510,23 @@ function ShootPlanner({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-2 px-6 py-5">
-        {routePlans.map((plan) => (
-          <button
-            key={plan.id}
-            type="button"
-            onClick={() => onSetActiveRoute(plan.id)}
-            className={cx(
-              "rounded-lg border border-[var(--line)] px-3 py-3 text-left shadow-sm transition",
-              activeRouteId === plan.id ? "bg-[var(--moss)] text-white" : "bg-white text-[var(--ink)] hover:bg-[var(--chip)]",
-            )}
-          >
-            <span className="flex items-center gap-2 text-sm">
-              <span
-                className={cx(
-                  "grid size-7 shrink-0 place-items-center rounded-md",
-                  activeRouteId === plan.id ? "bg-white/15" : "bg-[var(--chip)] text-[var(--moss)]",
-                )}
-              >
-                {plan.id === "morning" ? <Sun className="size-4" /> : <CloudSun className="size-4" />}
-              </span>
-              {plan.eyebrow}
-            </span>
-            <strong className="mt-2 block font-normal">{plan.title}</strong>
-          </button>
-        ))}
-      </div>
-
-      {activeRoute.stops.length ? (
-        <RoutePlanCard
-          plan={activeRoute}
-          isEditing={isEditingRoute}
-          pinnedStopIds={pinnedStopIds}
-          addablePlaces={addablePlaces}
-          onCopyAddress={onCopyAddress}
-          onAddStop={onAddStop}
-          onRemoveStop={onRemoveStop}
-          onReorderStop={onReorderStop}
-          onFinishReorder={onFinishReorder}
-          onTogglePinnedStop={onTogglePinnedStop}
-        />
+      {stops.length ? (
+        <ItineraryList stops={stops} onRemoveStop={onRemoveStop} onReorderStop={onReorderStop} onCopyAddress={onCopyAddress} />
       ) : (
-        <div className="mx-6 rounded-[10px] border border-dashed border-[var(--line)] p-5 text-sm text-[var(--muted)]">
-          Save a few places first. Oculi will build a morning and sunset plan from your saved photo spots.
+        <div className="mx-6 my-5 rounded-[10px] border border-dashed border-[var(--line)] p-5 text-sm text-[var(--muted)]">
+          Your itinerary is empty. Tap <span className="font-medium text-[var(--ink)]">Add</span> to pick from your saved places, or use the three-dots menu on any saved place.
         </div>
       )}
 
-      {savedPhotos.length ? <p className="px-6 pt-4 text-sm text-[var(--muted)]">{savedPhotos.length} saved photo references attached.</p> : null}
-      {routeStatus ? <p className="px-6 pt-4 text-sm text-[var(--moss)]">{routeStatus}</p> : null}
+      {itineraryStatus ? <p className="px-6 pt-1 text-sm text-[var(--moss)]">{itineraryStatus}</p> : null}
 
-      <div className="grid gap-3 p-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_52px]">
+      <div className="grid gap-3 p-6 md:grid-cols-2">
         <a
           className={cx(
             "inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[var(--moss)] px-3 text-white shadow-sm transition hover:bg-[var(--moss-dark)]",
-            !activeRoute.stops.length && "pointer-events-none opacity-50",
+            !stops.length && "pointer-events-none opacity-50",
           )}
-          href={activeRoute.googleMapsUrl}
+          href={googleMapsUrl}
           target="_blank"
           rel="noreferrer"
         >
@@ -589,9 +538,9 @@ function ShootPlanner({
         <a
           className={cx(
             "inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white px-3 text-[var(--ink)] shadow-sm transition hover:bg-[var(--chip)]",
-            !activeRoute.stops.length && "pointer-events-none opacity-50",
+            !stops.length && "pointer-events-none opacity-50",
           )}
-          href={activeRoute.appleMapsUrl}
+          href={appleMapsUrl}
           target="_blank"
           rel="noreferrer"
         >
@@ -600,67 +549,36 @@ function ShootPlanner({
           </span>
           Apple Maps
         </a>
-        <button
-          type="button"
-          className="grid size-12 place-items-center rounded-lg border border-[var(--line)] bg-white shadow-sm transition hover:bg-[var(--chip)]"
-          onClick={onRegenerateRoute}
-          aria-label="Regenerate route"
-        >
-          <RefreshCw className="size-5" />
-        </button>
-        <button
-          type="button"
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white px-3 text-[var(--ink)] shadow-sm transition hover:bg-[var(--chip)] md:col-span-3"
-          onClick={onSaveRoutePlan}
-        >
-          <span className="grid size-7 place-items-center rounded-md bg-[var(--chip)] text-[var(--moss)]">
-            <Save className="size-4" />
-          </span>
-          Save route plan
-        </button>
       </div>
     </aside>
   );
 }
 
-function RoutePlanCard({
-  plan,
-  isEditing,
-  pinnedStopIds,
-  addablePlaces,
-  onCopyAddress,
-  onAddStop,
+function ItineraryList({
+  stops,
   onRemoveStop,
   onReorderStop,
-  onFinishReorder,
-  onTogglePinnedStop,
+  onCopyAddress,
 }: {
-  plan: ShootRoutePlan;
-  isEditing: boolean;
-  pinnedStopIds: string[];
-  addablePlaces: Place[];
-  onCopyAddress: (stop: ShootRouteStop) => void;
-  onAddStop: (placeId: string) => void;
+  stops: ItineraryStop[];
   onRemoveStop: (placeId: string) => void;
   onReorderStop: (placeId: string, nextIndex: number) => void;
-  onFinishReorder: () => void;
-  onTogglePinnedStop: (placeId: string) => void;
+  onCopyAddress: (stop: ItineraryStop) => void;
 }) {
   const [draggingStopId, setDraggingStopId] = useState<string | null>(null);
   const draggingStopIdRef = useRef<string | null>(null);
   const dragStartedRef = useRef(false);
   const pointerStartRef = useRef({ x: 0, y: 0 });
 
-  function startStopPointerDrag(event: PointerEvent<HTMLElement>, placeId: string) {
-    if (!isEditing || isInteractiveDragTarget(event.target)) return;
-
+  function startPointerDrag(event: PointerEvent<HTMLElement>, placeId: string) {
+    if (isInteractiveDragTarget(event.target)) return;
     draggingStopIdRef.current = placeId;
     dragStartedRef.current = false;
     pointerStartRef.current = { x: event.clientX, y: event.clientY };
     event.currentTarget.setPointerCapture(event.pointerId);
   }
 
-  function moveDraggedStop(clientX: number, clientY: number) {
+  function moveDragged(clientX: number, clientY: number) {
     const draggedPlaceId = draggingStopIdRef.current;
     if (!draggedPlaceId) return false;
 
@@ -671,23 +589,20 @@ function RoutePlanCard({
     dragStartedRef.current = true;
     setDraggingStopId(draggedPlaceId);
 
-    const overStopElement = document
-      .elementFromPoint(clientX, clientY)
-      ?.closest<HTMLElement>("[data-route-stop-id]");
-    const overPlaceId = overStopElement?.dataset.routeStopId;
+    const overElement = document.elementFromPoint(clientX, clientY)?.closest<HTMLElement>("[data-itinerary-stop-id]");
+    const overPlaceId = overElement?.dataset.itineraryStopId;
     if (!overPlaceId || overPlaceId === draggedPlaceId) return true;
 
-    const nextIndex = plan.stops.findIndex((stop) => stop.place.id === overPlaceId);
+    const nextIndex = stops.findIndex((stop) => stop.place.id === overPlaceId);
     if (nextIndex >= 0) onReorderStop(draggedPlaceId, nextIndex);
     return true;
   }
 
-  function moveStopPointerDrag(event: PointerEvent<HTMLElement>) {
-    if (moveDraggedStop(event.clientX, event.clientY)) event.preventDefault();
+  function movePointerDrag(event: PointerEvent<HTMLElement>) {
+    if (moveDragged(event.clientX, event.clientY)) event.preventDefault();
   }
 
-  function endStopPointerDrag(event: PointerEvent<HTMLElement>) {
-    if (draggingStopIdRef.current && dragStartedRef.current) onFinishReorder();
+  function endPointerDrag(event: PointerEvent<HTMLElement>) {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
@@ -696,108 +611,53 @@ function RoutePlanCard({
     setDraggingStopId(null);
   }
 
-  function startStopMouseDrag(event: ReactMouseEvent<HTMLElement>, placeId: string) {
-    if (!isEditing || isInteractiveDragTarget(event.target)) return;
-
+  function startMouseDrag(event: ReactMouseEvent<HTMLElement>, placeId: string) {
+    if (isInteractiveDragTarget(event.target)) return;
     draggingStopIdRef.current = placeId;
     dragStartedRef.current = false;
     pointerStartRef.current = { x: event.clientX, y: event.clientY };
     event.preventDefault();
   }
 
-  function moveStopMouseDrag(event: ReactMouseEvent<HTMLElement>) {
-    if (moveDraggedStop(event.clientX, event.clientY)) event.preventDefault();
+  function moveMouseDrag(event: ReactMouseEvent<HTMLElement>) {
+    if (moveDragged(event.clientX, event.clientY)) event.preventDefault();
   }
 
-  function endStopMouseDrag() {
-    if (draggingStopIdRef.current && dragStartedRef.current) onFinishReorder();
+  function endMouseDrag() {
     draggingStopIdRef.current = null;
     dragStartedRef.current = false;
     setDraggingStopId(null);
   }
 
   return (
-    <section className="border-y border-[var(--line)] px-6 py-5">
-      <div className="mb-4 space-y-4">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h3 className="flex items-center gap-2 text-xl">
-              {plan.id === "morning" ? <Sun className="size-5 text-[var(--gold)]" /> : <CloudSun className="size-5 text-orange-500" />}
-              {plan.title}
-            </h3>
-            <p className="mt-1 text-sm text-[var(--muted)]">{plan.summary}</p>
-          </div>
-          {isEditing ? <span className="rounded-full bg-[var(--chip)] px-3 py-1.5 font-sans text-xs text-[var(--muted)]">Drag stops</span> : null}
-        </div>
-        {isEditing ? <AddStopTileRail places={addablePlaces} onAddStop={onAddStop} /> : null}
-      </div>
-      <div className="mb-5 rounded-lg bg-[var(--chip)] px-4 py-3 text-xs leading-5 text-[var(--muted)]">
-        {plan.confidenceText}
-      </div>
-      <div className="space-y-3" onMouseMove={moveStopMouseDrag} onMouseUp={endStopMouseDrag} onMouseLeave={endStopMouseDrag}>
-        {plan.stops.map((stop, index) => (
-          <RouteStopRow
-            key={stop.place.id}
-            stop={stop}
-            index={index}
-            isEditing={isEditing}
-            isPinned={pinnedStopIds.includes(stop.place.id)}
-            isDragging={draggingStopId === stop.place.id}
-            onCopyAddress={onCopyAddress}
-            onRemoveStop={onRemoveStop}
-            onMouseDown={(event) => startStopMouseDrag(event, stop.place.id)}
-            onPointerDown={(event) => startStopPointerDrag(event, stop.place.id)}
-            onPointerMove={moveStopPointerDrag}
-            onPointerUp={endStopPointerDrag}
-            onPointerCancel={endStopPointerDrag}
-            onTogglePinnedStop={onTogglePinnedStop}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function AddStopTileRail({ places, onAddStop }: { places: Place[]; onAddStop: (placeId: string) => void }) {
-  if (!places.length) {
-    return (
-      <div className="rounded-lg border border-dashed border-[var(--line)] bg-white/70 px-3 py-2 font-sans text-xs text-[var(--muted)]">
-        Every saved place is already in this route.
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]" aria-label="Add saved places to route">
-      {places.slice(0, 8).map((place) => (
-        <button
-          key={place.id}
-          type="button"
-          className="group relative h-20 min-w-[11rem] overflow-hidden rounded-lg border border-white/60 text-left text-white shadow-sm transition hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[var(--moss)]"
-          onClick={() => onAddStop(place.id)}
-        >
-          <ResilientImage src={place.coverPhotoUrl} alt="" className="absolute inset-0 size-full object-cover transition duration-300 group-hover:scale-105" />
-          <span className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/42 to-black/20" />
-          <span className="relative flex h-full flex-col justify-between p-3">
-            <span className="inline-flex size-7 items-center justify-center rounded-md bg-white/20 backdrop-blur">
-              <Plus className="size-4" />
-            </span>
-            <span className="min-w-0">
-              <span className="block truncate text-sm font-semibold">{place.name}</span>
-              <span className="block truncate font-sans text-[11px] text-white/78">{place.fuzzyLocationLabel}</span>
-            </span>
-          </span>
-        </button>
+    <div
+      className="space-y-3 border-t border-[var(--line)] px-6 py-5"
+      onMouseMove={moveMouseDrag}
+      onMouseUp={endMouseDrag}
+      onMouseLeave={endMouseDrag}
+    >
+      {stops.map((stop, index) => (
+        <ItineraryStopRow
+          key={stop.place.id}
+          stop={stop}
+          index={index}
+          isDragging={draggingStopId === stop.place.id}
+          onCopyAddress={onCopyAddress}
+          onRemoveStop={onRemoveStop}
+          onMouseDown={(event) => startMouseDrag(event, stop.place.id)}
+          onPointerDown={(event) => startPointerDrag(event, stop.place.id)}
+          onPointerMove={movePointerDrag}
+          onPointerUp={endPointerDrag}
+          onPointerCancel={endPointerDrag}
+        />
       ))}
     </div>
   );
 }
 
-function RouteStopRow({
+function ItineraryStopRow({
   stop,
   index,
-  isEditing,
-  isPinned,
   isDragging,
   onCopyAddress,
   onRemoveStop,
@@ -806,30 +666,25 @@ function RouteStopRow({
   onPointerMove,
   onPointerUp,
   onPointerCancel,
-  onTogglePinnedStop,
 }: {
-  stop: ShootRouteStop;
+  stop: ItineraryStop;
   index: number;
-  isEditing: boolean;
-  isPinned: boolean;
   isDragging: boolean;
-  onCopyAddress: (stop: ShootRouteStop) => void;
+  onCopyAddress: (stop: ItineraryStop) => void;
   onRemoveStop: (placeId: string) => void;
   onMouseDown: (event: ReactMouseEvent<HTMLElement>) => void;
   onPointerDown: (event: PointerEvent<HTMLElement>) => void;
   onPointerMove: (event: PointerEvent<HTMLElement>) => void;
   onPointerUp: (event: PointerEvent<HTMLElement>) => void;
   onPointerCancel: (event: PointerEvent<HTMLElement>) => void;
-  onTogglePinnedStop: (placeId: string) => void;
 }) {
   return (
     <article
       className={cx(
-        "group relative min-h-[11rem] select-none overflow-hidden rounded-[10px] border border-white/60 bg-[var(--chip)] text-white shadow-[0_16px_38px_rgba(39,34,27,0.18)] transition",
-        isEditing && "touch-none cursor-grab active:cursor-grabbing",
+        "group relative min-h-[9rem] touch-none select-none cursor-grab overflow-hidden rounded-[10px] border border-white/60 bg-[var(--chip)] text-white shadow-[0_16px_38px_rgba(39,34,27,0.18)] transition active:cursor-grabbing",
         isDragging && "scale-[0.985] opacity-60 ring-2 ring-[var(--gold)]",
       )}
-      data-route-stop-id={stop.place.id}
+      data-itinerary-stop-id={stop.place.id}
       onMouseDown={onMouseDown}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -840,7 +695,7 @@ function RouteStopRow({
       <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/48 to-black/18" />
       <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/72 to-transparent" />
 
-      <div className="relative flex min-h-[11rem] flex-col justify-between p-4">
+      <div className="relative flex min-h-[9rem] flex-col justify-between p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-start gap-3">
             <span className="grid size-9 shrink-0 place-items-center rounded-full border border-white/45 bg-white/20 font-sans text-sm font-semibold backdrop-blur">
@@ -849,76 +704,141 @@ function RouteStopRow({
             <div className="min-w-0">
               <h4 className="truncate text-lg font-semibold drop-shadow-sm">{stop.place.name}</h4>
               <p className="mt-1 flex items-center gap-1.5 font-sans text-xs text-white/82">
-                <Clock3 className="size-3.5" />
-                {stop.arrivalLabel} · {stop.durationLabel}
+                <MapPinned className="size-3.5 text-[var(--gold)]" />
+                {stop.place.fuzzyLocationLabel}
               </p>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-1.5">
-            {isPinned ? (
-              <span className="inline-flex size-8 items-center justify-center rounded-md bg-white/20 backdrop-blur" aria-label="Pinned stop">
-                <Check className="size-4" />
-              </span>
-            ) : null}
-            {isEditing ? (
-              <span className="grid size-8 place-items-center rounded-md bg-white/18 backdrop-blur" aria-hidden="true">
-                <GripVertical className="size-4" />
-              </span>
-            ) : null}
-          </div>
-        </div>
-
-        <div>
-          <p className="line-clamp-2 text-sm leading-5 text-white/86 drop-shadow-sm">{stop.note}</p>
-          <div className="mt-3 rounded-lg bg-white/8 p-3 text-white shadow-sm backdrop-blur-md">
-            <p className="flex items-start gap-2 font-sans text-xs leading-5 text-white/90">
-              <MapPinned className="mt-0.5 size-4 shrink-0 text-[var(--gold)]" />
-              <span className="min-w-0">
-                <span className="block truncate">{stop.address}</span>
-                <span className="block truncate text-white/66">{stop.coordinateLabel}</span>
-              </span>
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button type="button" className="inline-flex h-8 items-center gap-1.5 rounded-md bg-white/10 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/18" onClick={() => onCopyAddress(stop)}>
-                <Copy className="size-3.5" />
-                Copy
-              </button>
-              <a className="inline-flex h-8 items-center gap-1.5 rounded-md bg-white/10 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/18" href={stop.googleMapsUrl} target="_blank" rel="noreferrer">
-                <Navigation className="size-3.5" />
-                Google <ExternalLink className="size-3" />
-              </a>
-              <a className="inline-flex h-8 items-center gap-1.5 rounded-md bg-white/10 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/18" href={stop.appleMapsUrl} target="_blank" rel="noreferrer">
-                <Map className="size-3.5" />
-                Apple <ExternalLink className="size-3" />
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {isEditing ? (
-          <div className="mt-3 flex flex-wrap gap-2">
+            <span className="grid size-8 place-items-center rounded-md bg-white/18 backdrop-blur" aria-hidden="true">
+              <GripVertical className="size-4" />
+            </span>
             <button
               type="button"
-              className={cx(
-                "inline-flex h-8 items-center gap-1.5 rounded-md border border-white/25 bg-white/18 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/26",
-                isPinned && "bg-[var(--gold)]/70",
-              )}
-              onClick={() => onTogglePinnedStop(stop.place.id)}
-            >
-              {isPinned ? <PinOff className="size-3.5" /> : <Pin className="size-3.5" />}
-              {isPinned ? "Unpin" : "Pin"}
-            </button>
-            <button
-              type="button"
-              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-white/25 bg-white/18 px-2.5 font-sans text-xs text-white shadow-sm backdrop-blur transition hover:bg-red-500/50"
+              className="grid size-8 place-items-center rounded-md bg-white/18 text-white shadow-sm backdrop-blur transition hover:bg-red-500/60"
               onClick={() => onRemoveStop(stop.place.id)}
+              aria-label={`Remove ${stop.place.name} from itinerary`}
             >
-              <Trash2 className="size-3.5" />Remove
+              <X className="size-4" />
             </button>
           </div>
-        ) : null}
+        </div>
+
+        <div className="mt-3 rounded-lg bg-white/8 p-3 text-white shadow-sm backdrop-blur-md">
+          <p className="flex items-start gap-2 font-sans text-xs leading-5 text-white/90">
+            <MapPinned className="mt-0.5 size-4 shrink-0 text-[var(--gold)]" />
+            <span className="min-w-0">
+              <span className="block truncate">{stop.address}</span>
+              <span className="block truncate text-white/66">{stop.coordinateLabel}</span>
+            </span>
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" className="inline-flex h-8 items-center gap-1.5 rounded-md bg-white/10 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/18" onClick={() => onCopyAddress(stop)}>
+              <Copy className="size-3.5" />
+              Copy
+            </button>
+            <a className="inline-flex h-8 items-center gap-1.5 rounded-md bg-white/10 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/18" href={stop.googleMapsUrl} target="_blank" rel="noreferrer">
+              <Navigation className="size-3.5" />
+              Google <ExternalLink className="size-3" />
+            </a>
+            <a className="inline-flex h-8 items-center gap-1.5 rounded-md bg-white/10 px-2.5 font-sans text-xs shadow-sm backdrop-blur transition hover:bg-white/18" href={stop.appleMapsUrl} target="_blank" rel="noreferrer">
+              <Map className="size-3.5" />
+              Apple <ExternalLink className="size-3" />
+            </a>
+          </div>
+        </div>
       </div>
     </article>
+  );
+}
+
+function ItineraryAddDialog({
+  places,
+  areas,
+  onAdd,
+  onClose,
+}: {
+  places: Place[];
+  areas: ReturnType<typeof useDemoState>["areas"];
+  onAdd: (place: Place) => void;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 grid place-items-center bg-black/35 px-4 py-6 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Add saved places to itinerary"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="flex max-h-[80vh] w-full max-w-lg flex-col overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] text-[var(--ink)]"
+        style={{ boxShadow: "var(--elevated-shadow)" }}
+      >
+        <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] px-5 py-4">
+          <div>
+            <p className="text-lg font-semibold">Add to itinerary</p>
+            <p className="mt-0.5 text-sm text-[var(--muted)]">Pick from your saved places.</p>
+          </div>
+          <button
+            type="button"
+            className="grid size-9 place-items-center rounded-md text-[var(--ink)] transition hover:bg-[var(--chip)]"
+            onClick={onClose}
+            aria-label="Close add-to-itinerary dialog"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+          {places.length ? (
+            <ul className="space-y-2">
+              {places.map((place) => (
+                <li key={place.id}>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-lg border border-[var(--line)] bg-white p-2.5 text-left shadow-sm transition hover:bg-[var(--chip)]"
+                    onClick={() => onAdd(place)}
+                    aria-label={`Add ${place.name} to itinerary`}
+                  >
+                    <ResilientImage src={place.coverPhotoUrl} alt="" className="size-14 shrink-0 rounded-md object-cover" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-semibold text-[var(--ink)]">{place.name}</span>
+                      <span className="block truncate text-sm text-[var(--muted)]">{formatPlaceLocation(place, areas)}</span>
+                    </span>
+                    <span className="grid size-9 shrink-0 place-items-center rounded-md bg-[var(--moss)] text-white">
+                      <Plus className="size-4" />
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="rounded-lg border border-dashed border-[var(--line)] p-8 text-center text-sm text-[var(--muted)]">
+              Every saved place is already in your itinerary. Save more places to add them here.
+            </div>
+          )}
+        </div>
+        <div className="flex justify-end border-t border-[var(--line)] px-5 py-4">
+          <button
+            type="button"
+            className="inline-flex h-10 items-center rounded-lg border border-[var(--line)] bg-white px-4 text-sm text-[var(--ink)] shadow-sm transition hover:bg-[var(--chip)]"
+            onClick={onClose}
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -99,6 +99,7 @@ export function mergeDemoStates(a: DemoState, b: DemoState): DemoState {
 
   return {
     savedPlaceIds: unionPreserveOrder(a.savedPlaceIds, b.savedPlaceIds),
+    itineraryPlaceIds: unionPreserveOrder(a.itineraryPlaceIds, b.itineraryPlaceIds),
     followedUserIds: unionPreserveOrder(a.followedUserIds, b.followedUserIds),
     likedPhotoIds: unionPreserveOrder(a.likedPhotoIds, b.likedPhotoIds),
     viewedPhotoIds: unionPreserveOrder(a.viewedPhotoIds, b.viewedPhotoIds),

@@ -187,8 +187,13 @@ test("saving a place persists across reload and appears on /saved; unsaving pers
   await page.reload();
   await expect(page.getByRole("heading", { name: PLACE_NAME, level: 2 })).toBeVisible();
 
-  // Unsave from the /saved list.
+  // Unsave from the /saved list. The bookmark button now opens a confirm
+  // dialog (added 2026-07-12) rather than unsaving instantly, so Remove must
+  // be confirmed before the place actually leaves saved.
   await page.getByRole("button", { name: `Remove ${PLACE_NAME} from saved places` }).click();
+  const confirmDialog = page.getByRole("dialog", { name: `Remove ${PLACE_NAME} from saved?` });
+  await expect(confirmDialog).toBeVisible();
+  await confirmDialog.getByRole("button", { name: "Remove", exact: true }).click();
   await expect.poll(() => supabase.getState().savedPlaceIds).not.toContain(PLACE_ID);
   await expect(page.getByRole("heading", { name: PLACE_NAME, level: 2 })).toHaveCount(0);
 
