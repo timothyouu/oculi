@@ -1,3 +1,4 @@
+import { fetchWithRetry } from "@/lib/fetch-retry";
 import { createRateLimiter } from "@/lib/rate-limit";
 
 const MAPBOX_API_HOST = "api.mapbox.com";
@@ -102,22 +103,36 @@ export async function GET(request: Request) {
   }
 
   const referrerOrigin = mapboxReferrerOrigin(request);
-  let mapboxResponse = await fetch(targetUrl, {
-    headers: {
-      accept: request.headers.get("accept") || "*/*",
-      origin: new URL(referrerOrigin).origin,
-      referer: referrerOrigin,
-    },
-  });
 
-  const fallbackReferrer = localhostFallbackReferrer(request, referrerOrigin);
-  if (fallbackReferrer && (mapboxResponse.status === 401 || mapboxResponse.status === 403)) {
-    mapboxResponse = await fetch(targetUrl, {
+  // A transient network failure to one Mapbox CloudFront edge IP must fail fast
+  // and retry rather than hang for undici's ~10s default and surface as an
+  // unhandled 500. On final exhaustion we return a 502 (no-store) — a transient
+  // upstream error the live map treats as a cosmetic tile miss, NOT a signal to
+  // tear down to the stylized fallback (only 401/403 does that, see CLAUDE.md).
+  let mapboxResponse: Response;
+  try {
+    mapboxResponse = await fetchWithRetry(targetUrl, {
       headers: {
         accept: request.headers.get("accept") || "*/*",
-        origin: new URL(fallbackReferrer).origin,
-        referer: fallbackReferrer,
+        origin: new URL(referrerOrigin).origin,
+        referer: referrerOrigin,
       },
+    });
+
+    const fallbackReferrer = localhostFallbackReferrer(request, referrerOrigin);
+    if (fallbackReferrer && (mapboxResponse.status === 401 || mapboxResponse.status === 403)) {
+      mapboxResponse = await fetchWithRetry(targetUrl, {
+        headers: {
+          accept: request.headers.get("accept") || "*/*",
+          origin: new URL(fallbackReferrer).origin,
+          referer: fallbackReferrer,
+        },
+      });
+    }
+  } catch {
+    return new Response("Upstream Mapbox request failed.", {
+      status: 502,
+      headers: { "cache-control": "no-store" },
     });
   }
 
