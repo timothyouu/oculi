@@ -247,3 +247,48 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   already restricted to the production and localhost origins; Mapbox does not
   currently offer configurable usage/spending alerts, per its official billing
   documentation. All collected manual dashboard items are now resolved.
+- 2026-07-19: LOOP RESUMED by Tim via /goal: "run the /loop on the demo to
+  product implementation doc until all implementations mentioned within the
+  file are implemented." The loop's spec is now
+  `docs/demo-to-product-implementation.md` (which supersedes the remaining
+  audit items and carries all of Tim's decisions as of 2026-07-19); the
+  budget stop rule that paused the loop is lifted by this instruction. The
+  verifier, modifiable/locked lists, and circuit-breaker rules above remain
+  in force, with one Tim-approved spec change recorded in the implementation
+  doc's item 10: `scripts/verify-db-sync.mts` is retired/inverted as part of
+  the DB source-of-truth flip (step 3 of item 10) — it stays locked and
+  passing until that step lands. Baseline at resumption: tsc 0, 102/102 unit
+  tests, branch audit/demo-to-product clean at f9fff49. Execution order per
+  the doc: 1, 5, 9, 3, 10+4, 7, 8, 6.
+- 2026-07-19 (wave 1): Items 1, 5, 9 DONE and verified. Item 5 (drop the 4.8
+  rating) done inline: Star stat + import removed from place-detail.tsx,
+  stats grid 4→3 cols. Item 9: Sonnet subagent rewrote
+  e2e/saved-route-planner.spec.ts against the drag-reorder UI (tile rail +
+  mouse drag + saved_places-table mock); no product code touched. Item 1
+  (Task 6a): Sonnet subagent added lib/relation-defaults.ts gating the
+  bootstrap reconciler's upward migration; orchestrator verification found
+  TWO misses that were fixed before counting it done. (a) The full e2e suite
+  went red: an opus debug agent + orchestrator traced it to a PRE-EXISTING
+  race — bootstrap hydration resolving after a user action clobbered/
+  resurrected it (the unsave in saved-roundtrip.spec.ts); the gate only
+  perturbed timing. Fixed for real users, not just the test: new
+  lib/bootstrap-merge.ts `applyBootstrapState` + a userTouchedRelationsRef
+  in demo-state.tsx — relations the user touched since mount win over a
+  late-resolving bootstrap's stale merge (4 new unit tests). (b) Live SQL
+  verification against the remote showed the original all-or-nothing gate
+  leaked: one explicit save made the merged set diverge from the defaults
+  and the NEXT bootstrap migrated all four defaults up anyway (observed:
+  5 rows). relationsToMigrateUp now excludes default ids per-id,
+  unconditionally; explicit toggles still write their rows directly. The 5
+  unit tests for the discarded all-or-nothing helper were replaced in the
+  same session they were added (test count 116→111, still above the 102
+  resumption baseline; no pre-existing test touched — recorded here as the
+  justified exception to "count never decreases"). Final verifier evidence:
+  tsc 0; vitest 111/111; next build 0; playwright 11/11 ×2 (and ×3 on the
+  race fix before the gate correction); live on localhost:3000 against the
+  remote with two throwaway anon identities: untouched fresh visitor →
+  0 saved/followed/liked rows while the UI still shows the 4 demo defaults;
+  explicit save → exactly 1 owner-scoped row (twin-peaks), survives reload,
+  and post-reload reconcile still migrates nothing else. All verification
+  residue (relation/state rows, both anon auth users) deleted; dev server
+  stopped. Committing as wave 1; next: item 3 (retire user-guest).

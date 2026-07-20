@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bookmark, Car, Map, MapPin, Route, Share, Star, Footprints } from "lucide-react";
+import { Bookmark, Car, Map, MapPin, Route, Share, Footprints } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDemoState } from "@/lib/demo-state";
 import { kmToMiles, haversineDistanceKm } from "@/lib/geo";
@@ -151,9 +151,8 @@ export function PlaceDetail({
               </button>
           </div>
           {actionStatus ? <p className="text-sm text-[var(--moss)]">{actionStatus}</p> : null}
-          <div className="grid grid-cols-4 gap-2 border-y border-[var(--line)] py-4 text-sm text-[var(--muted)]">
+          <div className="grid grid-cols-3 gap-2 border-y border-[var(--line)] py-4 text-sm text-[var(--muted)]">
             <span className="flex items-center gap-2"><Bookmark className="size-4" />{place.saveCount} saves</span>
-            <span className="flex items-center gap-2"><Star className="size-4" />4.8</span>
             <span className="flex items-center gap-2"><Car className="size-4" />{accessibilityForPlace(place)}</span>
             {distanceMiles !== null ? (
               <span className="flex items-center gap-2">
