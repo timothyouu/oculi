@@ -37,10 +37,9 @@ jobs:
         # that `npx next build` succeeds with no env vars present.
 
       - name: Lint
-        run: npx next lint
-        # `next lint`'s default ESLint config only fails the process on lint
-        # errors, not warnings. This repo has known <img> "no-img-element"
-        # warnings (tracked, not yet fixed) that must keep passing CI.
+        run: npm run lint
+        # Next.js 16 removed `next lint`; the package script runs the same
+        # configured ESLint rules directly and fails only on lint errors.
 
       - name: Verify catalog integrity (local seed, credential-free)
         run: npx tsx scripts/verify-catalog-integrity.mts --local
