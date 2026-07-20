@@ -1,2 +1,0 @@
-[     236ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom.development.js:38559
-[    7983ms] [LOG] [cluster-click-debug] {"currentZoom":1.0397043228149414,"targetZoom":3.303194046020508,"placesCount":47,"bounds":[[-122.7089,29.9584],[-86.7785,47.6295]],"targetCenter":{"lng":-104.7437,"lat":39.39718517734383}} @ webpack-internal:///(app-pages-browser)/./components/mapbox-map.tsx:251
