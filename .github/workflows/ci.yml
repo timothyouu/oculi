@@ -37,20 +37,24 @@ jobs:
         # that `npx next build` succeeds with no env vars present.
 
       - name: Lint
-        run: npm run lint
+        run: npx next lint
+        # `next lint`'s default ESLint config only fails the process on lint
+        # errors, not warnings. This repo has known <img> "no-img-element"
+        # warnings (tracked, not yet fixed) that must keep passing CI.
 
-      - name: Verify seed-data / DB-sync (local checks only)
-        run: npm run verify:db-sync
-        # scripts/verify-db-sync.mts is a locked verifier (see its header comment).
-        # Run with NO arguments, it only does local, offline checks: (1) confirms
-        # supabase/migrations/20260709000100_place_taxonomy_fields.sql is
-        # byte-identical to what would be regenerated from lib/data.ts, and
-        # (2) sanity-checks local entity counts. It never talks to Supabase.
-        #
-        # The script *also* supports `--sql-out <dir>`, which additionally emits
-        # SQL files that must be run by hand against the remote Supabase project
-        # (real credentials, network access, not safe/appropriate for CI) to
-        # check for drift against the live oculi_demo_catalog_items table. That
-        # remote-comparison step is intentionally NOT run here — it requires
-        # Supabase credentials that must never be committed to this repo — and
-        # stays a manual/local step per CLAUDE.md's Last Updated notes.
+      - name: Verify catalog integrity (local seed, credential-free)
+        run: npx tsx scripts/verify-catalog-integrity.mts --local
+        # scripts/verify-db-sync.mts (a data.ts <-> DB byte-equality checker)
+        # was retired (docs/demo-to-product-implementation.md item 10, step 3
+        # -- Tim-approved spec change): its premise stopped holding once the
+        # database became the source of truth for live catalog content
+        # instead of lib/data.ts. scripts/verify-catalog-integrity.mts
+        # replaces it. Run with `--local`, it validates the bundled seed in
+        # lib/data.ts only (every payload parses via lib/catalog-validation.ts,
+        # every place satisfies the lib/place-taxonomy.ts taxonomy invariants)
+        # -- credential-free and network-free, so it's safe for CI. The same
+        # script's default (remote) mode queries the live
+        # oculi_demo_catalog_items table via the Supabase REST API using
+        # NEXT_PUBLIC_SUPABASE_URL/NEXT_PUBLIC_SUPABASE_ANON_KEY from the
+        # environment; that mode requires real credentials and stays a
+        # manual/local step, not run here.

@@ -368,3 +368,34 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   overlays, folding in item 6's rejected-photo filter), arc Goal 4
   (demote data.ts, retire verify-db-sync into a DB-querying integrity
   check).
+- 2026-07-20 (waves 4+5 — LOOP COMPLETE): Arc Goals 3 and 4 plus item 6
+  DONE; every item in docs/demo-to-product-implementation.md is now
+  implemented and verified. Goal 3 + item 6 (Sonnet): loadRemoteDemoCatalog
+  is DB-authoritative — no id-merge over the seed; seed is strictly the
+  error/empty-result fallback per pure resolveCatalogKind
+  (lib/catalog-hydration.ts), validators on every row; counts REPLACED with
+  real aggregates via the three RPC loaders; rejected photos filtered from
+  public hydration (query-level .or + pure isPhotoVisibleToViewer
+  re-enforcement in lib/photo-visibility.ts) with owner visibility kept;
+  e2e mocks gained the two rpc stubs (no assertions changed); 160/160
+  tests. Orchestrator live evidence: a DB-only coit-tower description edit
+  rendered with no deploy (item 10's headline acceptance); planted rejected
+  rows — hidden from a non-owner, visible to their owner (checked via img
+  alt, after a false negative from textContent); residue cleaned. Goal 4
+  (Sonnet): lib/data.ts demoted to one-time seed (header comment;
+  runtime-import audit confirmed only remote-state's sanctioned seed
+  fallback + the currentUserId seed-persona references);
+  gen-taxonomy-migration reframed as seed-bootstrap;
+  scripts/verify-db-sync.mts DELETED (the Tim-approved spec change recorded
+  in the implementation doc — the lock on it is hereby lifted per that
+  approval) and replaced by scripts/verify-catalog-integrity.mts (local
+  mode validates the bundled seed credential-free for CI; remote mode
+  REST-queries the live catalog and asserts catalog-validation parses +
+  place-taxonomy invariants + 61/110/16/21 shape); ci.yml swapped to the
+  --local invocation. Orchestrator verified both modes green AND the
+  negative case: a hand-planted easeOfVisit:"Trivial" on coit-tower made
+  remote mode exit 1 naming the row (then restored to the canonical "Easy"
+  and re-ran green). Final battery: tsc 0, vitest 160/160, next lint clean,
+  next build 0, playwright 11/11. All verification identities/rows deleted
+  from the remote. STOP RULE MET: success — all in-scope items done and
+  verified. Loop closed 2026-07-20.
