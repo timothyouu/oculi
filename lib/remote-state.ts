@@ -4,7 +4,9 @@ import {
   parsePlacePayload,
   parseUserPayload,
 } from "./catalog-validation";
+import { overlayFollowerCounts, overlayLikeCounts, overlaySaveCounts, resolveCatalogKind } from "./catalog-hydration";
 import { areas, photos, places, users } from "./data";
+import { isPhotoVisibleToViewer } from "./photo-visibility";
 import { createInitialDemoState, normalizeDemoState } from "./storage";
 import { getSupabaseBrowserClient } from "./supabase";
 import type { Area, DemoState, Photo, Place, User } from "./types";
@@ -18,6 +20,8 @@ const LIKED_PHOTOS_TABLE = "liked_photos";
 const FOLLOWED_USERS_TABLE = "followed_users";
 const VIEWED_PHOTOS_TABLE = "viewed_photos";
 const PLACE_SAVE_COUNTS_FN = "place_save_counts";
+const USER_FOLLOW_COUNTS_FN = "user_follow_counts";
+const PHOTO_LIKE_COUNTS_FN = "photo_like_counts";
 
 type StateRow = {
   user_id: string;
@@ -343,21 +347,87 @@ export async function loadPlaceSaveCounts(): Promise<Record<string, number>> {
   return counts;
 }
 
+/**
+ * Real aggregate follower counts (docs/demo-to-product-implementation.md
+ * item 4) via `user_follow_counts()`, mirroring `loadPlaceSaveCounts`.
+ */
+export async function loadUserFollowCounts(): Promise<Record<string, number>> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return {};
+
+  const { data, error } = await supabase.rpc(USER_FOLLOW_COUNTS_FN);
+  if (error) {
+    console.warn("Unable to load Oculi user follow counts from Supabase.", error.message);
+    return {};
+  }
+
+  const counts: Record<string, number> = {};
+  (data as Array<{ user_id: unknown; follow_count: unknown }> | null)?.forEach((row) => {
+    if (typeof row.user_id === "string" && typeof row.follow_count === "number") {
+      counts[row.user_id] = row.follow_count;
+    }
+  });
+  return counts;
+}
+
+/**
+ * Real aggregate like counts (docs/demo-to-product-implementation.md item 4)
+ * via `photo_like_counts()`, mirroring `loadPlaceSaveCounts`.
+ */
+export async function loadPhotoLikeCounts(): Promise<Record<string, number>> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return {};
+
+  const { data, error } = await supabase.rpc(PHOTO_LIKE_COUNTS_FN);
+  if (error) {
+    console.warn("Unable to load Oculi photo like counts from Supabase.", error.message);
+    return {};
+  }
+
+  const counts: Record<string, number> = {};
+  (data as Array<{ photo_id: unknown; like_count: unknown }> | null)?.forEach((row) => {
+    if (typeof row.photo_id === "string" && typeof row.like_count === "number") {
+      counts[row.photo_id] = row.like_count;
+    }
+  });
+  return counts;
+}
+
 export async function loadRemoteDemoCatalog(): Promise<DemoCatalog> {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return seedCatalog;
 
-  const [catalogResult, photosResult, saveCounts] = await Promise.all([
+  // The moderation filter (docs/demo-to-product-implementation.md item 6)
+  // needs to know the current viewer's uid so their own rejected photos can
+  // still hydrate for them. `getSession()` reads the already-established
+  // session (this always runs after the auth bootstrap effect in
+  // lib/demo-state.tsx has resolved it) rather than creating a new one.
+  const { data: sessionData } = await supabase.auth.getSession();
+  const viewerId = sessionData?.session?.user.id ?? null;
+
+  const basePhotosQuery = supabase
+    .from(PHOTOS_TABLE)
+    .select("id,owner_id,place_id,caption,image_url,tags,shot_at_time_of_day,location_label,like_count,created_at,moderation_status");
+  // Public posture (item 6): approved + pending are public, rejected is
+  // hidden -- except from its own owner. RLS itself still allows every row
+  // back over the wire, so `isPhotoVisibleToViewer` below is the actual
+  // enforcement, not just this query-level optimization.
+  const photosQuery = (
+    viewerId
+      ? basePhotosQuery.or(`moderation_status.neq.rejected,owner_id.eq.${viewerId}`)
+      : basePhotosQuery.neq("moderation_status", "rejected")
+  ).returns<PhotoRow[]>();
+
+  const [catalogResult, photosResult, saveCounts, followCounts, likeCounts] = await Promise.all([
     supabase
       .from(CATALOG_TABLE)
       .select("kind,item_id,payload")
       .order("item_id", { ascending: true })
       .returns<CatalogRow[]>(),
-    supabase
-      .from(PHOTOS_TABLE)
-      .select("id,owner_id,place_id,caption,image_url,tags,shot_at_time_of_day,location_label,like_count,created_at,moderation_status")
-      .returns<PhotoRow[]>(),
+    photosQuery,
     loadPlaceSaveCounts(),
+    loadUserFollowCounts(),
+    loadPhotoLikeCounts(),
   ]);
 
   if (catalogResult.error) {
@@ -365,11 +435,16 @@ export async function loadRemoteDemoCatalog(): Promise<DemoCatalog> {
     return seedCatalog;
   }
 
-  const remoteCatalog: DemoCatalog = {
-    users: [],
-    areas: [],
-    places: [],
-    photos: [],
+  const remoteUsers: User[] = [];
+  const remoteAreas: Area[] = [];
+  const remotePlaces: Place[] = [];
+  const remoteCatalogPhotos: Photo[] = [];
+
+  const remoteByKind: Record<CatalogKind, unknown[]> = {
+    users: remoteUsers,
+    areas: remoteAreas,
+    places: remotePlaces,
+    photos: remoteCatalogPhotos,
   };
 
   // Defensive hydration (docs/demo-to-product-audit.md item 3): a single
@@ -377,7 +452,7 @@ export async function loadRemoteDemoCatalog(): Promise<DemoCatalog> {
   // must never propagate into app state and crash a downstream `.some()`/
   // `.map()` call the way it did before. Each row is parsed through the
   // matching validator in lib/catalog-validation.ts; anything that fails is
-  // skipped with a console.warn instead of pushed into the merged catalog.
+  // skipped with a console.warn instead of pushed into the catalog.
   catalogResult.data?.forEach((row) => {
     const catalogKind = tableKindToCatalogKind(row.kind);
     if (!isCatalogKind(catalogKind)) return;
@@ -388,39 +463,55 @@ export async function loadRemoteDemoCatalog(): Promise<DemoCatalog> {
       );
       return;
     }
-    remoteCatalog[catalogKind].push(parsed as never);
+    remoteByKind[catalogKind].push(parsed);
   });
+
+  const remoteUploadPhotos: Photo[] = [];
 
   if (photosResult.error) {
     console.warn("Unable to load Oculi photos from Supabase.", photosResult.error.message);
   } else {
     photosResult.data?.forEach((row) => {
+      if (!isPhotoVisibleToViewer({ moderationStatus: row.moderation_status as string | null, ownerId: row.owner_id as string | null }, viewerId)) {
+        return;
+      }
       const parsed = photoRowToPhoto(row);
       if (!parsed) {
         console.warn(`Skipping malformed Oculi photo row (id=${String(row.id)}).`);
         return;
       }
-      remoteCatalog.photos.push(parsed);
+      remoteUploadPhotos.push(parsed);
     });
   }
 
-  const mergedPlaces = mergeById(seedCatalog.places, remoteCatalog.places);
+  // Item 10 step 2: the database is now the catalog for each kind, not a
+  // peer merged with the bundled seed by id. A kind whose fetch errored, or
+  // came back empty when it never legitimately should be (see
+  // `resolveCatalogKind`), falls back to the bundled seed as an
+  // offline/error cache -- `seedCatalog` is otherwise no longer consulted.
+  const users = resolveCatalogKind(seedCatalog.users, { items: remoteUsers, error: false });
+  const areas = resolveCatalogKind(seedCatalog.areas, { items: remoteAreas, error: false });
+  const places = resolveCatalogKind(seedCatalog.places, { items: remotePlaces, error: false });
+  const catalogPhotos = resolveCatalogKind(seedCatalog.photos, {
+    items: remoteCatalogPhotos,
+    error: Boolean(catalogResult.error),
+  });
+
+  // Real uploads (public.photos) are always additive on top of whichever
+  // seed-photo source won above -- they're a separate table, not a peer
+  // catalog row, so they never participate in the seed-vs-remote fallback.
+  const mergedPhotos = mergeById(catalogPhotos, remoteUploadPhotos).sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   return {
-    users: mergeById(seedCatalog.users, remoteCatalog.users),
-    areas: mergeById(seedCatalog.areas, remoteCatalog.areas),
-    // Real saveCount overlay (docs/demo-to-product-audit.md item 7): the
-    // seed/catalog value is a static demo baseline (e.g. 842); real saves
-    // recorded in `saved_places` are added on top so the number actually
-    // moves when someone saves/unsaves the place, while keeping the existing
-    // demo-flavor baseline and scoring order intact.
-    places: mergedPlaces.map((place) => ({
-      ...place,
-      saveCount: place.saveCount + (saveCounts[place.id] ?? 0),
-    })),
-    photos: mergeById(seedCatalog.photos, remoteCatalog.photos).sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    ),
+    users: overlayFollowerCounts(users, followCounts),
+    areas,
+    // Real saveCount/likeCount replace (docs/demo-to-product-implementation.md
+    // item 4): seed baselines are zeroed, so the displayed number is exactly
+    // the real aggregate, defaulting to 0 for anything with no real rows yet.
+    places: overlaySaveCounts(places, saveCounts),
+    photos: overlayLikeCounts(mergedPhotos, likeCounts),
   };
 }
 
