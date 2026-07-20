@@ -11,6 +11,8 @@ import {
 } from "./auth-session";
 import { currentUserId } from "./data";
 import { createRetryScheduler, type PersistenceStatus, type RetryScheduler } from "./persistence-status";
+import { applyBootstrapState, type RelationKey } from "./bootstrap-merge";
+import { relationsToMigrateUp } from "./relation-defaults";
 import {
   deleteUploadedPhotoFile,
   isRemoteStateEnabled,
@@ -224,6 +226,11 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
   // (docs/demo-to-product-audit.md item 6's folded-in double-write bug).
   const lastPersistedStateRef = useRef<DemoState | null>(null);
 
+  // Relations the user has explicitly acted on since mount. A late-resolving
+  // bootstrap hydration must not clobber these with the (stale) relation set
+  // it fetched before the action happened — see lib/bootstrap-merge.ts.
+  const userTouchedRelationsRef = useRef<Set<RelationKey>>(new Set());
+
   useEffect(() => {
     let cancelled = false;
 
@@ -262,13 +269,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         ]).then(([remoteState, tableRelations]) => {
           if (cancelled) return;
           const mergedRelations = unionAllRelations([relationsFromState(remoteState), tableRelations]);
-          setState({
-            ...remoteState,
-            savedPlaceIds: mergedRelations.savedPlaceIds,
-            followedUserIds: mergedRelations.followedUserIds,
-            likedPhotoIds: mergedRelations.likedPhotoIds,
-            viewedPhotoIds: mergedRelations.viewedPhotoIds,
-          });
+          setState((prev) => applyBootstrapState(prev, remoteState, mergedRelations, userTouchedRelationsRef.current));
           setHasLoadedRemoteState(true);
         });
       } else {
@@ -321,7 +322,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
           ownedTableRelations,
         ]);
 
-        const finalState: DemoState = {
+        let finalState: DemoState = {
           ...mergedState,
           savedPlaceIds: mergedRelations.savedPlaceIds,
           followedUserIds: mergedRelations.followedUserIds,
@@ -329,20 +330,20 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
           viewedPhotoIds: mergedRelations.viewedPhotoIds,
         };
 
-        setState(finalState);
+        setState((prev) => {
+          finalState = applyBootstrapState(prev, mergedState, mergedRelations, userTouchedRelationsRef.current);
+          return finalState;
+        });
         setHasLoadedRemoteState(true);
 
         // Make the reconciled relations durable in the owner's per-entity
-        // tables going forward (idempotent, fire-and-forget). Seed-default
-        // saved places only migrate if some *other* durable source (not a
-        // fresh local/blob fallback) proves real save intent -- see
-        // `selectSavedPlaceIdsToMigrate`.
-        const otherDurableSavedPlaceIds = unionAllRelations([
-          legacyTableRelations,
-          ownedLegacyBlobRelations,
-          legacyBlobRelations,
-        ]).savedPlaceIds;
-        reconcileOwnedRelations(ownerId, mergedRelations, ownedTableRelations, otherDurableSavedPlaceIds);
+        // tables going forward (idempotent, fire-and-forget) -- but never
+        // migrate up saved/followed relations that are still exactly the
+        // untouched demo defaults (docs/demo-to-product-implementation.md
+        // item 1 / LOOP.md Task 6a). Local state keeps showing the demo
+        // defaults either way (`finalState` above is untouched); this only
+        // gates what becomes a durable, publicly-counted row.
+        reconcileOwnedRelations(ownerId, relationsToMigrateUp(mergedRelations), ownedTableRelations);
 
         if (JSON.stringify(finalState) !== JSON.stringify(ownedRemoteState)) {
           saveRemoteDemoState(finalState, ownerId).catch((error) => {
@@ -442,6 +443,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         setState(freshState);
       },
       recordPhotoView: (photo, discoveryActiveIndex) => {
+        userTouchedRelationsRef.current.add("viewedPhotoIds");
         update((prev) => {
           const next = recordPlaceViewInState(prev, photo.placeId, discoveryActiveIndex);
           return {
@@ -458,6 +460,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       recordPlaceView: (placeId, discoveryActiveIndex) =>
         update((prev) => recordPlaceViewInState(prev, placeId, discoveryActiveIndex)),
       toggleSavedPlace: (placeId) => {
+        userTouchedRelationsRef.current.add("savedPlaceIds");
         const nextSaved = !state.savedPlaceIds.includes(placeId);
         update((prev) => ({ ...prev, savedPlaceIds: toggleId(prev.savedPlaceIds, placeId) }));
         // Single row insert/delete, not a whole-state upsert.
@@ -491,11 +494,13 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         }),
       toggleFollowUser: (userId) => {
         if (userId === currentUserId) return;
+        userTouchedRelationsRef.current.add("followedUserIds");
         const nextFollowed = !state.followedUserIds.includes(userId);
         update((prev) => ({ ...prev, followedUserIds: toggleId(prev.followedUserIds, userId) }));
         if (isRemoteStateEnabled()) setFollowedUserRemote(stateOwnerId, userId, nextFollowed);
       },
       togglePhotoLike: (photoId) => {
+        userTouchedRelationsRef.current.add("likedPhotoIds");
         const nextLiked = !state.likedPhotoIds.includes(photoId);
         update((prev) => ({ ...prev, likedPhotoIds: toggleId(prev.likedPhotoIds, photoId) }));
         if (isRemoteStateEnabled()) setLikedPhotoRemote(stateOwnerId, photoId, nextLiked);
