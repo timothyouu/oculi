@@ -1,44 +1,25 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
-import { shouldBypassImageOptimizer } from "@/lib/image-attribution";
+import { useEffect, useRef, useState, type SyntheticEvent } from "react";
+import Image, { type ImageProps } from "next/image";
+import { attributionForPhoto, attributionLabel, isOptimizerAllowedSrc } from "@/lib/image-attribution";
+import type { PhotoAttribution } from "@/lib/types";
 
 const FALLBACK_IMAGE_URL = "/generated/golden-gate-overlook.png";
 
-// Hosts allowed through next/image's server-side optimizer. Must mirror the hostnames configured
-// in next.config.mjs `images.remotePatterns` MINUS the hosts `shouldBypassImageOptimizer` routes
-// around (Wikimedia rate-limits the optimizer's single server IP with 429s -- see
-// lib/image-attribution.ts). next/image throws synchronously at render time (not a catchable
-// onError) for a remote src whose host isn't allow-listed in remotePatterns -- a real risk here
-// because `avatarUrl` is one of the few fields a visitor can free-type into
-// (components/profile-summary.tsx's "Avatar URL" edit field), so an arbitrary pasted host must
-// not crash the page. Anything not optimizer-eligible renders `unoptimized` (still displayed,
-// no crash, browser fetches it directly) instead.
-const OPTIMIZED_REMOTE_HOSTS = new Set([
-  "images.unsplash.com",
-  "xlzknvhiuhtcqmqrypqh.supabase.co",
-]);
+/** Don't render the credit chip on thumbnails narrower than this -- it would cover most of the image. */
+const MIN_ATTRIBUTION_WIDTH_PX = 120;
 
-function shouldRenderUnoptimized(src: string): boolean {
-  if (shouldBypassImageOptimizer(src)) return true;
-  try {
-    const parsed = new URL(src);
-    return !OPTIMIZED_REMOTE_HOSTS.has(parsed.hostname);
-  } catch {
-    // Relative/local path (e.g. "/generated/..."), not a remote URL -- always optimizer-safe.
-    return false;
-  }
-}
-
-type ResilientImageProps = {
-  src: string | undefined;
+type ResilientImageProps = Omit<ImageProps, "src" | "alt" | "fill" | "width" | "height" | "onError" | "onLoad"> & {
+  src?: string;
   alt?: string;
-  className?: string;
   fallbackSrc?: string;
-  draggable?: boolean;
-  sizes?: string;
-  priority?: boolean;
+  /** Explicit photo attribution; falls back to URL-derived attribution (e.g. Wikimedia). */
+  attribution?: PhotoAttribution | null;
+  /** Suppress the attribution credit overlay even when one would be derivable. */
+  hideAttribution?: boolean;
+  onError?: (event: SyntheticEvent<HTMLImageElement>) => void;
+  onLoad?: (event: SyntheticEvent<HTMLImageElement>) => void;
 };
 
 function resolveImageSrc(src: string | undefined, fallbackSrc: string) {
@@ -46,61 +27,110 @@ function resolveImageSrc(src: string | undefined, fallbackSrc: string) {
   return src || fallbackSrc;
 }
 
-function cx(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
+function extractObjectFitClass(className: string | undefined): string {
+  const match = className?.match(/object-(cover|contain|fill|none|scale-down)/);
+  return match ? match[0] : "object-cover";
 }
 
-function hasOutOfFlowPosition(className: string | undefined): boolean {
-  return className?.split(/\s+/).some((classToken) => classToken === "absolute" || classToken === "fixed") ?? false;
-}
-
-// Wraps next/image in `fill` mode so every existing call site can keep sizing itself purely via
-// className (aspect ratios, size-N, absolute inset-0, etc.) on the wrapper, same as the raw <img>
-// it replaces -- see the Task 9 (image pipeline) note in CLAUDE.md. Every current call site's
-// className already ends in "object-cover", so the inner Image always uses that; the wrapper
-// needs `relative overflow-hidden` so `fill` has a positioned box to fill and rounded corners
-// still clip the image. Preserves the original fallback semantics: dead `source.unsplash.com`
-// URLs are rewritten up front, and a real load failure (onError) or a zero-dimension "success"
-// (onLoad with naturalWidth 0, matching the pre-migration <img> behavior) falls back to
-// `fallbackSrc` (defaulting to a local demo asset, so it's always a same-origin, non-remote URL
-// and safe to render unoptimized without a remotePatterns entry).
+/**
+ * Wraps next/image with the same "never show a broken image" fallback
+ * behavior the old raw <img>-based ResilientImage had, plus an automatic
+ * Wikimedia attribution credit derived purely from `src` (see
+ * lib/image-attribution.ts) -- callers don't need to pass anything for
+ * Wikimedia-hosted seed photos to get their required credit, which also
+ * covers photo surfaces (photo-card.tsx, discover-deck.tsx,
+ * selected-place-card.tsx's post view) without editing those files. The
+ * chip is size-gated: thumbnails narrower than ~120px render no credit.
+ *
+ * Renders `fill` inside a positioned wrapper that inherits the caller's
+ * sizing classes (aspect-*, size-*, w-*, h-*, etc.), so every existing
+ * call site's CSS-based box sizing keeps working unchanged.
+ *
+ * Defaults: `loading="eager"` matches the old raw <img> semantics (the
+ * discover deck's top card is the "/" LCP and must not turn lazy), and
+ * `unoptimized` is derived per-src so arbitrary user-supplied URLs
+ * (pasted avatar URLs, blob:/data: previews) never hit next/image's
+ * "hostname not configured" failure -- both are overridable via props.
+ */
 export function ResilientImage({
   src,
   fallbackSrc = FALLBACK_IMAGE_URL,
   alt = "",
   className,
-  draggable,
-  sizes = "(max-width: 768px) 100vw, 50vw",
-  priority,
+  attribution,
+  hideAttribution = false,
+  onError,
+  onLoad,
+  sizes = "100vw",
+  loading = "eager",
+  unoptimized,
+  ...props
 }: ResilientImageProps) {
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const requestedSrc = resolveImageSrc(src, fallbackSrc);
-  const resolvedSrc = requestedSrc === failedSrc ? fallbackSrc : requestedSrc;
+  const wrapperRef = useRef<HTMLSpanElement | null>(null);
+  const [currentSrc, setCurrentSrc] = useState(() => resolveImageSrc(src, fallbackSrc));
+  const [broken, setBroken] = useState(false);
+  const [wideEnoughForCredit, setWideEnoughForCredit] = useState(false);
+
+  useEffect(() => {
+    setCurrentSrc(resolveImageSrc(src, fallbackSrc));
+    setBroken(false);
+  }, [fallbackSrc, src]);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper || typeof ResizeObserver === "undefined") return;
+
+    const observer = new ResizeObserver(() => {
+      setWideEnoughForCredit(wrapper.offsetWidth >= MIN_ATTRIBUTION_WIDTH_PX);
+    });
+    observer.observe(wrapper);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const resolvedSrc = broken ? fallbackSrc : currentSrc || fallbackSrc;
+  const objectFitClass = extractObjectFitClass(className);
+  const credit =
+    hideAttribution || !wideEnoughForCredit ? null : attributionForPhoto(resolvedSrc, attribution);
 
   return (
-    <span className={cx("block overflow-hidden", !hasOutOfFlowPosition(className) && "relative", className)}>
+    <span ref={wrapperRef} className={`relative block overflow-hidden ${className ?? ""}`}>
       <Image
-        key={resolvedSrc}
+        {...props}
         src={resolvedSrc}
         alt={alt}
         fill
-        draggable={draggable}
         sizes={sizes}
-        // Next 16's LCP detector requires an explicit eager load for
-        // above-the-fold unoptimized images; the legacy `priority` flag no
-        // longer suppresses that warning on direct Wikimedia requests.
-        loading={priority ? "eager" : undefined}
-        unoptimized={shouldRenderUnoptimized(resolvedSrc)}
-        className="object-cover"
-        onError={() => {
-          if (resolvedSrc !== fallbackSrc) setFailedSrc(resolvedSrc);
+        loading={loading}
+        unoptimized={unoptimized ?? !isOptimizerAllowedSrc(resolvedSrc)}
+        className={objectFitClass}
+        onError={(event) => {
+          onError?.(event);
+          if (resolvedSrc !== fallbackSrc) setBroken(true);
         }}
         onLoad={(event) => {
+          onLoad?.(event);
           if (event.currentTarget.naturalWidth === 0 && resolvedSrc !== fallbackSrc) {
-            setFailedSrc(resolvedSrc);
+            setBroken(true);
           }
         }}
       />
+      {credit ? (
+        <span className="pointer-events-none absolute bottom-1 right-1 z-10 rounded bg-black/55 px-1.5 py-0.5 text-[10px] leading-none text-white/90">
+          {credit.sourceUrl ? (
+            <a
+              href={credit.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="pointer-events-auto underline-offset-2 hover:underline"
+            >
+              {attributionLabel(credit)}
+            </a>
+          ) : (
+            attributionLabel(credit)
+          )}
+        </span>
+      ) : null}
     </span>
   );
 }

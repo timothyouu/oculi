@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { Bookmark, Clock, MapPin, Sparkles } from "lucide-react";
+import { isOptimizerAllowedSrc } from "@/lib/image-attribution";
 import type { Place } from "../lib/types";
-import { ResilientImage } from "./resilient-image";
 
 type PlaceCardProps = {
   place: Place;
@@ -26,11 +27,14 @@ export function PlaceCard({ place, rank, isSaved = false, compact = false, reaso
         className="group block w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-950"
         onClick={() => onOpenPlace?.(place.id)}
       >
-        <div className="relative">
-          <ResilientImage
+        <div className={cx("relative overflow-hidden bg-zinc-100", compact ? "aspect-[5/3]" : "aspect-[4/3]")}>
+          <Image
             src={place.coverPhotoUrl}
             alt={`${place.name} photo spot`}
-            className={cx("w-full bg-zinc-100 object-cover transition duration-300 group-hover:scale-[1.02]", compact ? "aspect-[5/3]" : "aspect-[4/3]")}
+            fill
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            unoptimized={!isOptimizerAllowedSrc(place.coverPhotoUrl)}
+            className="object-cover transition duration-300 group-hover:scale-[1.02]"
           />
           {rank ? (
             <span className="absolute left-3 top-3 rounded-md bg-white/95 px-2 py-1 text-xs font-bold text-zinc-950 shadow-sm">

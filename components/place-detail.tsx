@@ -1,19 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bookmark, Car, Footprints, Map, MapPin, Route, Share } from "lucide-react";
+import Image from "next/image";
+import { Bookmark, Car, Map, MapPin, Route, Share, Footprints } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDemoState } from "@/lib/demo-state";
 import { kmToMiles, haversineDistanceKm } from "@/lib/geo";
+import { attributionForPhoto, attributionLabel, isOptimizerAllowedSrc } from "@/lib/image-attribution";
 import { formatPlaceLocation } from "@/lib/location-labels";
 import { accessibilityForPlace } from "@/lib/place-accessibility";
 import { sceneLabelsFor } from "@/lib/place-taxonomy";
-import { attributionForImageUrl } from "@/lib/image-attribution";
 import type { Photo, Place } from "../lib/types";
 import { BackButton } from "./back-button";
 import { MapboxMap } from "./mapbox-map";
 import { PhotoCard } from "./photo-card";
-import { ResilientImage } from "./resilient-image";
 import { SharePlaceButton } from "./share-place-button";
 
 type PlaceDetailProps = {
@@ -56,10 +56,11 @@ export function PlaceDetail({
   } = useDemoState();
   const isSaved = savedPlaceIds.includes(place.id);
   const heroPhotos = photos.slice(0, 4);
+  const heroPhoto = heroPhotos[0];
+  const heroUrl = heroPhoto?.imageUrl || place.coverPhotoUrl;
+  const heroAttribution = attributionForPhoto(heroUrl, heroPhoto?.attribution);
   const usersById = Object.fromEntries(users.map((user) => [user.id, user]));
   const placeLocation = formatPlaceLocation(place, areas);
-  const heroImageUrl = heroPhotos[0]?.imageUrl || place.coverPhotoUrl;
-  const heroAttribution = attributionForImageUrl(heroImageUrl);
 
   // Real distance-to-place (docs/demo-to-product-audit.md item 7), replacing
   // the previously-hardcoded "0.3 mi". Same geolocation pattern already used
@@ -99,31 +100,32 @@ export function PlaceDetail({
       <section className="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_440px]">
         <div className="space-y-6">
           {showBackButton ? <BackButton label="Back" fallbackHref="/" /> : null}
-          <div className="relative overflow-hidden rounded-[12px]">
-            <ResilientImage
-              src={heroImageUrl}
+          <div className="relative aspect-[16/9] overflow-hidden rounded-[12px] max-sm:aspect-[4/3]">
+            <Image
+              src={heroUrl}
               alt={`${place.name} hero photo`}
-              className="aspect-[16/9] w-full object-cover max-sm:aspect-[4/3]"
+              fill
               priority
+              sizes="(min-width: 1024px) 60vw, 100vw"
+              unoptimized={!isOptimizerAllowedSrc(heroUrl)}
+              className="object-cover"
             />
+            {heroAttribution?.sourceUrl ? (
+              <a
+                href={heroAttribution.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="absolute bottom-2 right-2 rounded bg-black/55 px-1.5 py-0.5 text-[11px] leading-none text-white/90 underline-offset-2 hover:underline"
+              >
+                {attributionLabel(heroAttribution)}
+              </a>
+            ) : null}
             {isSaved ? (
               <span className="absolute right-4 top-0 grid h-20 w-12 place-items-center rounded-b bg-[var(--gold)] text-white">
                 <Bookmark className="size-6 fill-current" />
               </span>
             ) : null}
           </div>
-          {heroAttribution ? (
-            <p className="text-xs text-[var(--ink)]/50">
-              <a
-                href={heroAttribution.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline decoration-dotted underline-offset-2 hover:text-[var(--ink)]/80"
-              >
-                {heroAttribution.label}
-              </a>
-            </p>
-          ) : null}
         </div>
 
         <aside className="space-y-5 lg:pt-14">
@@ -168,7 +170,7 @@ export function PlaceDetail({
               </button>
           </div>
           {actionStatus ? <p className="text-sm text-[var(--moss)]">{actionStatus}</p> : null}
-          <div className="grid grid-cols-2 gap-2 border-y border-[var(--line)] py-4 text-sm text-[var(--muted)] sm:grid-cols-3">
+          <div className="grid grid-cols-3 gap-2 border-y border-[var(--line)] py-4 text-sm text-[var(--muted)]">
             <span className="flex items-center gap-2"><Bookmark className="size-4" />{place.saveCount} saves</span>
             <span className="flex items-center gap-2"><Car className="size-4" />{accessibilityForPlace(place)}</span>
             {distanceMiles !== null ? (
@@ -229,7 +231,7 @@ export function PlaceDetail({
           </button>
         </div>
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-          {photos.map((photo, index) => {
+          {photos.map((photo) => {
             const photographer = usersById[photo.userId];
             if (!photographer) return null;
 
@@ -242,7 +244,6 @@ export function PlaceDetail({
                 isFollowed={followedUserIds.includes(photographer.id)}
                 isCurrentUser={photographer.id === currentUserId}
                 isLiked={likedPhotoIds.includes(photo.id)}
-                priority={index === 0}
                 onToggleFollow={toggleFollowUser}
                 onTogglePhotoLike={togglePhotoLike}
                 onOpenPlace={onOpenPlace ?? ((placeId) => router.push(`/places/${placeId}`))}

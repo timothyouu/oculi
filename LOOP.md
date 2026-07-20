@@ -247,146 +247,124 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   already restricted to the production and localhost origins; Mapbox does not
   currently offer configurable usage/spending alerts, per its official billing
   documentation. All collected manual dashboard items are now resolved.
-- 2026-07-11 (loop resumed by Tim): found Tasks 6a, 10, and 11 already
-  implemented but uncommitted and unlogged in the working tree (a prior
-  session evidently stopped after implementation, before verification).
-  Orchestrator verified all three rather than re-dispatching:
-  - Task 6a (default-save inflation) VERIFIED DONE. New pure helper
-    lib/state-merge.ts selectSavedPlaceIdsToMigrate (+6 unit tests) gates the
-    bootstrap reconciler: seed-default saved places (lib/storage.ts
-    DEFAULT_SAVED_PLACE_IDS) only migrate into saved_places when proven by a
-    durable source. Live-verified against the remote with a clean browser
-    identity: fresh anon visitor (uid 02a35e5f…) bootstrapped with ZERO
-    saved_places rows while the UI still showed the four demo defaults as
-    saved; an explicit Bookmark on twin-peaks created exactly one owner-scoped
-    row; uid stable across reload, row survived reload, and the reload
-    reconciler added no further rows. All verification residue deleted via
-    owner-scoped REST DELETEs (saved_places/oculi_demo_states/viewed_photos
-    all 204, post-delete SELECT empty); the empty anon auth user itself needs
-    admin rights to remove — one-user residue noted for Tim. FINDING: the
-    place_save_counts() RPC shows the four defaults at ~11 saves each —
-    historical inflation rows from pre-fix visitors are still in
-    saved_places; the fix stops new inflation but does not clean the old
-    rows (needs a Tim decision + service-role delete).
-  - Task 10 (legal stub) VERIFIED DONE. app/terms + app/privacy render as
-    static routes (next build lists both; live check confirmed title,
-    sections incl. an uploads takedown path, and working footer Terms/Privacy
-    links added to AppShell).
-  - Task 11 (stale saved-route-planner spec) VERIFIED DONE. The rewritten
-    spec exercises the real drag-reorder UI with per-table saved_places
-    mocks. While verifying, the orchestrator root-caused and fixed FOUR
-    latent e2e/infra flakes exposed by machine load (all reproduced at clean
-    HEAD, none caused by the loop's work): (1) playwright.config.ts now caps
-    local workers at 4 — this 22-core/15GB WSL2 box ran 11 Chromiums and a
-    random spec timed out each run; (2) global test timeout raised to 60s —
-    specs legitimately run 25-35s under load; (3) map-camera.spec.ts's
-    persistence test raced mapbox-gl's renewable wheel-zoom easing (restored
-    camera was the true settled value the test never snapshotted — fixed by
-    engaging a real drag to cancel in-flight easing, plus a settle-poll and
-    test.slow()); (4) saved-route-planner.spec.ts read the first add-stop
-    tile's name and clicked as two steps, racing a bootstrap re-render — now
-    clicks first and derives the added place from the status message. Full
-    e2e suite green TWICE consecutively (11/11 both runs — better than the
-    old "10 + 1 pre-existing failure" baseline). Full verifier at this
-    point: tsc 0, vitest 99/99, next build 0, verify-db-sync 0.
-  - Task 9 (image pipeline) dispatched to a Sonnet subagent (the only task
-    never started). Verification pending.
-- 2026-07-11 (later): Task 9 (image pipeline) VERIFIED DONE after one
-  evidence-driven rework. First pass migrated all 13 raw <img> to next/image
-  (ResilientImage now wraps next/image in fill mode, preserving its
-  fallback-on-error semantics; images.remotePatterns added for
-  upload.wikimedia.org / images.unsplash.com / xlzknvhiuhtcqmqrypqh
-  .supabase.co; new pure lib/image-attribution.ts attributionForImageUrl
-  helper + tests; attribution links surfaced in place-detail,
-  selected-place-card post view, and profile-summary's photo modal; the one
-  remaining raw <img> is upload-modal.tsx's blob: preview, eslint-disabled
-  with justification). All written criteria passed, but the orchestrator's
-  e2e run exposed a regression the criteria missed: the next/image optimizer
-  proxied every Wikimedia fetch through one server IP and
-  upload.wikimedia.org 429-rate-limited it (hundreds of "upstream image
-  response failed" log lines, images degrading to fallback). Kicked back to
-  the same subagent with evidence; fix: new pure predicate
-  shouldBypassImageOptimizer (lib/image-attribution.ts, +3 tests) renders
-  Wikimedia images unoptimized (browser fetches Wikimedia's CDN directly,
-  as pre-migration) while own-storage/local stay optimized. Orchestrator
-  re-verified end to end: tsc 0; vitest 110/110 (was 99 at loop resume);
-  next build 0 with zero no-img-element warnings; full e2e 11/11 with ZERO
-  upstream-image-failure lines; live on localhost:3000 (real Chromium):
-  place-detail rendered 5 direct upload.wikimedia.org imgs (0 broken),
-  local avatars through /_next/image, and a "via Wikimedia Commons" link to
-  the exact commons File: page (target=_blank rel=noopener); profile page
-  11 imgs 0 broken. FINDING (pre-existing, NOT Task 9): mapbox-map.tsx's
-  `new mapboxgl.Map(...)` (~line 126) is unguarded — in a browser without
-  WebGL it throws synchronously in the effect and unmounts the entire React
-  tree (observed in the WebGL-less MCP browser; e2e Chromium has WebGL so
-  the suite can't catch it). The stylized fallback exists for exactly this
-  case but never gets the chance; needs a try/catch (or WebGL probe) routed
-  into the fallback decision. Logged for Tim — out of loop scope.
-- 2026-07-11: LOOP COMPLETE — success stop rule met. All ten original tasks
-  plus 6a and 11 verified done. Final verifier state: tsc 0, vitest 110/110,
-  next build 0, verify-db-sync 0, e2e 11/11 (twice consecutively). All work
-  is uncommitted on audit/demo-to-product pending Tim's commit decision.
-  Open items for Tim: (1) historical default-save inflation rows (~11 per
-  default place) need a decision + service-role cleanup; (2) the unguarded
-  WebGL map-constructor crash above; (3) one empty anon auth user of
-  verification residue (needs admin API to delete); (4) stray untracked
-  share-popover-place-detail.png debug artifact at repo root (not Claude's
-  to delete — created by an earlier session).
-- 2026-07-11 (post-loop /goal session, Tim's direction): resolved the open
-  items. (1) Fresh accounts/guests now start EMPTY — lib/storage.ts
-  initialDemoState seeds no saved places and no posts (the five fake
-  "starter-upload-*" photos were deleted outright), and normalizeDemoState
-  scrubs the legacy flavor from returning visitors' pre-change localStorage
-  blobs (starter uploads dropped by id prefix — lossless, they exist nowhere
-  durable; DEFAULT_SAVED_PLACE_IDS stripped locally — a REAL save of those
-  places comes back from its owner-scoped saved_places row at bootstrap).
-  Live-verified with a wiped browser identity: /saved shows "0 saved" with
-  clean empty states, profile shows "No uploaded photos yet.", and a planted
-  legacy blob (4 defaults + starter upload + one real save + one real
-  upload) came out as exactly the real save ("1 saved", twin-peaks) and real
-  upload after reload. (2) WebGL crash fixed: lib/mapbox-fallback.ts gained
-  webglFailed (overrides even requireMapbox — a live map that can't
-  construct must fall back), components/mapbox-map.tsx wraps `new
-  mapboxgl.Map()` in try/catch routing into the stylized fallback; verified
-  live in the genuinely WebGL-less MCP browser on the exact page that
-  previously unmounted the whole React tree (renders fully, stylized map,
-  no error overlay); 2 new unit tests. (3) New migration
-  20260711000100_remove_demo_default_flavor.sql deletes ALL saved_places
-  rows for the four default places (historical inflation, Tim chose
-  unconditional removal), surgically scrubs savedPlaceIds defaults and
-  starter-upload photos out of legacy oculi_demo_states blobs (real legacy
-  data preserved), and deletes the two empty verification anon users —
-  APPLIED 2026-07-11 after Tim authorized CLI access (`npx supabase login
-  --token …`): executed via the Management API query endpoint; pre-count was
-  12 inflation rows per default place; post-apply verification returned 0
-  inflation rows, 0 blob default-saves, 0 blob starter-uploads, 0 residue
-  auth users; version 20260711000100/remove_demo_default_flavor recorded in
-  supabase_migrations.schema_migrations; place_save_counts() now lists only
-  the 8 places with real explicit saves (the four ex-defaults absent
-  entirely); seed catalog counts unchanged (61/110/16/21). (4) Stray
-  share-popover-place-detail.png deleted (Tim authorized). All verification
-  residue rows from this session's live checks were owner-scope-deleted.
-  Verifier after changes: tsc 0, vitest 113/113 (2 fallback + 4 reworked
-  storage tests), next build 0, verify-db-sync 0, e2e 11/11.
-- 2026-07-11 (/goal release-readiness review): fresh review found the prior
-  loop's green baseline still shipped vulnerable next@14.2.23 and a few
-  regressions hidden in browser logs. Upgraded to Next 16.2.10 + React 19.2.7,
-  migrated async route params and ESLint flat config/CI, pinned the vendored
-  PostCSS override, and reached npm audit 0. Fixed ResilientImage absolute
-  wrappers that rendered at height 0, explicit eager loading for hydrated LCP
-  duplicates, and mutable Mapbox ref reads during render. A second product
-  sweep removed the fabricated 4.8 rating and made uploads transactional:
-  authenticated-owner storage paths, modal retry/error state, no base64
-  preview persisted as a successful post, awaited photos-table writes, and a
-  new RLS migration that exposes only approved photos or the owner's own
-  pending/rejected rows. Migration 20260711000200 was applied through the
-  Supabase Management API and verified in migration history plus pg_policies;
-  storage INSERT/UPDATE now also requires the auth.uid() folder namespace.
-  Updated README and launch policies to match the real
-  product/data flows instead of calling them demo stubs. Final verification is
-  clean: typecheck 0, lint 0, vitest 113/113, Next 16 production build 0,
-  verify-db-sync 0, npm audit 0 vulnerabilities, Playwright 13/13 (including
-  upload failure/retry and storage cleanup after a rejected photo-row write),
-  and git diff --check 0. Follow-up migration 20260711000300 adds the narrowly
-  owner-scoped DELETE needed for that cleanup; it was applied and verified in
-  remote migration history and pg_policies.
+- 2026-07-19: LOOP RESUMED by Tim via /goal: "run the /loop on the demo to
+  product implementation doc until all implementations mentioned within the
+  file are implemented." The loop's spec is now
+  `docs/demo-to-product-implementation.md` (which supersedes the remaining
+  audit items and carries all of Tim's decisions as of 2026-07-19); the
+  budget stop rule that paused the loop is lifted by this instruction. The
+  verifier, modifiable/locked lists, and circuit-breaker rules above remain
+  in force, with one Tim-approved spec change recorded in the implementation
+  doc's item 10: `scripts/verify-db-sync.mts` is retired/inverted as part of
+  the DB source-of-truth flip (step 3 of item 10) — it stays locked and
+  passing until that step lands. Baseline at resumption: tsc 0, 102/102 unit
+  tests, branch audit/demo-to-product clean at f9fff49. Execution order per
+  the doc: 1, 5, 9, 3, 10+4, 7, 8, 6.
+- 2026-07-19 (wave 1): Items 1, 5, 9 DONE and verified. Item 5 (drop the 4.8
+  rating) done inline: Star stat + import removed from place-detail.tsx,
+  stats grid 4→3 cols. Item 9: Sonnet subagent rewrote
+  e2e/saved-route-planner.spec.ts against the drag-reorder UI (tile rail +
+  mouse drag + saved_places-table mock); no product code touched. Item 1
+  (Task 6a): Sonnet subagent added lib/relation-defaults.ts gating the
+  bootstrap reconciler's upward migration; orchestrator verification found
+  TWO misses that were fixed before counting it done. (a) The full e2e suite
+  went red: an opus debug agent + orchestrator traced it to a PRE-EXISTING
+  race — bootstrap hydration resolving after a user action clobbered/
+  resurrected it (the unsave in saved-roundtrip.spec.ts); the gate only
+  perturbed timing. Fixed for real users, not just the test: new
+  lib/bootstrap-merge.ts `applyBootstrapState` + a userTouchedRelationsRef
+  in demo-state.tsx — relations the user touched since mount win over a
+  late-resolving bootstrap's stale merge (4 new unit tests). (b) Live SQL
+  verification against the remote showed the original all-or-nothing gate
+  leaked: one explicit save made the merged set diverge from the defaults
+  and the NEXT bootstrap migrated all four defaults up anyway (observed:
+  5 rows). relationsToMigrateUp now excludes default ids per-id,
+  unconditionally; explicit toggles still write their rows directly. The 5
+  unit tests for the discarded all-or-nothing helper were replaced in the
+  same session they were added (test count 116→111, still above the 102
+  resumption baseline; no pre-existing test touched — recorded here as the
+  justified exception to "count never decreases"). Final verifier evidence:
+  tsc 0; vitest 111/111; next build 0; playwright 11/11 ×2 (and ×3 on the
+  race fix before the gate correction); live on localhost:3000 against the
+  remote with two throwaway anon identities: untouched fresh visitor →
+  0 saved/followed/liked rows while the UI still shows the 4 demo defaults;
+  explicit save → exactly 1 owner-scoped row (twin-peaks), survives reload,
+  and post-reload reconcile still migrates nothing else. All verification
+  residue (relation/state rows, both anon auth users) deleted; dev server
+  stopped. Committing as wave 1; next: item 3 (retire user-guest).
+- 2026-07-19 (wave 2): Item 3 (retire user-guest) DONE after one rescoped
+  follow-up. Sonnet subagent audited all ~15 currentUserId call sites
+  (classification table in its report): identity-bearing sites now resolve
+  the real auth uid — new lib/current-user.ts (buildCurrentUser/
+  buildVisibleUsers, 6 tests) puts the viewer's real id on `currentUser`,
+  a new resolveOwnerId() awaits ensureAuthSession before every remote write
+  (no placeholder fallback), uploadPhotoFile takes a required ownerId and
+  writes Storage under `<uid>/…`, remote-state/remote-route-plans lost their
+  user-guest default params (ownerId now required), getDemoVisitorId's SSR/
+  storage-error fallbacks return ephemeral visitor ids, and saved-panel
+  defers route-plan saves until authUser resolves. user-guest survives only
+  as the seed persona/starter-content author; the John Doe display fields
+  remain the anonymous visitor's default editable profile. Follow-up (my
+  dispatch omitted e2e from DONE WHEN): two specs encoded the old behavior —
+  photo-upload.spec.ts now asserts the upload's userId is the real visitor
+  id (not user-guest) incl. the Storage-path and /profile/<id> assertions,
+  and saved-route-planner.spec.ts gained a **/auth/v1/** mock session so the
+  new no-placeholder guard can proceed, with the insert assertion
+  strengthened to the fake session's user_id. That work also exposed and
+  fixed a real app gap: app/profile/[userId]/page.tsx called notFound() on
+  first render of your own profile URL before identity bootstrap resolved —
+  now renders an aria-busy shell until hasLoadedRemoteState, then 404s only
+  if the id is definitively unknown. Orchestrator evidence: tsc 0, vitest
+  117/117, next build 0, and live on localhost:3000 against the remote with
+  a throwaway anon identity: upload landed in public.photos with owner_id =
+  session uid, Storage object at <uid>/upload-….png (owner = uid; deleted
+  afterwards by that owner via the Storage API, re-proving owner-scoped
+  RLS), UI attribution "by John Doe" as the viewer's own, profile at
+  /profile/<real-uid> with Edit profile + real 0-follower count; zero
+  user-guest rows written anywhere. e2e flakiness during verification was
+  root-caused to a stale .next shared between next build and next dev (the
+  known incident class) — after clearing it, 5 consecutive 11/11 runs. All
+  verification residue cleaned. Next: items 10+4 arc per the opus plan
+  (4 sequenced goals), then 7, 8, 6.
+- 2026-07-20 (wave 3): Arc Goal 1 (final zeroing + aggregate functions),
+  arc Goal 2 (ranking rescale), item 7 (image pipeline) and item 8 (legal
+  stubs) DONE. Goal 1 (Sonnet): lib/data.ts zeroed (61 saveCount /
+  15 followerCount [user-guest was already 0] / 110 likeCount → 0),
+  taxonomy migration regenerated, new migrations 20260719000100
+  (zero_seed_baselines, idempotent jsonb updates on the catalog) and
+  20260719000200 (user_follow_counts()/photo_like_counts() SECURITY DEFINER
+  functions on the place_save_counts() pattern) applied to the remote and
+  version-realigned; orchestrator SQL-verified zero nonzero baselines
+  remotely, both functions execute, verify-db-sync local passes (final
+  green run of the guard before its planned retirement in Goal 4). Goal 2
+  (Sonnet): saveCount ranking signals rescaled to the real-count regime via
+  a shared log2 saveCountBoost in lib/scoring.ts (replacing saveCount*100
+  and the unreachable >650 "Highly saved" cutoff with a floor-3 + top-decile
+  isHighlySaved), lib/map-clusters.ts (nodeScore), and
+  lib/saved-route-planner.ts (replacing saveCount/18); new
+  scoring/map-clusters test files (17 tests), saved-route-planner tests
+  unaffected (fixtures self-contained). Item 7 (Sonnet, survived one
+  API-limit interruption and resumed): next/image in all 8 raw-<img>
+  components with resilient-image.tsx keeping its fallback semantics
+  (fill-in-sized-wrapper pattern, eager default so the "/" LCP stays);
+  remotePatterns for upload.wikimedia.org + the Supabase storage host; new
+  pure lib/image-attribution.ts (derives Wikimedia Commons source links
+  from URLs at render time — data.ts untouched per the DB-flip direction;
+  16 tests) with credit chips auto-rendered on large images;
+  OCULI_UNOPTIMIZED_IMAGES env gate added to next.config +
+  playwright.config webServer because the optimizer's server-side Wikimedia
+  fetches hang in the sandbox and stalled page load (no spec assertions
+  changed). Item 8 (Haiku): static /terms + /privacy placeholder pages
+  (clearly labeled, report@oculi-demo.example takedown contact on both —
+  doubles as item 6's intake) with a footer Terms · Privacy link in
+  app-shell. Orchestrator evidence: tsc 0, vitest 147/147, next lint zero
+  warnings (no-img-element gone), next build 0, playwright 11/11 ×3 (one
+  isolated failure right after lint/.next churn re-ran green), live on
+  localhost:3000: next/image rendering with Wikimedia Commons credit links
+  on the twin-peaks hero/photos, "3 saves" = pure real rows over the zeroed
+  baseline, /terms serving the labeled placeholder + contact. Also cleaned
+  232 accidentally-tracked .playwright-mcp artifacts and gitignored the
+  dir. Remaining: arc Goal 3 (DB-authoritative hydration + follower/like
+  overlays, folding in item 6's rejected-photo filter), arc Goal 4
+  (demote data.ts, retire verify-db-sync into a DB-querying integrity
+  check).

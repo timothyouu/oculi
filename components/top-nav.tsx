@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import { Bell, Camera, Check, Moon, Plus, Settings, Sparkles, Sun, Tag, Type, UserRound } from "lucide-react";
 import { useAppSettings } from "@/components/app-settings";
 import { useDemoState } from "@/lib/demo-state";
+import { isOptimizerAllowedSrc } from "@/lib/image-attribution";
 import type { User } from "../lib/types";
-import { ResilientImage } from "./resilient-image";
 
 type NavItem = {
   id: string;
@@ -283,7 +284,14 @@ export function TopNav({
             onClick={() => currentUser && onOpenProfile?.(currentUser.id)}
           >
             {currentUser?.avatarUrl ? (
-              <ResilientImage src={currentUser.avatarUrl} alt="" priority className="size-full object-cover" />
+              <Image
+                src={currentUser.avatarUrl}
+                alt=""
+                width={40}
+                height={40}
+                unoptimized={!isOptimizerAllowedSrc(currentUser.avatarUrl)}
+                className="size-full object-cover"
+              />
             ) : (
               <UserRound className="size-4 text-[var(--muted)]" aria-hidden="true" />
             )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { Camera, ImagePlus, LocateFixed, MapPin, Sun, X } from "lucide-react";
 import { sortByDistanceFrom } from "../lib/geo";
 import { rankSearchResults } from "../lib/search-ranking";
@@ -23,7 +24,7 @@ type UploadModalProps = {
   places: Place[];
   initialPlaceId?: string;
   onClose: () => void;
-  onSubmit: (input: UploadPhotoInput) => void | Promise<unknown>;
+  onSubmit: (input: UploadPhotoInput) => void;
 };
 
 type GeoStatus = "idle" | "locating" | "found" | "denied";
@@ -53,8 +54,6 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
   const [metadataText, setMetadataText] = useState("");
   const [bestLight, setBestLight] = useState("Golden hour");
   const [tagsText, setTagsText] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
   const locationFieldRef = useRef<HTMLDivElement>(null);
 
   const selectedPlace = useMemo(() => places.find((place) => place.id === placeId), [places, placeId]);
@@ -163,39 +162,30 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
     }
   }
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!file || !previewUrl || !placeId || !caption.trim() || isSubmitting) return;
-
-    setIsSubmitting(true);
-    setSubmitError("");
-    try {
-      await onSubmit({
-        file,
-        previewUrl,
-        placeId,
-        caption: caption.trim(),
-        metadataText: metadataText.trim() || undefined,
-        bestLight,
-        tags: tagsText
-          .split(",")
-          .map((tag) => tag.trim().replace(/^#/, ""))
-          .filter(Boolean),
-        usedCurrentLocation,
-        approximateLocationLabel: selectedPlace?.fuzzyLocationLabel,
-      });
-      setFile(null);
-      setPreviewUrl("");
-      setCaption("");
-      setMetadataText("");
-      setBestLight("Golden hour");
-      setTagsText("");
-      onClose();
-    } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : "The photo could not be published. Try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    if (!file || !previewUrl || !placeId || !caption.trim()) return;
+    onSubmit({
+      file,
+      previewUrl,
+      placeId,
+      caption: caption.trim(),
+      metadataText: metadataText.trim() || undefined,
+      bestLight,
+      tags: tagsText
+        .split(",")
+        .map((tag) => tag.trim().replace(/^#/, ""))
+        .filter(Boolean),
+      usedCurrentLocation,
+      approximateLocationLabel: selectedPlace?.fuzzyLocationLabel,
+    });
+    setFile(null);
+    setPreviewUrl("");
+    setCaption("");
+    setMetadataText("");
+    setBestLight("Golden hour");
+    setTagsText("");
+    onClose();
   }
 
   const locationHint = geoStatus === "locating"
@@ -231,12 +221,16 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
               <span className="mb-2 block text-base text-[var(--ink)]">Photo preview</span>
               <span className={cx("relative flex min-h-72 cursor-pointer items-center justify-center overflow-hidden rounded-[12px] border border-dashed border-[var(--line)] bg-[var(--chip)] outline-none transition hover:border-[var(--moss)]", previewUrl && "border-solid bg-zinc-100")}>
                 {previewUrl ? (
-                  // Local data: URL from FileReader (see handleFileChange above) -- it only exists
-                  // for this pre-publish preview and should not go through next/image's optimizer.
-                  // A plain <img> is the
-                  // correct tool here, not a workaround; see Task 9 image-pipeline migration notes.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={previewUrl} alt="Selected upload preview" className="h-full max-h-[460px] w-full object-cover" />
+                  // blob: object URL from the file picker -- the next/image
+                  // optimizer can't fetch it, so render unoptimized.
+                  <Image
+                    src={previewUrl}
+                    alt="Selected upload preview"
+                    width={1200}
+                    height={900}
+                    unoptimized
+                    className="h-full max-h-[460px] w-full object-cover"
+                  />
                 ) : (
                   <span className="flex flex-col items-center gap-2 text-sm text-[var(--muted)]">
                     <ImagePlus className="size-8" aria-hidden="true" />
@@ -361,21 +355,15 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
               />
             </label>
 
-            {submitError ? (
-              <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {submitError}
-              </p>
-            ) : null}
-
             <div className="grid gap-3 sm:grid-cols-[160px_minmax(0,1fr)]">
               <button type="button" className="h-12 rounded-lg border border-[var(--line)] bg-white text-base" onClick={onClose}>Cancel</button>
             <button
               type="submit"
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[var(--moss)] px-4 text-base text-white outline-none transition hover:bg-[var(--moss-dark)] disabled:cursor-not-allowed disabled:bg-zinc-300"
-              disabled={!file || !caption.trim() || !placeId || isSubmitting}
+              disabled={!file || !caption.trim() || !placeId}
             >
               <Camera className="size-4" aria-hidden="true" />
-              {isSubmitting ? "Publishing…" : "Publish photo"}
+              Publish photo
             </button>
             </div>
         </div>

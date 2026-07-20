@@ -20,7 +20,7 @@ export const users: User[] = [
     avatarUrl: "/generated/maya-chen.png",
     bio: "Golden hour, glass reflections, city walks.",
     homeArea: "Hayes Valley",
-    followerCount: 4200,
+    followerCount: 0,
     followingCount: 212,
     isInfluencer: true
   },
@@ -31,7 +31,7 @@ export const users: User[] = [
     avatarUrl: "/generated/eli-brooks.png",
     bio: "Street frames and fog-chasing routes.",
     homeArea: "Mission District",
-    followerCount: 980,
+    followerCount: 0,
     followingCount: 305
   },
   {
@@ -41,7 +41,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-nora-patel.png",
     bio: "Landscape, architecture, and quiet corners.",
     homeArea: "Richmond",
-    followerCount: 1510,
+    followerCount: 0,
     followingCount: 188
   },
   {
@@ -51,7 +51,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-jules-rivera.png",
     bio: "Portrait scout. Shade, color, clean backdrops.",
     homeArea: "Oakland",
-    followerCount: 756,
+    followerCount: 0,
     followingCount: 332
   },
   {
@@ -61,7 +61,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-lena-ortiz.png",
     bio: "Neighborhood color, stairways, and small light pockets.",
     homeArea: "Noe Valley",
-    followerCount: 1280,
+    followerCount: 0,
     followingCount: 244
   },
   {
@@ -71,7 +71,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-sam-wilder.png",
     bio: "Wide frames, rooftops, piers, and moving weather.",
     homeArea: "North Beach",
-    followerCount: 2310,
+    followerCount: 0,
     followingCount: 412,
     isInfluencer: true
   },
@@ -82,7 +82,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-isha-raman.png",
     bio: "Street portraits and architecture details.",
     homeArea: "Inner Sunset",
-    followerCount: 890,
+    followerCount: 0,
     followingCount: 176
   },
   {
@@ -92,7 +92,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-zoe-kim.png",
     bio: "Gardens, quiet museums, and soft botanical light.",
     homeArea: "Inner Richmond",
-    followerCount: 1740,
+    followerCount: 0,
     followingCount: 298
   },
   {
@@ -102,7 +102,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-marcus-lee.png",
     bio: "Transit lines, long shadows, and downtown geometry.",
     homeArea: "SoMa",
-    followerCount: 1325,
+    followerCount: 0,
     followingCount: 221
   },
   {
@@ -112,7 +112,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-ava-thompson.png",
     bio: "Coastal hikes, beaches, and weather that makes a frame.",
     homeArea: "Pacifica",
-    followerCount: 2480,
+    followerCount: 0,
     followingCount: 355,
     isInfluencer: true
   },
@@ -123,7 +123,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-diego-alvarez.png",
     bio: "Night color, neon, diners, and handheld street sets.",
     homeArea: "Lower Haight",
-    followerCount: 1168,
+    followerCount: 0,
     followingCount: 409
   },
   {
@@ -133,7 +133,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-hannah-reed.png",
     bio: "National parks, desert weather, and sunrise trailheads.",
     homeArea: "Denver",
-    followerCount: 3120,
+    followerCount: 0,
     followingCount: 428,
     isInfluencer: true
   },
@@ -144,7 +144,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-noah-singh.png",
     bio: "Big-city landmarks, rain reflections, and clean night color.",
     homeArea: "Brooklyn",
-    followerCount: 2214,
+    followerCount: 0,
     followingCount: 344
   },
   {
@@ -154,7 +154,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-camila-santos.png",
     bio: "Beaches, warm-weather streets, and handheld travel sets.",
     homeArea: "Miami Beach",
-    followerCount: 1842,
+    followerCount: 0,
     followingCount: 275
   },
   {
@@ -164,7 +164,7 @@ export const users: User[] = [
     avatarUrl: "/generated/avatar-kenji-watanabe.png",
     bio: "World landmarks, transit energy, and patient blue-hour frames.",
     homeArea: "Tokyo",
-    followerCount: 3920,
+    followerCount: 0,
     followingCount: 512,
     isInfluencer: true
   }
@@ -373,7 +373,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Near the Presidio overlook",
     navigationAddress: "Golden Gate Bridge Overlook, Lincoln Blvd, San Francisco, CA",
     timCurated: true,
-    saveCount: 842,
+    saveCount: 0,
     recentActivityScore: 95,
     bestTimes: ["Sunrise", "Blue hour", "Foggy mornings"],
     tags: ["bridge", "fog", "landscape", "iconic"],
@@ -392,7 +392,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "North beach overlook",
     navigationAddress: "Baker Beach, Battery Chamberlin Rd, San Francisco, CA",
     timCurated: true,
-    saveCount: 771,
+    saveCount: 0,
     recentActivityScore: 88,
     bestTimes: ["Sunset", "Low tide"],
     tags: ["beach", "bridge", "portraits", "sunset"],
@@ -411,7 +411,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Marina lagoon paths",
     navigationAddress: "Palace of Fine Arts, 3601 Lyon St, San Francisco, CA",
     timCurated: false,
-    saveCount: 690,
+    saveCount: 0,
     recentActivityScore: 74,
     bestTimes: ["Morning", "Late afternoon"],
     tags: ["architecture", "portraits", "reflections"],
@@ -430,7 +430,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Public hilltop viewpoints",
     navigationAddress: "Twin Peaks, 501 Twin Peaks Blvd, San Francisco, CA",
     timCurated: true,
-    saveCount: 641,
+    saveCount: 0,
     recentActivityScore: 82,
     bestTimes: ["Sunrise", "Night"],
     tags: ["skyline", "night", "wide-angle"],
@@ -449,7 +449,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Public coastal trail",
     navigationAddress: "Lands End Trail, 680 Point Lobos Ave, San Francisco, CA",
     timCurated: false,
-    saveCount: 604,
+    saveCount: 0,
     recentActivityScore: 67,
     bestTimes: ["Morning fog", "Sunset"],
     tags: ["trail", "coast", "moody", "landscape"],
@@ -468,7 +468,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Near public ruins overlook",
     navigationAddress: "Sutro Baths, 1004 Point Lobos Ave, San Francisco, CA",
     timCurated: false,
-    saveCount: 581,
+    saveCount: 0,
     recentActivityScore: 71,
     bestTimes: ["Sunset", "Overcast days"],
     tags: ["ruins", "coast", "long exposure"],
@@ -487,7 +487,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Ferry Building waterfront",
     navigationAddress: "Ferry Building, 1 Ferry Building, San Francisco, CA",
     timCurated: false,
-    saveCount: 489,
+    saveCount: 0,
     recentActivityScore: 78,
     bestTimes: ["Blue hour", "Rainy evenings"],
     tags: ["waterfront", "street", "reflections"],
@@ -506,7 +506,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Upper park skyline lawn",
     navigationAddress: "Mission Dolores Park, Dolores St & 19th St, San Francisco, CA",
     timCurated: false,
-    saveCount: 438,
+    saveCount: 0,
     recentActivityScore: 69,
     bestTimes: ["Late afternoon", "Clear weekends"],
     tags: ["portraits", "skyline", "social"],
@@ -525,7 +525,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Alamo Square public lawn",
     navigationAddress: "Painted Ladies, Steiner St & Hayes St, San Francisco, CA",
     timCurated: false,
-    saveCount: 514,
+    saveCount: 0,
     recentActivityScore: 56,
     bestTimes: ["Morning", "Clear afternoons"],
     tags: ["architecture", "color", "skyline"],
@@ -544,7 +544,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Near Battery Spencer",
     navigationAddress: "Battery Spencer, Conzelman Rd, Sausalito, CA",
     timCurated: true,
-    saveCount: 817,
+    saveCount: 0,
     recentActivityScore: 90,
     bestTimes: ["Sunrise", "Golden hour"],
     tags: ["bridge", "overlook", "telephoto"],
@@ -563,7 +563,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Below the Presidio bluffs",
     navigationAddress: "Marshall's Beach, Batteries to Bluffs Trail, San Francisco, CA",
     timCurated: true,
-    saveCount: 734,
+    saveCount: 0,
     recentActivityScore: 86,
     bestTimes: ["Sunset", "Low tide", "Golden hour"],
     tags: ["beach", "bridge", "coast", "landscape"],
@@ -582,7 +582,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Under the south bridge approach",
     navigationAddress: "Fort Point National Historic Site, Long Ave & Marine Dr, San Francisco, CA",
     timCurated: false,
-    saveCount: 612,
+    saveCount: 0,
     recentActivityScore: 83,
     bestTimes: ["Morning", "Blue hour", "Foggy mornings"],
     tags: ["bridge", "architecture", "street", "waterfront"],
@@ -601,7 +601,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Marina waterfront lawns",
     navigationAddress: "Chrissy Field East Beach, 1199 E Beach, San Francisco, CA",
     timCurated: false,
-    saveCount: 566,
+    saveCount: 0,
     recentActivityScore: 80,
     bestTimes: ["Sunrise", "Golden hour", "Daylight"],
     tags: ["waterfront", "bridge", "portraits", "landscape"],
@@ -620,7 +620,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Telegraph Hill public paths",
     navigationAddress: "Coit Tower, 1 Telegraph Hill Blvd, San Francisco, CA",
     timCurated: false,
-    saveCount: 458,
+    saveCount: 0,
     recentActivityScore: 73,
     bestTimes: ["Morning", "Clear afternoons", "Blue hour"],
     tags: ["skyline", "architecture", "street", "bay"],
@@ -639,7 +639,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Downtown elevated park",
     navigationAddress: "Salesforce Park, 425 Mission St, San Francisco, CA",
     timCurated: false,
-    saveCount: 394,
+    saveCount: 0,
     recentActivityScore: 76,
     bestTimes: ["Daylight", "Late afternoon", "Blue hour"],
     tags: ["architecture", "portraits", "reflections", "skyline"],
@@ -658,7 +658,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Grant Avenue corridor",
     navigationAddress: "Grant Avenue, Chinatown, San Francisco, CA",
     timCurated: false,
-    saveCount: 376,
+    saveCount: 0,
     recentActivityScore: 77,
     bestTimes: ["Daylight", "Night", "Rainy evenings"],
     tags: ["street", "color", "architecture", "night"],
@@ -677,7 +677,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Outer Sunset shoreline",
     navigationAddress: "Ocean Beach, Great Hwy, San Francisco, CA",
     timCurated: false,
-    saveCount: 421,
+    saveCount: 0,
     recentActivityScore: 65,
     bestTimes: ["Sunset", "Overcast days", "Morning fog"],
     tags: ["beach", "coast", "landscape", "surfers"],
@@ -696,7 +696,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Bernal hilltop paths",
     navigationAddress: "Bernal Heights Park, 3400-3416 Folsom St, San Francisco, CA",
     timCurated: false,
-    saveCount: 402,
+    saveCount: 0,
     recentActivityScore: 68,
     bestTimes: ["Sunrise", "Sunset", "Golden hour"],
     tags: ["skyline", "landscape", "portraits", "trail"],
@@ -715,7 +715,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Nob Hill plaza",
     navigationAddress: "Grace Cathedral, 1100 California St, San Francisco, CA",
     timCurated: false,
-    saveCount: 352,
+    saveCount: 0,
     recentActivityScore: 61,
     bestTimes: ["Morning", "Late afternoon", "Daylight"],
     tags: ["architecture", "portraits", "stairs", "stone"],
@@ -734,7 +734,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Clarion and Balmy alley area",
     navigationAddress: "Clarion Alley Murals, Clarion Alley, San Francisco, CA",
     timCurated: false,
-    saveCount: 465,
+    saveCount: 0,
     recentActivityScore: 79,
     bestTimes: ["Daylight", "Late afternoon", "Overcast days"],
     tags: ["street", "color", "portraits", "murals"],
@@ -753,7 +753,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Golden Gate Park garden paths",
     navigationAddress: "Japanese Tea Garden, 75 Hagiwara Tea Garden Dr, San Francisco, CA",
     timCurated: true,
-    saveCount: 538,
+    saveCount: 0,
     recentActivityScore: 84,
     bestTimes: ["Morning", "Overcast days", "Spring bloom"],
     tags: ["garden", "architecture", "portraits", "details"],
@@ -772,7 +772,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Golden Gate Park museum tower",
     navigationAddress: "de Young Museum, 50 Hagiwara Tea Garden Dr, San Francisco, CA",
     timCurated: false,
-    saveCount: 446,
+    saveCount: 0,
     recentActivityScore: 72,
     bestTimes: ["Daylight", "Late afternoon", "Clear afternoons"],
     tags: ["architecture", "skyline", "reflections", "museum"],
@@ -791,7 +791,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Public redwood boardwalks",
     navigationAddress: "Muir Woods National Monument, Mill Valley, CA",
     timCurated: true,
-    saveCount: 702,
+    saveCount: 0,
     recentActivityScore: 75,
     bestTimes: ["Morning", "Foggy mornings", "Overcast days"],
     tags: ["forest", "landscape", "trail", "moody"],
@@ -810,7 +810,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Pacifica public bluff trails",
     navigationAddress: "Mori Point, Mori Point Rd, Pacifica, CA",
     timCurated: false,
-    saveCount: 487,
+    saveCount: 0,
     recentActivityScore: 70,
     bestTimes: ["Sunset", "Golden hour", "Spring bloom"],
     tags: ["coast", "trail", "landscape", "wildflowers"],
@@ -829,7 +829,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Ferry Building plaza",
     navigationAddress: "Ferry Plaza Farmers Market, 1 Ferry Building, San Francisco, CA",
     timCurated: false,
-    saveCount: 365,
+    saveCount: 0,
     recentActivityScore: 82,
     bestTimes: ["Morning", "Daylight", "Rainy evenings"],
     tags: ["street", "food", "color", "waterfront"],
@@ -848,7 +848,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Inner Sunset tiled stairway",
     navigationAddress: "16th Avenue Tiled Steps, 16th Ave, San Francisco, CA",
     timCurated: false,
-    saveCount: 429,
+    saveCount: 0,
     recentActivityScore: 73,
     bestTimes: ["Morning", "Late afternoon", "Overcast days"],
     tags: ["stairs", "color", "portraits", "architecture"],
@@ -867,7 +867,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Haight Street corridor",
     navigationAddress: "Haight St & Ashbury St, San Francisco, CA",
     timCurated: false,
-    saveCount: 398,
+    saveCount: 0,
     recentActivityScore: 78,
     bestTimes: ["Daylight", "Late afternoon", "Night"],
     tags: ["street", "color", "portraits", "night"],
@@ -886,7 +886,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Public waterfront viewpoints",
     navigationAddress: "Treasure Island, San Francisco, CA",
     timCurated: true,
-    saveCount: 624,
+    saveCount: 0,
     recentActivityScore: 81,
     bestTimes: ["Blue hour", "Night", "Sunset"],
     tags: ["skyline", "waterfront", "night", "telephoto"],
@@ -905,7 +905,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "East River bridge walkway",
     navigationAddress: "Brooklyn Bridge, New York, NY",
     timCurated: true,
-    saveCount: 884,
+    saveCount: 0,
     recentActivityScore: 92,
     bestTimes: ["Sunrise", "Blue hour", "Overcast days"],
     tags: ["bridge", "skyline", "street", "architecture"],
@@ -924,7 +924,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Central Park terrace",
     navigationAddress: "Bethesda Terrace, Central Park, New York, NY",
     timCurated: false,
-    saveCount: 612,
+    saveCount: 0,
     recentActivityScore: 77,
     bestTimes: ["Morning", "Late afternoon", "Rainy days"],
     tags: ["architecture", "portraits", "street", "park"],
@@ -943,7 +943,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Midtown pedestrian plazas",
     navigationAddress: "Times Square, New York, NY",
     timCurated: false,
-    saveCount: 733,
+    saveCount: 0,
     recentActivityScore: 90,
     bestTimes: ["Night", "Rainy evenings", "Blue hour"],
     tags: ["street", "night", "color", "neon"],
@@ -962,7 +962,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "National Mall reflecting paths",
     navigationAddress: "Washington Monument, 2 15th St NW, Washington, DC",
     timCurated: true,
-    saveCount: 701,
+    saveCount: 0,
     recentActivityScore: 74,
     bestTimes: ["Sunrise", "Blue hour", "Clear afternoons"],
     tags: ["monument", "reflections", "architecture", "landmark"],
@@ -981,7 +981,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "National Mall west end",
     navigationAddress: "Lincoln Memorial, 2 Lincoln Memorial Cir NW, Washington, DC",
     timCurated: false,
-    saveCount: 664,
+    saveCount: 0,
     recentActivityScore: 73,
     bestTimes: ["Morning", "Golden hour", "Night"],
     tags: ["monument", "architecture", "portraits", "night"],
@@ -1000,7 +1000,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Public valley viewpoints",
     navigationAddress: "Monument Valley Visitor Center, Oljato-Monument Valley, AZ",
     timCurated: true,
-    saveCount: 792,
+    saveCount: 0,
     recentActivityScore: 68,
     bestTimes: ["Sunrise", "Sunset", "Clear nights"],
     tags: ["desert", "landscape", "landmark", "red rock"],
@@ -1019,7 +1019,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Page public overlook",
     navigationAddress: "Horseshoe Bend, Page, AZ",
     timCurated: true,
-    saveCount: 756,
+    saveCount: 0,
     recentActivityScore: 72,
     bestTimes: ["Sunrise", "Late afternoon", "Overcast days"],
     tags: ["desert", "river", "landscape", "overlook"],
@@ -1038,7 +1038,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "South Rim viewpoints",
     navigationAddress: "Mather Point, Grand Canyon Village, AZ",
     timCurated: true,
-    saveCount: 921,
+    saveCount: 0,
     recentActivityScore: 79,
     bestTimes: ["Sunrise", "Sunset", "Storm light"],
     tags: ["canyon", "landscape", "overlook", "national park"],
@@ -1057,7 +1057,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Zion east canyon overlook",
     navigationAddress: "Canyon Overlook Trail, Zion National Park, UT",
     timCurated: true,
-    saveCount: 685,
+    saveCount: 0,
     recentActivityScore: 76,
     bestTimes: ["Sunrise", "Late afternoon", "Clear days"],
     tags: ["canyon", "trail", "landscape", "red rock"],
@@ -1076,7 +1076,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Public amphitheater viewpoints",
     navigationAddress: "Sunrise Point, Bryce Canyon National Park, UT",
     timCurated: false,
-    saveCount: 602,
+    saveCount: 0,
     recentActivityScore: 66,
     bestTimes: ["Sunrise", "Snowy mornings", "Golden hour"],
     tags: ["canyon", "landscape", "snow", "red rock"],
@@ -1095,7 +1095,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Joshua Tree public roads",
     navigationAddress: "Hidden Valley Nature Trail, Joshua Tree National Park, CA",
     timCurated: false,
-    saveCount: 649,
+    saveCount: 0,
     recentActivityScore: 70,
     bestTimes: ["Sunset", "Blue hour", "Clear nights"],
     tags: ["desert", "landscape", "night", "national park"],
@@ -1114,7 +1114,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Public pier and beach",
     navigationAddress: "Santa Monica Pier, Santa Monica, CA",
     timCurated: false,
-    saveCount: 588,
+    saveCount: 0,
     recentActivityScore: 81,
     bestTimes: ["Sunset", "Blue hour", "Night"],
     tags: ["beach", "neon", "waterfront", "street"],
@@ -1133,7 +1133,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Griffith Park public terraces",
     navigationAddress: "Griffith Observatory, 2800 E Observatory Rd, Los Angeles, CA",
     timCurated: true,
-    saveCount: 812,
+    saveCount: 0,
     recentActivityScore: 87,
     bestTimes: ["Golden hour", "Blue hour", "Clear nights"],
     tags: ["skyline", "architecture", "night", "landmark"],
@@ -1152,7 +1152,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Queen Anne public overlook",
     navigationAddress: "Kerry Park, 211 W Highland Dr, Seattle, WA",
     timCurated: true,
-    saveCount: 693,
+    saveCount: 0,
     recentActivityScore: 82,
     bestTimes: ["Sunset", "Blue hour", "Clear afternoons"],
     tags: ["skyline", "overlook", "mountains", "night"],
@@ -1171,7 +1171,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Downtown market halls",
     navigationAddress: "Pike Place Market, 85 Pike St, Seattle, WA",
     timCurated: false,
-    saveCount: 514,
+    saveCount: 0,
     recentActivityScore: 84,
     bestTimes: ["Morning", "Rainy days", "Blue hour"],
     tags: ["market", "street", "color", "waterfront"],
@@ -1190,7 +1190,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Downtown river paths",
     navigationAddress: "Chicago Riverwalk, Chicago, IL",
     timCurated: true,
-    saveCount: 722,
+    saveCount: 0,
     recentActivityScore: 83,
     bestTimes: ["Blue hour", "Golden hour", "Rainy evenings"],
     tags: ["architecture", "waterfront", "reflections", "cityscape"],
@@ -1209,7 +1209,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Loop public plaza",
     navigationAddress: "Cloud Gate, Millennium Park, Chicago, IL",
     timCurated: false,
-    saveCount: 658,
+    saveCount: 0,
     recentActivityScore: 76,
     bestTimes: ["Morning", "Blue hour", "Snowy days"],
     tags: ["reflections", "architecture", "street", "landmark"],
@@ -1228,7 +1228,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Ocean Drive corridor",
     navigationAddress: "Ocean Dr, Miami Beach, FL",
     timCurated: false,
-    saveCount: 541,
+    saveCount: 0,
     recentActivityScore: 82,
     bestTimes: ["Morning", "Golden hour", "Night"],
     tags: ["beach", "architecture", "color", "night"],
@@ -1247,7 +1247,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Public Everglades boardwalk",
     navigationAddress: "Anhinga Trail, Everglades National Park, FL",
     timCurated: false,
-    saveCount: 392,
+    saveCount: 0,
     recentActivityScore: 58,
     bestTimes: ["Morning", "Storm light", "Overcast days"],
     tags: ["wetland", "wildlife", "landscape", "reflections"],
@@ -1266,7 +1266,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Royal and Chartres street area",
     navigationAddress: "French Quarter, New Orleans, LA",
     timCurated: false,
-    saveCount: 567,
+    saveCount: 0,
     recentActivityScore: 80,
     bestTimes: ["Morning", "Blue hour", "Rainy evenings"],
     tags: ["street", "architecture", "color", "night"],
@@ -1285,7 +1285,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Beacon Hill public lane",
     navigationAddress: "Acorn St, Boston, MA",
     timCurated: false,
-    saveCount: 436,
+    saveCount: 0,
     recentActivityScore: 61,
     bestTimes: ["Morning", "Overcast days", "Fall color"],
     tags: ["street", "architecture", "historic", "portraits"],
@@ -1304,7 +1304,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Fairmount museum plaza",
     navigationAddress: "Philadelphia Museum of Art, 2600 Benjamin Franklin Pkwy, Philadelphia, PA",
     timCurated: false,
-    saveCount: 474,
+    saveCount: 0,
     recentActivityScore: 64,
     bestTimes: ["Golden hour", "Morning", "Blue hour"],
     tags: ["architecture", "skyline", "stairs", "landmark"],
@@ -1323,7 +1323,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Rocky Mountain trail lake",
     navigationAddress: "Dream Lake Trail, Rocky Mountain National Park, CO",
     timCurated: true,
-    saveCount: 702,
+    saveCount: 0,
     recentActivityScore: 69,
     bestTimes: ["Sunrise", "Snowy mornings", "Clear afternoons"],
     tags: ["mountains", "lake", "landscape", "trail"],
@@ -1342,7 +1342,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Yellowstone public boardwalk",
     navigationAddress: "Grand Prismatic Spring, Yellowstone National Park, WY",
     timCurated: true,
-    saveCount: 748,
+    saveCount: 0,
     recentActivityScore: 71,
     bestTimes: ["Morning", "Daylight", "Cool weather"],
     tags: ["thermal", "color", "landscape", "national park"],
@@ -1361,7 +1361,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Grand Teton river access",
     navigationAddress: "Schwabacher Landing, Grand Teton National Park, WY",
     timCurated: true,
-    saveCount: 681,
+    saveCount: 0,
     recentActivityScore: 66,
     bestTimes: ["Sunrise", "Morning fog", "Fall color"],
     tags: ["mountains", "river", "reflections", "landscape"],
@@ -1380,7 +1380,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Washington Park garden",
     navigationAddress: "Portland Japanese Garden, 611 SW Kingston Ave, Portland, OR",
     timCurated: false,
-    saveCount: 512,
+    saveCount: 0,
     recentActivityScore: 73,
     bestTimes: ["Overcast days", "Morning", "Fall color"],
     tags: ["garden", "details", "portraits", "rain"],
@@ -1399,7 +1399,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Columbia River Gorge public falls",
     navigationAddress: "Multnomah Falls, OR",
     timCurated: true,
-    saveCount: 634,
+    saveCount: 0,
     recentActivityScore: 70,
     bestTimes: ["Morning", "Overcast days", "Rainy days"],
     tags: ["waterfall", "forest", "long exposure", "landscape"],
@@ -1418,7 +1418,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Lower Broadway corridor",
     navigationAddress: "Broadway, Nashville, TN",
     timCurated: false,
-    saveCount: 489,
+    saveCount: 0,
     recentActivityScore: 82,
     bestTimes: ["Night", "Blue hour", "Rainy evenings"],
     tags: ["street", "neon", "night", "music"],
@@ -1437,7 +1437,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Trocadero public terraces",
     navigationAddress: "Place du Trocadero, Paris, France",
     timCurated: true,
-    saveCount: 938,
+    saveCount: 0,
     recentActivityScore: 88,
     bestTimes: ["Sunrise", "Blue hour", "Rainy evenings"],
     tags: ["landmark", "architecture", "night", "cityscape"],
@@ -1456,7 +1456,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "South Bank river paths",
     navigationAddress: "Tower Bridge, London, UK",
     timCurated: false,
-    saveCount: 821,
+    saveCount: 0,
     recentActivityScore: 83,
     bestTimes: ["Blue hour", "Rainy evenings", "Morning"],
     tags: ["bridge", "landmark", "reflections", "night"],
@@ -1475,7 +1475,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Public perimeter walkways",
     navigationAddress: "Colosseum, Piazza del Colosseo, Rome, Italy",
     timCurated: true,
-    saveCount: 876,
+    saveCount: 0,
     recentActivityScore: 81,
     bestTimes: ["Morning", "Golden hour", "Blue hour"],
     tags: ["landmark", "architecture", "historic", "street"],
@@ -1494,7 +1494,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Shibuya public crossing",
     navigationAddress: "Shibuya Crossing, Tokyo, Japan",
     timCurated: true,
-    saveCount: 914,
+    saveCount: 0,
     recentActivityScore: 94,
     bestTimes: ["Night", "Rainy evenings", "Blue hour"],
     tags: ["street", "neon", "night", "cityscape"],
@@ -1513,7 +1513,7 @@ export const places: Place[] = [
     fuzzyLocationLabel: "Giza Plateau public viewpoints",
     navigationAddress: "Giza Necropolis, Al Haram, Giza Governorate, Egypt",
     timCurated: true,
-    saveCount: 902,
+    saveCount: 0,
     recentActivityScore: 79,
     bestTimes: ["Sunrise", "Golden hour", "Clear afternoons"],
     tags: ["landmark", "desert", "historic", "silhouette"],
@@ -1536,7 +1536,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["fog", "bridge", "golden hour"],
     createdAt: "2026-07-06T14:18:00.000Z",
-    likeCount: 184
+    likeCount: 0
   },
   {
     id: "photo-2",
@@ -1549,7 +1549,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunset",
     tags: ["portraits", "beach", "sunset"],
     createdAt: "2026-07-06T03:05:00.000Z",
-    likeCount: 97
+    likeCount: 0
   },
   {
     id: "photo-3",
@@ -1562,7 +1562,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Late afternoon",
     tags: ["architecture", "reflections"],
     createdAt: "2026-07-05T23:40:00.000Z",
-    likeCount: 131
+    likeCount: 0
   },
   {
     id: "photo-4",
@@ -1575,7 +1575,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["skyline", "night", "tripod"],
     createdAt: "2026-07-05T04:20:00.000Z",
-    likeCount: 203
+    likeCount: 0
   },
   {
     id: "photo-5",
@@ -1588,7 +1588,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["coast", "trail", "moody"],
     createdAt: "2026-07-04T17:55:00.000Z",
-    likeCount: 88
+    likeCount: 0
   },
   {
     id: "photo-6",
@@ -1601,7 +1601,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["street", "reflections", "waterfront"],
     createdAt: "2026-07-03T04:50:00.000Z",
-    likeCount: 76
+    likeCount: 0
   },
   {
     id: "photo-7",
@@ -1614,7 +1614,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["bridge", "fog", "telephoto"],
     createdAt: "2026-07-06T13:52:00.000Z",
-    likeCount: 221
+    likeCount: 0
   },
   {
     id: "photo-8",
@@ -1627,7 +1627,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["landscape", "bridge", "haze"],
     createdAt: "2026-07-05T14:02:00.000Z",
-    likeCount: 168
+    likeCount: 0
   },
   {
     id: "photo-9",
@@ -1640,7 +1640,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Golden hour",
     tags: ["bridge", "overlook", "fog"],
     createdAt: "2026-07-05T03:08:00.000Z",
-    likeCount: 196
+    likeCount: 0
   },
   {
     id: "photo-10",
@@ -1653,7 +1653,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Night",
     tags: ["bridge", "night", "long exposure"],
     createdAt: "2026-07-04T05:12:00.000Z",
-    likeCount: 151
+    likeCount: 0
   },
   {
     id: "photo-11",
@@ -1666,7 +1666,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunset",
     tags: ["beach", "bridge", "coast"],
     createdAt: "2026-07-04T03:22:00.000Z",
-    likeCount: 122
+    likeCount: 0
   },
   {
     id: "photo-12",
@@ -1679,7 +1679,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Golden hour",
     tags: ["landscape", "beach", "silhouette"],
     createdAt: "2026-07-03T03:40:00.000Z",
-    likeCount: 109
+    likeCount: 0
   },
   {
     id: "photo-13",
@@ -1692,7 +1692,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["architecture", "bridge", "portraits"],
     createdAt: "2026-07-02T18:35:00.000Z",
-    likeCount: 86
+    likeCount: 0
   },
   {
     id: "photo-14",
@@ -1705,7 +1705,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Daylight",
     tags: ["waterfront", "bridge", "portraits"],
     createdAt: "2026-07-02T21:05:00.000Z",
-    likeCount: 91
+    likeCount: 0
   },
   {
     id: "photo-15",
@@ -1718,7 +1718,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["architecture", "portraits", "shade"],
     createdAt: "2026-07-02T17:15:00.000Z",
-    likeCount: 143
+    likeCount: 0
   },
   {
     id: "photo-16",
@@ -1731,7 +1731,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Daylight",
     tags: ["skyline", "wide-angle", "haze"],
     createdAt: "2026-07-02T00:30:00.000Z",
-    likeCount: 174
+    likeCount: 0
   },
   {
     id: "photo-17",
@@ -1744,7 +1744,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Late afternoon",
     tags: ["portraits", "skyline", "social"],
     createdAt: "2026-07-01T23:45:00.000Z",
-    likeCount: 74
+    likeCount: 0
   },
   {
     id: "photo-18",
@@ -1757,7 +1757,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Daylight",
     tags: ["architecture", "color", "skyline"],
     createdAt: "2026-07-01T20:20:00.000Z",
-    likeCount: 117
+    likeCount: 0
   },
   {
     id: "photo-19",
@@ -1770,7 +1770,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["skyline", "bay", "architecture"],
     createdAt: "2026-07-01T16:18:00.000Z",
-    likeCount: 101
+    likeCount: 0
   },
   {
     id: "photo-20",
@@ -1783,7 +1783,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["architecture", "reflections", "portraits"],
     createdAt: "2026-06-30T04:05:00.000Z",
-    likeCount: 89
+    likeCount: 0
   },
   {
     id: "photo-21",
@@ -1796,7 +1796,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Night",
     tags: ["street", "color", "night"],
     createdAt: "2026-06-30T05:18:00.000Z",
-    likeCount: 96
+    likeCount: 0
   },
   {
     id: "photo-22",
@@ -1809,7 +1809,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Overcast days",
     tags: ["beach", "coast", "landscape"],
     createdAt: "2026-06-29T22:40:00.000Z",
-    likeCount: 65
+    likeCount: 0
   },
   {
     id: "photo-23",
@@ -1822,7 +1822,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunset",
     tags: ["skyline", "trail", "golden hour"],
     createdAt: "2026-06-29T03:25:00.000Z",
-    likeCount: 83
+    likeCount: 0
   },
   {
     id: "photo-24",
@@ -1835,7 +1835,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Late afternoon",
     tags: ["architecture", "portraits", "stairs"],
     createdAt: "2026-06-28T23:10:00.000Z",
-    likeCount: 72
+    likeCount: 0
   },
   {
     id: "photo-25",
@@ -1848,7 +1848,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Daylight",
     tags: ["street", "color", "portraits"],
     createdAt: "2026-06-28T19:45:00.000Z",
-    likeCount: 111
+    likeCount: 0
   },
   {
     id: "photo-26",
@@ -1861,7 +1861,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Overcast days",
     tags: ["ruins", "coast", "long exposure"],
     createdAt: "2026-06-27T21:22:00.000Z",
-    likeCount: 94
+    likeCount: 0
   },
   {
     id: "photo-27",
@@ -1874,7 +1874,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunset",
     tags: ["beach", "bridge", "fog"],
     createdAt: "2026-06-27T03:50:00.000Z",
-    likeCount: 156
+    likeCount: 0
   },
   {
     id: "photo-28",
@@ -1887,7 +1887,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["waterfront", "street", "reflections"],
     createdAt: "2026-06-26T04:35:00.000Z",
-    likeCount: 104
+    likeCount: 0
   },
   {
     id: "photo-29",
@@ -1900,7 +1900,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["garden", "details", "portraits"],
     createdAt: "2026-07-07T16:10:00.000Z",
-    likeCount: 139
+    likeCount: 0
   },
   {
     id: "photo-30",
@@ -1913,7 +1913,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Overcast days",
     tags: ["garden", "architecture", "calm"],
     createdAt: "2026-07-07T15:42:00.000Z",
-    likeCount: 118
+    likeCount: 0
   },
   {
     id: "photo-31",
@@ -1926,7 +1926,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Daylight",
     tags: ["architecture", "skyline", "reflections"],
     createdAt: "2026-07-07T00:28:00.000Z",
-    likeCount: 93
+    likeCount: 0
   },
   {
     id: "photo-32",
@@ -1939,7 +1939,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Late afternoon",
     tags: ["museum", "architecture", "golden hour"],
     createdAt: "2026-07-06T23:36:00.000Z",
-    likeCount: 107
+    likeCount: 0
   },
   {
     id: "photo-33",
@@ -1952,7 +1952,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["forest", "fog", "trail"],
     createdAt: "2026-07-06T16:05:00.000Z",
-    likeCount: 204
+    likeCount: 0
   },
   {
     id: "photo-34",
@@ -1965,7 +1965,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Overcast days",
     tags: ["forest", "landscape", "moody"],
     createdAt: "2026-07-06T15:22:00.000Z",
-    likeCount: 167
+    likeCount: 0
   },
   {
     id: "photo-35",
@@ -1978,7 +1978,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Golden hour",
     tags: ["coast", "wildflowers", "sunset"],
     createdAt: "2026-07-05T03:58:00.000Z",
-    likeCount: 145
+    likeCount: 0
   },
   {
     id: "photo-36",
@@ -1991,7 +1991,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunset",
     tags: ["coast", "trail", "landscape"],
     createdAt: "2026-07-05T03:17:00.000Z",
-    likeCount: 112
+    likeCount: 0
   },
   {
     id: "photo-37",
@@ -2004,7 +2004,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["street", "food", "color"],
     createdAt: "2026-07-04T17:08:00.000Z",
-    likeCount: 86
+    likeCount: 0
   },
   {
     id: "photo-38",
@@ -2017,7 +2017,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Daylight",
     tags: ["waterfront", "street", "market"],
     createdAt: "2026-07-04T18:14:00.000Z",
-    likeCount: 94
+    likeCount: 0
   },
   {
     id: "photo-39",
@@ -2030,7 +2030,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Overcast days",
     tags: ["stairs", "color", "portraits"],
     createdAt: "2026-07-03T20:12:00.000Z",
-    likeCount: 121
+    likeCount: 0
   },
   {
     id: "photo-40",
@@ -2043,7 +2043,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Late afternoon",
     tags: ["portraits", "color", "stairs"],
     createdAt: "2026-07-03T23:32:00.000Z",
-    likeCount: 104
+    likeCount: 0
   },
   {
     id: "photo-41",
@@ -2056,7 +2056,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Night",
     tags: ["street", "color", "night"],
     createdAt: "2026-07-03T05:05:00.000Z",
-    likeCount: 132
+    likeCount: 0
   },
   {
     id: "photo-42",
@@ -2069,7 +2069,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Late afternoon",
     tags: ["street", "portraits", "color"],
     createdAt: "2026-07-02T23:55:00.000Z",
-    likeCount: 98
+    likeCount: 0
   },
   {
     id: "photo-43",
@@ -2082,7 +2082,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["skyline", "night", "waterfront"],
     createdAt: "2026-07-02T04:38:00.000Z",
-    likeCount: 186
+    likeCount: 0
   },
   {
     id: "photo-44",
@@ -2095,7 +2095,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Night",
     tags: ["skyline", "telephoto", "night"],
     createdAt: "2026-07-01T05:10:00.000Z",
-    likeCount: 158
+    likeCount: 0
   },
   {
     id: "photo-45",
@@ -2108,7 +2108,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["bridge", "skyline", "morning"],
     createdAt: "2026-07-08T12:20:00.000Z",
-    likeCount: 214
+    likeCount: 0
   },
   {
     id: "photo-46",
@@ -2121,7 +2121,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["bridge", "cityscape", "night"],
     createdAt: "2026-07-08T02:42:00.000Z",
-    likeCount: 176
+    likeCount: 0
   },
   {
     id: "photo-47",
@@ -2134,7 +2134,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["architecture", "park", "details"],
     createdAt: "2026-07-07T13:30:00.000Z",
-    likeCount: 128
+    likeCount: 0
   },
   {
     id: "photo-48",
@@ -2147,7 +2147,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Rainy days",
     tags: ["portraits", "fountain", "rain"],
     createdAt: "2026-07-07T20:18:00.000Z",
-    likeCount: 119
+    likeCount: 0
   },
   {
     id: "photo-49",
@@ -2160,7 +2160,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Night",
     tags: ["street", "neon", "night"],
     createdAt: "2026-07-07T04:45:00.000Z",
-    likeCount: 202
+    likeCount: 0
   },
   {
     id: "photo-50",
@@ -2173,7 +2173,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Rainy evenings",
     tags: ["street", "reflections", "color"],
     createdAt: "2026-07-06T03:52:00.000Z",
-    likeCount: 188
+    likeCount: 0
   },
   {
     id: "photo-51",
@@ -2186,7 +2186,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["monument", "reflections", "morning"],
     createdAt: "2026-07-06T10:35:00.000Z",
-    likeCount: 166
+    likeCount: 0
   },
   {
     id: "photo-52",
@@ -2199,7 +2199,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["landmark", "architecture", "blue hour"],
     createdAt: "2026-07-06T01:05:00.000Z",
-    likeCount: 141
+    likeCount: 0
   },
   {
     id: "photo-53",
@@ -2212,7 +2212,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["architecture", "monument", "portraits"],
     createdAt: "2026-07-05T14:25:00.000Z",
-    likeCount: 127
+    likeCount: 0
   },
   {
     id: "photo-54",
@@ -2225,7 +2225,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Night",
     tags: ["night", "monument", "reflections"],
     createdAt: "2026-07-05T03:14:00.000Z",
-    likeCount: 153
+    likeCount: 0
   },
   {
     id: "photo-55",
@@ -2238,7 +2238,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["desert", "landscape", "red rock"],
     createdAt: "2026-07-04T12:10:00.000Z",
-    likeCount: 231
+    likeCount: 0
   },
   {
     id: "photo-56",
@@ -2251,7 +2251,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunset",
     tags: ["desert", "road", "sunset"],
     createdAt: "2026-07-04T02:55:00.000Z",
-    likeCount: 205
+    likeCount: 0
   },
   {
     id: "photo-57",
@@ -2264,7 +2264,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["river", "desert", "wide-angle"],
     createdAt: "2026-07-03T12:38:00.000Z",
-    likeCount: 174
+    likeCount: 0
   },
   {
     id: "photo-58",
@@ -2277,7 +2277,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Overcast days",
     tags: ["canyon", "river", "landscape"],
     createdAt: "2026-07-03T19:15:00.000Z",
-    likeCount: 146
+    likeCount: 0
   },
   {
     id: "photo-59",
@@ -2290,7 +2290,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["canyon", "landscape", "sunrise"],
     createdAt: "2026-07-02T12:05:00.000Z",
-    likeCount: 244
+    likeCount: 0
   },
   {
     id: "photo-60",
@@ -2303,7 +2303,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Storm light",
     tags: ["canyon", "storm", "landscape"],
     createdAt: "2026-07-02T22:10:00.000Z",
-    likeCount: 219
+    likeCount: 0
   },
   {
     id: "photo-61",
@@ -2316,7 +2316,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["canyon", "trail", "red rock"],
     createdAt: "2026-07-01T12:22:00.000Z",
-    likeCount: 190
+    likeCount: 0
   },
   {
     id: "photo-62",
@@ -2329,7 +2329,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Late afternoon",
     tags: ["landscape", "trail", "golden hour"],
     createdAt: "2026-07-01T23:40:00.000Z",
-    likeCount: 167
+    likeCount: 0
   },
   {
     id: "photo-63",
@@ -2342,7 +2342,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["canyon", "red rock", "sunrise"],
     createdAt: "2026-06-30T12:16:00.000Z",
-    likeCount: 154
+    likeCount: 0
   },
   {
     id: "photo-64",
@@ -2355,7 +2355,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Snowy mornings",
     tags: ["snow", "canyon", "landscape"],
     createdAt: "2026-06-30T16:42:00.000Z",
-    likeCount: 138
+    likeCount: 0
   },
   {
     id: "photo-65",
@@ -2368,7 +2368,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunset",
     tags: ["desert", "sunset", "landscape"],
     createdAt: "2026-06-29T02:35:00.000Z",
-    likeCount: 172
+    likeCount: 0
   },
   {
     id: "photo-66",
@@ -2381,7 +2381,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Clear nights",
     tags: ["night", "desert", "stars"],
     createdAt: "2026-06-29T07:05:00.000Z",
-    likeCount: 201
+    likeCount: 0
   },
   {
     id: "photo-67",
@@ -2394,7 +2394,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunset",
     tags: ["beach", "pier", "sunset"],
     createdAt: "2026-06-28T03:18:00.000Z",
-    likeCount: 143
+    likeCount: 0
   },
   {
     id: "photo-68",
@@ -2407,7 +2407,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Night",
     tags: ["neon", "street", "waterfront"],
     createdAt: "2026-06-28T05:40:00.000Z",
-    likeCount: 121
+    likeCount: 0
   },
   {
     id: "photo-69",
@@ -2420,7 +2420,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Golden hour",
     tags: ["architecture", "skyline", "golden hour"],
     createdAt: "2026-06-27T02:55:00.000Z",
-    likeCount: 211
+    likeCount: 0
   },
   {
     id: "photo-70",
@@ -2433,7 +2433,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["skyline", "night", "architecture"],
     createdAt: "2026-06-27T04:38:00.000Z",
-    likeCount: 196
+    likeCount: 0
   },
   {
     id: "photo-71",
@@ -2446,7 +2446,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunset",
     tags: ["skyline", "mountains", "sunset"],
     createdAt: "2026-06-26T03:15:00.000Z",
-    likeCount: 178
+    likeCount: 0
   },
   {
     id: "photo-72",
@@ -2459,7 +2459,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["skyline", "night", "cityscape"],
     createdAt: "2026-06-26T04:22:00.000Z",
-    likeCount: 164
+    likeCount: 0
   },
   {
     id: "photo-73",
@@ -2472,7 +2472,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["market", "street", "color"],
     createdAt: "2026-06-25T16:35:00.000Z",
-    likeCount: 117
+    likeCount: 0
   },
   {
     id: "photo-74",
@@ -2485,7 +2485,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Rainy days",
     tags: ["rain", "street", "neon"],
     createdAt: "2026-06-25T22:12:00.000Z",
-    likeCount: 133
+    likeCount: 0
   },
   {
     id: "photo-75",
@@ -2498,7 +2498,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["architecture", "reflections", "cityscape"],
     createdAt: "2026-06-24T03:50:00.000Z",
-    likeCount: 151
+    likeCount: 0
   },
   {
     id: "photo-76",
@@ -2511,7 +2511,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Rainy evenings",
     tags: ["waterfront", "rain", "reflections"],
     createdAt: "2026-06-24T04:20:00.000Z",
-    likeCount: 139
+    likeCount: 0
   },
   {
     id: "photo-77",
@@ -2524,7 +2524,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["reflections", "architecture", "landmark"],
     createdAt: "2026-06-23T13:22:00.000Z",
-    likeCount: 126
+    likeCount: 0
   },
   {
     id: "photo-78",
@@ -2537,7 +2537,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Snowy days",
     tags: ["snow", "reflections", "cityscape"],
     createdAt: "2026-06-23T17:02:00.000Z",
-    likeCount: 144
+    likeCount: 0
   },
   {
     id: "photo-79",
@@ -2550,7 +2550,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["beach", "architecture", "color"],
     createdAt: "2026-06-22T13:40:00.000Z",
-    likeCount: 132
+    likeCount: 0
   },
   {
     id: "photo-80",
@@ -2563,7 +2563,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Night",
     tags: ["neon", "street", "color"],
     createdAt: "2026-06-22T02:25:00.000Z",
-    likeCount: 149
+    likeCount: 0
   },
   {
     id: "photo-81",
@@ -2576,7 +2576,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["wetland", "wildlife", "morning"],
     createdAt: "2026-06-21T12:50:00.000Z",
-    likeCount: 88
+    likeCount: 0
   },
   {
     id: "photo-82",
@@ -2589,7 +2589,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Storm light",
     tags: ["wetland", "storm", "reflections"],
     createdAt: "2026-06-21T20:35:00.000Z",
-    likeCount: 101
+    likeCount: 0
   },
   {
     id: "photo-83",
@@ -2602,7 +2602,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["architecture", "street", "historic"],
     createdAt: "2026-06-20T14:05:00.000Z",
-    likeCount: 124
+    likeCount: 0
   },
   {
     id: "photo-84",
@@ -2615,7 +2615,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Rainy evenings",
     tags: ["night", "rain", "color"],
     createdAt: "2026-06-20T03:28:00.000Z",
-    likeCount: 137
+    likeCount: 0
   },
   {
     id: "photo-85",
@@ -2628,7 +2628,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["historic", "street", "architecture"],
     createdAt: "2026-06-19T13:15:00.000Z",
-    likeCount: 109
+    likeCount: 0
   },
   {
     id: "photo-86",
@@ -2641,7 +2641,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Fall color",
     tags: ["portraits", "historic", "color"],
     createdAt: "2026-06-19T18:45:00.000Z",
-    likeCount: 118
+    likeCount: 0
   },
   {
     id: "photo-87",
@@ -2654,7 +2654,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Golden hour",
     tags: ["stairs", "skyline", "architecture"],
     createdAt: "2026-06-18T23:35:00.000Z",
-    likeCount: 113
+    likeCount: 0
   },
   {
     id: "photo-88",
@@ -2667,7 +2667,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["architecture", "landmark", "blue hour"],
     createdAt: "2026-06-18T01:56:00.000Z",
-    likeCount: 104
+    likeCount: 0
   },
   {
     id: "photo-89",
@@ -2680,7 +2680,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["mountains", "lake", "reflections"],
     createdAt: "2026-06-17T12:05:00.000Z",
-    likeCount: 182
+    likeCount: 0
   },
   {
     id: "photo-90",
@@ -2693,7 +2693,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Snowy mornings",
     tags: ["snow", "mountains", "trail"],
     createdAt: "2026-06-17T16:20:00.000Z",
-    likeCount: 156
+    likeCount: 0
   },
   {
     id: "photo-91",
@@ -2706,7 +2706,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["thermal", "color", "steam"],
     createdAt: "2026-06-16T14:10:00.000Z",
-    likeCount: 167
+    likeCount: 0
   },
   {
     id: "photo-92",
@@ -2719,7 +2719,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Daylight",
     tags: ["thermal", "color", "landscape"],
     createdAt: "2026-06-16T19:30:00.000Z",
-    likeCount: 158
+    likeCount: 0
   },
   {
     id: "photo-93",
@@ -2732,7 +2732,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["mountains", "reflections", "river"],
     createdAt: "2026-06-15T12:18:00.000Z",
-    likeCount: 193
+    likeCount: 0
   },
   {
     id: "photo-94",
@@ -2745,7 +2745,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Fall color",
     tags: ["mountains", "fall", "landscape"],
     createdAt: "2026-06-15T16:55:00.000Z",
-    likeCount: 171
+    likeCount: 0
   },
   {
     id: "photo-95",
@@ -2758,7 +2758,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Rainy days",
     tags: ["garden", "rain", "details"],
     createdAt: "2026-06-14T18:25:00.000Z",
-    likeCount: 122
+    likeCount: 0
   },
   {
     id: "photo-96",
@@ -2771,7 +2771,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Fall color",
     tags: ["garden", "color", "portraits"],
     createdAt: "2026-06-14T20:12:00.000Z",
-    likeCount: 116
+    likeCount: 0
   },
   {
     id: "photo-97",
@@ -2784,7 +2784,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["waterfall", "forest", "mist"],
     createdAt: "2026-06-13T15:30:00.000Z",
-    likeCount: 159
+    likeCount: 0
   },
   {
     id: "photo-98",
@@ -2797,7 +2797,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Rainy days",
     tags: ["waterfall", "long exposure", "rain"],
     createdAt: "2026-06-13T19:40:00.000Z",
-    likeCount: 148
+    likeCount: 0
   },
   {
     id: "photo-99",
@@ -2810,7 +2810,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Night",
     tags: ["neon", "music", "street"],
     createdAt: "2026-06-12T04:10:00.000Z",
-    likeCount: 136
+    likeCount: 0
   },
   {
     id: "photo-100",
@@ -2823,7 +2823,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Rainy evenings",
     tags: ["rain", "neon", "night"],
     createdAt: "2026-06-12T02:22:00.000Z",
-    likeCount: 129
+    likeCount: 0
   },
   {
     id: "photo-101",
@@ -2836,7 +2836,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["landmark", "architecture", "morning"],
     createdAt: "2026-06-11T05:50:00.000Z",
-    likeCount: 235
+    likeCount: 0
   },
   {
     id: "photo-102",
@@ -2849,7 +2849,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["landmark", "night", "reflections"],
     createdAt: "2026-06-11T20:40:00.000Z",
-    likeCount: 218
+    likeCount: 0
   },
   {
     id: "photo-103",
@@ -2862,7 +2862,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["bridge", "reflections", "night"],
     createdAt: "2026-06-10T20:55:00.000Z",
-    likeCount: 189
+    likeCount: 0
   },
   {
     id: "photo-104",
@@ -2875,7 +2875,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Rainy evenings",
     tags: ["rain", "bridge", "street"],
     createdAt: "2026-06-10T19:25:00.000Z",
-    likeCount: 172
+    likeCount: 0
   },
   {
     id: "photo-105",
@@ -2888,7 +2888,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Morning",
     tags: ["historic", "architecture", "landmark"],
     createdAt: "2026-06-09T06:30:00.000Z",
-    likeCount: 211
+    likeCount: 0
   },
   {
     id: "photo-106",
@@ -2901,7 +2901,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Blue hour",
     tags: ["historic", "night", "architecture"],
     createdAt: "2026-06-09T20:15:00.000Z",
-    likeCount: 197
+    likeCount: 0
   },
   {
     id: "photo-107",
@@ -2914,7 +2914,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Night",
     tags: ["street", "neon", "night"],
     createdAt: "2026-06-08T12:35:00.000Z",
-    likeCount: 248
+    likeCount: 0
   },
   {
     id: "photo-108",
@@ -2927,7 +2927,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Rainy evenings",
     tags: ["rain", "street", "color"],
     createdAt: "2026-06-08T10:52:00.000Z",
-    likeCount: 226
+    likeCount: 0
   },
   {
     id: "photo-109",
@@ -2940,7 +2940,7 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Sunrise",
     tags: ["desert", "historic", "landmark"],
     createdAt: "2026-06-07T04:45:00.000Z",
-    likeCount: 234
+    likeCount: 0
   },
   {
     id: "photo-110",
@@ -2953,6 +2953,6 @@ export const photos: Photo[] = [
     shotAtTimeOfDay: "Golden hour",
     tags: ["silhouette", "desert", "landmark"],
     createdAt: "2026-06-07T17:55:00.000Z",
-    likeCount: 219
+    likeCount: 0
   }
 ];

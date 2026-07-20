@@ -1,93 +1,83 @@
-// Pure, DOM-free helper (Task 9, docs/demo-to-product-audit.md item 10): the Place/Photo/User
-// data model has no attribution field, but a meaningful slice of catalog imagery is sourced
-// from Wikimedia Commons (and, historically, Unsplash) rather than Oculi's own storage. This
-// derives a small attribution label + link straight from the image URL's host/path so it can be
-// surfaced next to full-size photo renders without adding a new stored field. Returns null for
-// anything we don't need/can't ethically claim attribution for: Oculi's own Supabase storage
-// uploads, local/generated demo assets, and transient blob/data preview URLs.
-export type ImageAttribution = {
-  label: string;
-  href: string;
-};
+import type { PhotoAttribution } from "./types";
 
 const WIKIMEDIA_HOST = "upload.wikimedia.org";
-const UNSPLASH_HOSTS = new Set(["images.unsplash.com", "source.unsplash.com"]);
 
 /**
- * Derives the Wikimedia Commons "File:" page URL from a Wikimedia upload URL's filename.
- * Upload URLs look like:
- *   https://upload.wikimedia.org/wikipedia/commons/a/ab/Some_File_Name.jpg
- *   https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Some_File_Name.jpg/640px-Some_File_Name.jpg
- * In both cases the original filename is the path segment immediately after the two
- * single-character hash directories (and, for thumbnails, before the extra "/thumb/" segment
- * and the resized-copy segment at the end).
+ * Derives a Wikimedia Commons file-page URL from a hotlinked
+ * upload.wikimedia.org image URL, without needing per-photo curation.
+ *
+ * Handles both URL shapes seen in lib/data.ts:
+ *   .../wikipedia/commons/thumb/c/c2/Golden_Gate_Bridge_by_night.jpg/960px-Golden_Gate_Bridge_by_night.jpg
+ *   .../wikipedia/commons/c/c2/Golden_Gate_Bridge_by_night.jpg
+ * by capturing the filename immediately after the two single/double-hex
+ * hash directories, ignoring any trailing "/960px-..." resize segment.
+ *
+ * Returns null for any URL that isn't hosted on upload.wikimedia.org, or
+ * whose path doesn't match the expected Commons layout.
  */
-function wikimediaFilePageUrl(pathname: string): string | null {
-  const segments = pathname.split("/").filter(Boolean);
-  const isThumb = segments[2] === "thumb";
-  // Non-thumb: ["wikipedia","commons", hash1, hash2, filename]
-  // Thumb:     ["wikipedia","commons","thumb", hash1, hash2, filename, resizedFilename]
-  const filenameIndex = isThumb ? 5 : 4;
-  const filename = segments[filenameIndex];
+export function deriveWikimediaCommonsUrl(imageUrl: string): string | null {
+  if (typeof imageUrl !== "string" || !imageUrl.includes(WIKIMEDIA_HOST)) return null;
+
+  const match = imageUrl.match(/\/wikipedia\/commons\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\/([^/]+)(?:\/.+)?$/i);
+  if (!match) return null;
+
+  const filename = match[1];
   if (!filename) return null;
 
-  return `https://commons.wikimedia.org/wiki/File:${filename}`;
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(filename);
+  } catch {
+    decoded = filename;
+  }
+
+  return `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(decoded)}`;
 }
 
 /**
- * Returns attribution { label, href } for an externally hosted image URL, or null when the
- * image is Oculi's own storage, a local/static asset, or a transient blob/data preview URL that
- * has no stable source to link to.
+ * Resolves the attribution to show for a photo: an explicit attribution
+ * (curated on the Photo record) always wins; otherwise derive an interim
+ * "Wikimedia Commons" credit from the image URL when possible. Returns
+ * null when neither is available (e.g. local/generated placeholder art,
+ * uploaded photos, or non-Wikimedia hotlinks) -- callers should render
+ * nothing in that case, never a fabricated credit.
  */
-export function attributionForImageUrl(url: string): ImageAttribution | null {
-  if (!url) return null;
-  if (url.startsWith("blob:") || url.startsWith("data:")) return null;
-
-  let parsed: URL;
-  try {
-    parsed = new URL(url);
-  } catch {
-    // Not an absolute URL -- local/relative asset path (e.g. /generated/...), no attribution.
-    return null;
+export function attributionForPhoto(
+  imageUrl: string,
+  explicit?: PhotoAttribution | null,
+): PhotoAttribution | null {
+  if (explicit && (explicit.author || explicit.license || explicit.sourceUrl)) {
+    return explicit;
   }
 
-  if (parsed.hostname === WIKIMEDIA_HOST) {
-    const filePageUrl = wikimediaFilePageUrl(parsed.pathname);
-    return {
-      label: "via Wikimedia Commons",
-      href: filePageUrl ?? "https://commons.wikimedia.org/",
-    };
-  }
+  const commonsUrl = deriveWikimediaCommonsUrl(imageUrl);
+  if (!commonsUrl) return null;
 
-  if (UNSPLASH_HOSTS.has(parsed.hostname)) {
-    return {
-      label: "via Unsplash",
-      href: "https://unsplash.com/",
-    };
-  }
-
-  return null;
+  return { license: "Wikimedia Commons", sourceUrl: commonsUrl };
 }
 
-// Hosts whose images should be fetched by the *browser*, directly, instead of being proxied
-// through next/image's server-side optimizer (/_next/image). Wikimedia's CDN rate-limits the
-// optimizer hard: every image request funnels through the one server IP, and upload.wikimedia.org
-// answers cold-start bursts with 429s ("upstream image response failed"), degrading whole pages
-// to the ResilientImage fallback. Before the next/image migration, browsers hit Wikimedia's CDN
-// from per-user IPs with proper caching and this never happened -- `unoptimized` restores exactly
-// that fetch behavior while keeping next/image's lazy-loading/layout benefits. Own-storage
-// (Supabase) and local assets stay optimized.
-const OPTIMIZER_BYPASS_HOSTS = new Set([WIKIMEDIA_HOST]);
+/** Short display label for an attribution, e.g. "Wikimedia Commons" or "Jane Doe · CC BY-SA". */
+export function attributionLabel(attribution: PhotoAttribution): string {
+  return [attribution.author, attribution.license].filter(Boolean).join(" · ") || "Source";
+}
 
 /**
- * Returns true when an image URL must be rendered with next/image's `unoptimized` prop so the
- * browser fetches it directly from the source CDN rather than through /_next/image.
+ * Hosts the next/image optimizer is allowed to fetch from. Must mirror
+ * next.config.mjs `images.remotePatterns` -- an <Image> whose remote src
+ * falls outside this list throws/400s instead of rendering, so callers use
+ * `isOptimizerAllowedSrc` to fall back to `unoptimized` for sources we
+ * can't vouch for (user-typed avatar URLs, blob:/data: upload previews).
  */
-export function shouldBypassImageOptimizer(url: string): boolean {
+const OPTIMIZER_ALLOWED_HOSTS = new Set(["upload.wikimedia.org", "xlzknvhiuhtcqmqrypqh.supabase.co"]);
+
+/** True when `src` is safe to run through the next/image optimizer: a local public asset or an allowlisted https host. */
+export function isOptimizerAllowedSrc(src: string): boolean {
+  if (typeof src !== "string" || !src) return false;
+  if (src.startsWith("/")) return true;
   try {
-    return OPTIMIZER_BYPASS_HOSTS.has(new URL(url).hostname);
+    const url = new URL(src);
+    return url.protocol === "https:" && OPTIMIZER_ALLOWED_HOSTS.has(url.hostname);
   } catch {
-    // Relative/local path, blob:, data:, etc. -- not a remote host we need to bypass for.
     return false;
   }
 }

@@ -27,6 +27,10 @@ export default defineConfig({
     env: {
       NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",
       NEXT_PUBLIC_SUPABASE_ANON_KEY: "playwright-demo-key",
+      // Skip the next/image optimizer under e2e: its server-side fetches to
+      // the remote image hosts hang in offline/sandboxed runs and stall the
+      // page `load` event (see next.config.mjs images.unoptimized).
+      OCULI_UNOPTIMIZED_IMAGES: "1",
     },
   },
   projects: [

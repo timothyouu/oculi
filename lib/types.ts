@@ -43,6 +43,19 @@ export type Place = {
   coverPhotoUrl: string;
 };
 
+/**
+ * Optional per-image credit. Populated where derivable (see
+ * lib/image-attribution.ts) rather than hand-curated across the whole seed
+ * catalog -- e.g. Wikimedia-hosted photos derive a Commons file-page link
+ * and license label at render time from `imageUrl` alone, without needing
+ * this field set on the seed row.
+ */
+export type PhotoAttribution = {
+  author?: string;
+  license?: string;
+  sourceUrl?: string;
+};
+
 export type Photo = {
   id: string;
   placeId: string;
@@ -55,6 +68,8 @@ export type Photo = {
   tags: string[];
   createdAt: string;
   likeCount: number;
+  /** Explicit attribution, when known. Falls back to derivation from imageUrl if absent. */
+  attribution?: PhotoAttribution;
 };
 
 export type AddPhotoInput = {

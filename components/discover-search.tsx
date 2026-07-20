@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import { MapPin, Search, UserRound } from "lucide-react";
+import { isOptimizerAllowedSrc } from "@/lib/image-attribution";
 import { normalizeSearchText } from "../lib/search-corrections";
 import { rankSearchResults } from "../lib/search-ranking";
 import type { Place, User } from "../lib/types";
-import { ResilientImage } from "./resilient-image";
 
 type DiscoverSearchProps = {
   places: Place[];
@@ -135,7 +136,14 @@ export function DiscoverSearch({ places, users, onOpenPlace, onOpenProfile }: Di
                       className="flex min-w-0 items-center gap-3 rounded-xl border border-[var(--line)] bg-[var(--paper-strong)] p-2 text-left outline-none transition hover:bg-white"
                       onClick={() => onOpenPlace(place.id)}
                     >
-                      <ResilientImage src={place.coverPhotoUrl} alt="" className="size-12 rounded-lg object-cover" />
+                      <Image
+                        src={place.coverPhotoUrl}
+                        alt=""
+                        width={48}
+                        height={48}
+                        unoptimized={!isOptimizerAllowedSrc(place.coverPhotoUrl)}
+                        className="size-12 shrink-0 rounded-lg object-cover"
+                      />
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-semibold text-[var(--ink)]">{place.name}</span>
                         <span className="flex items-center gap-1 truncate text-xs text-[var(--muted)]">
@@ -155,7 +163,14 @@ export function DiscoverSearch({ places, users, onOpenPlace, onOpenProfile }: Di
                     className="flex min-w-0 items-center gap-3 rounded-xl border border-[var(--line)] bg-[var(--paper-strong)] p-2 text-left outline-none transition hover:bg-white"
                     onClick={() => onOpenProfile(user.id)}
                   >
-                    <ResilientImage src={user.avatarUrl} alt="" className="size-11 rounded-full object-cover" />
+                    <Image
+                      src={user.avatarUrl}
+                      alt=""
+                      width={44}
+                      height={44}
+                      unoptimized={!isOptimizerAllowedSrc(user.avatarUrl)}
+                      className="size-11 shrink-0 rounded-full object-cover"
+                    />
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-semibold text-[var(--ink)]">{user.name}</span>
                       <span className="flex items-center gap-1 truncate text-xs text-[var(--muted)]">

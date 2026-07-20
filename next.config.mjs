@@ -1,30 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    // Remote hosts actually present in lib/data.ts imageUrl/avatarUrl/coverPhotoUrl values,
-    // plus the Supabase storage host that serves user-uploaded photos (Task 9, image pipeline
-    // migration to next/image, docs/demo-to-product-audit.md item 10).
+    // Escape hatch for environments without outbound network to the image
+    // hosts (the Playwright e2e web server sets this): the optimizer's
+    // server-side fetch to upload.wikimedia.org would otherwise hang for
+    // ~10s per image and block the page `load` event past test timeouts.
+    unoptimized: process.env.OCULI_UNOPTIMIZED_IMAGES === "1",
     remotePatterns: [
+      // Seed catalog cover/photo hotlinks (lib/data.ts) -- see CLAUDE.md
+      // Architecture Notes on demo-to-product Task 9 (image pipeline).
       {
-        // Curated place/photo imagery sourced from Wikimedia Commons (see lib/image-attribution.ts).
-        // NOTE: Wikimedia images are rendered with `unoptimized` (shouldBypassImageOptimizer) so
-        // browsers fetch them directly -- Wikimedia 429-rate-limits the optimizer's single server
-        // IP. This entry stays as a safety net so any future non-bypassed next/image usage of a
-        // Wikimedia URL degrades to slow/429 instead of throwing an unconfigured-host error.
         protocol: "https",
         hostname: "upload.wikimedia.org",
-        pathname: "/**",
+        pathname: "/wikipedia/commons/**",
       },
+      // Real uploaded photos land in Supabase Storage's public bucket URL
+      // (lib/remote-state.ts `saveRemoteCatalogPhoto` -> oculi-photos bucket).
       {
-        // Legacy/possible Unsplash imagery -- also handled by ResilientImage's dead
-        // source.unsplash.com rewrite and by lib/image-attribution.ts.
-        protocol: "https",
-        hostname: "images.unsplash.com",
-        pathname: "/**",
-      },
-      {
-        // User-uploaded photos, served from the Supabase "oculi-photos" storage bucket
-        // (lib/remote-state.ts uploadRemotePhoto / getPublicUrl).
         protocol: "https",
         hostname: "xlzknvhiuhtcqmqrypqh.supabase.co",
         pathname: "/storage/v1/object/public/**",
