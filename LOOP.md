@@ -326,3 +326,45 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   known incident class) — after clearing it, 5 consecutive 11/11 runs. All
   verification residue cleaned. Next: items 10+4 arc per the opus plan
   (4 sequenced goals), then 7, 8, 6.
+- 2026-07-20 (wave 3): Arc Goal 1 (final zeroing + aggregate functions),
+  arc Goal 2 (ranking rescale), item 7 (image pipeline) and item 8 (legal
+  stubs) DONE. Goal 1 (Sonnet): lib/data.ts zeroed (61 saveCount /
+  15 followerCount [user-guest was already 0] / 110 likeCount → 0),
+  taxonomy migration regenerated, new migrations 20260719000100
+  (zero_seed_baselines, idempotent jsonb updates on the catalog) and
+  20260719000200 (user_follow_counts()/photo_like_counts() SECURITY DEFINER
+  functions on the place_save_counts() pattern) applied to the remote and
+  version-realigned; orchestrator SQL-verified zero nonzero baselines
+  remotely, both functions execute, verify-db-sync local passes (final
+  green run of the guard before its planned retirement in Goal 4). Goal 2
+  (Sonnet): saveCount ranking signals rescaled to the real-count regime via
+  a shared log2 saveCountBoost in lib/scoring.ts (replacing saveCount*100
+  and the unreachable >650 "Highly saved" cutoff with a floor-3 + top-decile
+  isHighlySaved), lib/map-clusters.ts (nodeScore), and
+  lib/saved-route-planner.ts (replacing saveCount/18); new
+  scoring/map-clusters test files (17 tests), saved-route-planner tests
+  unaffected (fixtures self-contained). Item 7 (Sonnet, survived one
+  API-limit interruption and resumed): next/image in all 8 raw-<img>
+  components with resilient-image.tsx keeping its fallback semantics
+  (fill-in-sized-wrapper pattern, eager default so the "/" LCP stays);
+  remotePatterns for upload.wikimedia.org + the Supabase storage host; new
+  pure lib/image-attribution.ts (derives Wikimedia Commons source links
+  from URLs at render time — data.ts untouched per the DB-flip direction;
+  16 tests) with credit chips auto-rendered on large images;
+  OCULI_UNOPTIMIZED_IMAGES env gate added to next.config +
+  playwright.config webServer because the optimizer's server-side Wikimedia
+  fetches hang in the sandbox and stalled page load (no spec assertions
+  changed). Item 8 (Haiku): static /terms + /privacy placeholder pages
+  (clearly labeled, report@oculi-demo.example takedown contact on both —
+  doubles as item 6's intake) with a footer Terms · Privacy link in
+  app-shell. Orchestrator evidence: tsc 0, vitest 147/147, next lint zero
+  warnings (no-img-element gone), next build 0, playwright 11/11 ×3 (one
+  isolated failure right after lint/.next churn re-ran green), live on
+  localhost:3000: next/image rendering with Wikimedia Commons credit links
+  on the twin-peaks hero/photos, "3 saves" = pure real rows over the zeroed
+  baseline, /terms serving the labeled placeholder + contact. Also cleaned
+  232 accidentally-tracked .playwright-mcp artifacts and gitignored the
+  dir. Remaining: arc Goal 3 (DB-authoritative hydration + follower/like
+  overlays, folding in item 6's rejected-photo filter), arc Goal 4
+  (demote data.ts, retire verify-db-sync into a DB-querying integrity
+  check).

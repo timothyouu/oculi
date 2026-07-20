@@ -1,3 +1,4 @@
+import { saveCountBoost } from "./scoring";
 import type { Photo, Place } from "./types";
 
 export type PlacePhotoNode = {
@@ -22,8 +23,17 @@ type ClusterPoint = {
   y: number;
 };
 
+// `place.saveCount * 100` assumed fictional four-figure seed counts; real saveCount now
+// starts at 0 and grows a row at a time, so a flat weight either drowns it out completely
+// (at the old scale, next to a `photoCount * 100_000` term) or, worse, lets one real save
+// swing a tie between two zero-save places by an amount unrelated to how many saves it
+// actually took. `saveCountBoost` (shared with lib/scoring.ts) log-scales it instead: a
+// place's photo count still decides which node "wins" a cluster in the overwhelming
+// majority of cases (that term dominates by construction), but among places tied on
+// photoCount and curation, a place with a few real saves now nudges ahead of an
+// otherwise-identical all-zero place, without needing hundreds of saves to register.
 export function nodeScore(place: Place, photoCount: number) {
-  return photoCount * 100_000 + place.saveCount * 100 + place.recentActivityScore + (place.timCurated ? 10_000 : 0);
+  return photoCount * 100_000 + (place.timCurated ? 10_000 : 0) + place.recentActivityScore + saveCountBoost(place.saveCount);
 }
 
 export function buildPlacePhotoNodes(places: Place[], photos: Photo[]) {
@@ -52,7 +62,7 @@ export function clusterSizeForZoom(zoom: number) {
   return 112;
 }
 
-function buildCluster(groupId: string, group: PlacePhotoNode[]): PlacePhotoCluster {
+export function buildCluster(groupId: string, group: PlacePhotoNode[]): PlacePhotoCluster {
   const sortedGroup = [...group].sort((a, b) => b.score - a.score || a.place.name.localeCompare(b.place.name));
   const photoCount = sortedGroup.reduce((total, node) => total + node.photoCount, 0);
   const score = sortedGroup.reduce((total, node) => total + node.score, 0);

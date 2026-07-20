@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { Bookmark, Compass, Map, PlusCircle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDemoState } from "@/lib/demo-state";
+import { isOptimizerAllowedSrc } from "@/lib/image-attribution";
 import type { User } from "../lib/types";
 import { PersistenceStatusBanner } from "./persistence-status-banner";
 import { TopNav } from "./top-nav";
@@ -96,6 +99,18 @@ export function AppShell({
         ) : null}
       </main>
 
+      <footer className="border-t border-[var(--line)] px-5 py-6 text-center text-sm text-[var(--muted)] sm:px-8">
+        <div className="mx-auto max-w-[1320px]">
+          <Link href="/terms" className="hover:text-[var(--ink)]">
+            Terms
+          </Link>
+          {" · "}
+          <Link href="/privacy" className="hover:text-[var(--ink)]">
+            Privacy
+          </Link>
+        </div>
+      </footer>
+
       <nav
         className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--line)] bg-[var(--mobile-nav-bg)] px-3 pb-[env(safe-area-inset-bottom)] pt-2 shadow-[0_-10px_30px_rgba(39,34,27,0.08)] backdrop-blur-xl md:hidden"
         aria-label="Mobile navigation"
@@ -131,7 +146,14 @@ export function AppShell({
                     aria-hidden="true"
                   >
                     {shellCurrentUser?.avatarUrl ? (
-                      <img src={shellCurrentUser.avatarUrl} alt="" className="size-full object-cover" />
+                      <Image
+                        src={shellCurrentUser.avatarUrl}
+                        alt=""
+                        width={28}
+                        height={28}
+                        unoptimized={!isOptimizerAllowedSrc(shellCurrentUser.avatarUrl)}
+                        className="size-full object-cover"
+                      />
                     ) : (
                       <Icon className="size-4" aria-hidden="true" />
                     )}

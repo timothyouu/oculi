@@ -1,3 +1,4 @@
+import { saveCountBoost } from "./scoring";
 import type { Photo, Place } from "./types";
 
 export type ShootRouteKind = "morning" | "sunset";
@@ -82,7 +83,14 @@ function routeScore(kind: ShootRouteKind, place: Place, photos: Photo[]) {
   const text = normalizedText(place, photos);
   const aliases = kind === "morning" ? morningAliases : sunsetAliases;
   const lightScore = aliases.reduce((score, alias) => score + (text.includes(alias) ? 42 : 0), 0);
-  const activityScore = place.recentActivityScore * 1.3 + place.saveCount / 18;
+  // `place.saveCount / 18` assumed fictional four-figure seed counts (e.g. 900 saves ->
+  // 50 points); with real saveCount starting at 0 and growing one row at a time, that
+  // division floors it to an amount that never meaningfully registers (9 real saves is
+  // still only 0.5). Swapped for the shared log-scaled `saveCountBoost` (lib/scoring.ts)
+  // so a place's first few real saves land a real, felt bump here too -- on the same
+  // order as a light-time alias match (42) or one extra saved photo (18) -- while still
+  // leaving lightScore/photoScore/curationScore as the dominant signals overall.
+  const activityScore = place.recentActivityScore * 1.3 + saveCountBoost(place.saveCount);
   const photoScore = photos.length * 18;
   const curationScore = place.timCurated ? 24 : 0;
   const accessibilityPenalty = text.includes("difficult") || text.includes("low tide") ? 8 : 0;

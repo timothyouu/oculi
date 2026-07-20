@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { Bookmark, Check, Grid2X2, Heart, MapPin, X } from "lucide-react";
 import { useDemoState } from "@/lib/demo-state";
+import { attributionForPhoto, attributionLabel, isOptimizerAllowedSrc } from "@/lib/image-attribution";
 import { formatPlaceLocation } from "@/lib/location-labels";
 import type { EditableProfile } from "@/lib/types";
 import type { Photo, Place, User } from "../lib/types";
@@ -84,9 +86,13 @@ export function ProfileSummary({
       <div className="rounded-[10px] border border-[var(--line)] bg-[var(--paper-strong)] p-8 shadow-[0_16px_42px_rgba(39,34,27,0.08)]">
         <div className="grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)_170px]">
           <div className="space-y-6">
-            <img
+            {/* Avatar URLs are user-editable (see EditProfile below), so run unoptimized for hosts outside the allowlist. */}
+            <Image
               src={user.avatarUrl}
               alt=""
+              width={208}
+              height={208}
+              unoptimized={!isOptimizerAllowedSrc(user.avatarUrl)}
               className="size-52 rounded-full bg-zinc-200 object-cover shadow-sm max-sm:size-32"
             />
             <FavoriteTags tags={favoriteTags} />
@@ -190,10 +196,13 @@ export function ProfileSummary({
               onClick={() => setSelectedPhotoId(photo.id)}
               aria-label={`Open photo details: ${photo.caption}`}
             >
-              <img
+              <Image
                 src={photo.imageUrl}
                 alt={photo.caption}
-                className="size-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                fill
+                sizes="(min-width: 1024px) 33vw, 33vw"
+                unoptimized={!isOptimizerAllowedSrc(photo.imageUrl)}
+                className="object-cover transition duration-300 group-hover:scale-[1.03]"
               />
               <span className="pointer-events-none absolute inset-0 bg-black/0 transition group-hover:bg-black/10 group-focus-visible:bg-black/10" />
               <span className="sr-only">
@@ -211,7 +220,15 @@ export function ProfileSummary({
           <div className="grid gap-4 sm:grid-cols-2">
             {savedPlaces.map((place) => (
               <button key={place.id} type="button" className="grid grid-cols-[72px_minmax(0,1fr)_32px] items-center gap-4 rounded-lg border border-[var(--line)] bg-[var(--paper-strong)] p-3 text-left" onClick={() => onOpenPlace?.(place.id)}>
-                <img src={place.coverPhotoUrl} alt="" className="aspect-[4/3] rounded object-cover" />
+                <Image
+                  src={place.coverPhotoUrl}
+                  alt=""
+                  width={144}
+                  height={108}
+                  sizes="72px"
+                  unoptimized={!isOptimizerAllowedSrc(place.coverPhotoUrl)}
+                  className="aspect-[4/3] rounded object-cover"
+                />
                 <span className="min-w-0">
                   <span className="block truncate text-base text-[var(--ink)]">{place.name}</span>
                   <span className="block truncate text-sm text-[var(--muted)]">{formatPlaceLocation(place, areas)}</span>
@@ -268,6 +285,7 @@ function PhotoDetailModal({
     day: "numeric",
     year: "numeric",
   }).format(new Date(photo.createdAt));
+  const photoCredit = attributionForPhoto(photo.imageUrl, photo.attribution);
 
   return (
     <div
@@ -281,7 +299,15 @@ function PhotoDetailModal({
     >
       <div className="grid max-h-[min(860px,calc(100vh-3rem))] w-full max-w-5xl overflow-hidden rounded-lg bg-[var(--paper-strong)] text-[var(--ink)] shadow-[0_24px_70px_rgba(0,0,0,0.25)] md:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
         <div className="grid min-h-0 place-items-center bg-black">
-          <img src={photo.imageUrl} alt={photo.caption} className="max-h-[70vh] w-full object-contain md:max-h-[min(860px,calc(100vh-3rem))]" />
+          <Image
+            src={photo.imageUrl}
+            alt={photo.caption}
+            width={1600}
+            height={1067}
+            sizes="(min-width: 768px) 55vw, 100vw"
+            unoptimized={!isOptimizerAllowedSrc(photo.imageUrl)}
+            className="h-auto max-h-[70vh] w-full object-contain md:max-h-[min(860px,calc(100vh-3rem))]"
+          />
         </div>
         <div className="min-h-0 overflow-auto p-5">
           <div className="flex items-start justify-between gap-4">
@@ -323,6 +349,20 @@ function PhotoDetailModal({
               <div className="border-t border-[var(--line)] pt-4">
                 <dt className="text-[var(--muted)]">Details</dt>
                 <dd className="mt-1 font-semibold">{photo.metadataText}</dd>
+              </div>
+            ) : null}
+            {photoCredit ? (
+              <div className="flex items-center justify-between gap-4 border-t border-[var(--line)] pt-4">
+                <dt className="text-[var(--muted)]">Source</dt>
+                <dd className="font-semibold">
+                  {photoCredit.sourceUrl ? (
+                    <a href={photoCredit.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="underline-offset-2 hover:underline">
+                      {attributionLabel(photoCredit)}
+                    </a>
+                  ) : (
+                    attributionLabel(photoCredit)
+                  )}
+                </dd>
               </div>
             ) : null}
           </dl>
@@ -469,7 +509,15 @@ function EditProfileModal({
 
         <div className="mt-6 grid gap-5 sm:grid-cols-[132px_minmax(0,1fr)]">
           <div className="space-y-3">
-            <img src={draft.avatarUrl} alt="" className="size-28 rounded-full bg-[var(--chip)] object-cover ring-1 ring-[var(--line)]" />
+            {/* draft.avatarUrl is whatever the user pasted -- never send unknown hosts through the optimizer. */}
+            <Image
+              src={draft.avatarUrl || "/generated/default-avatar.svg"}
+              alt=""
+              width={112}
+              height={112}
+              unoptimized={!isOptimizerAllowedSrc(draft.avatarUrl)}
+              className="size-28 rounded-full bg-[var(--chip)] object-cover ring-1 ring-[var(--line)]"
+            />
             <p className="text-xs leading-5 text-[var(--muted)]">Paste an image URL to change the demo avatar.</p>
           </div>
           <div className="grid gap-3">

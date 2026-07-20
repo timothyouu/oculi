@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { Camera, ImagePlus, LocateFixed, MapPin, Sun, X } from "lucide-react";
 import { sortByDistanceFrom } from "../lib/geo";
 import { rankSearchResults } from "../lib/search-ranking";
@@ -220,7 +221,16 @@ export function UploadModal({ open, places, initialPlaceId, onClose, onSubmit }:
               <span className="mb-2 block text-base text-[var(--ink)]">Photo preview</span>
               <span className={cx("relative flex min-h-72 cursor-pointer items-center justify-center overflow-hidden rounded-[12px] border border-dashed border-[var(--line)] bg-[var(--chip)] outline-none transition hover:border-[var(--moss)]", previewUrl && "border-solid bg-zinc-100")}>
                 {previewUrl ? (
-                  <img src={previewUrl} alt="Selected upload preview" className="h-full max-h-[460px] w-full object-cover" />
+                  // blob: object URL from the file picker -- the next/image
+                  // optimizer can't fetch it, so render unoptimized.
+                  <Image
+                    src={previewUrl}
+                    alt="Selected upload preview"
+                    width={1200}
+                    height={900}
+                    unoptimized
+                    className="h-full max-h-[460px] w-full object-cover"
+                  />
                 ) : (
                   <span className="flex flex-col items-center gap-2 text-sm text-[var(--muted)]">
                     <ImagePlus className="size-8" aria-hidden="true" />
