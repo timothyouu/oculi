@@ -198,6 +198,15 @@ type PersistPayload = { state: DemoState; ownerId: string };
 
 export function DemoStateProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<DemoState>(() => createInitialDemoState());
+  // `seedCatalog` (the bundled lib/data.ts snapshot) is only ever the
+  // *first-paint/offline* cache now (docs/demo-to-product-implementation.md
+  // item 10 step 2) -- the database is the authoritative catalog.
+  // `loadRemoteDemoCatalog` below replaces this with DB-authoritative rows
+  // per kind as soon as it resolves, falling back to this same seed per
+  // kind only on a fetch error or a suspiciously-empty successful result.
+  // This is not a loading state (no spinner/skeleton) -- Tim's call is to
+  // keep instant first paint using the bundled seed rather than block on
+  // the network, per docs/demo-to-product-implementation.md item 10 step 2.
   const [catalog, setCatalog] = useState(seedCatalog);
   const [hasLoadedRemoteState, setHasLoadedRemoteState] = useState(false);
   const [stateOwnerId, setStateOwnerId] = useState(currentUserId);

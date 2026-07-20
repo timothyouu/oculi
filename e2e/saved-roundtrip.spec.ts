@@ -143,6 +143,16 @@ async function mockSupabaseState(page: Page) {
     await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
   });
 
+  // Real follower/like count RPCs (docs/demo-to-product-implementation.md
+  // item 4), mirroring place_save_counts above.
+  await page.route("**/rest/v1/rpc/user_follow_counts**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+
+  await page.route("**/rest/v1/rpc/photo_like_counts**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+
   await page.route("**/rest/v1/oculi_demo_catalog_items**", async (route) => {
     await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
   });
