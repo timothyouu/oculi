@@ -1,3 +1,10 @@
+// Fresh-environment seed-bootstrap generator (docs/demo-to-product-implementation.md
+// item 10, step 3) -- NOT a sync tool. Now that the database is the source of
+// truth for live catalog content, this script exists only to regenerate the
+// migration that seeds a brand-new Supabase project from lib/data.ts's
+// one-time seed data. Running it against an already-live project will
+// overwrite any content edits made directly in the database (dashboard/SQL)
+// with the stale lib/data.ts snapshot -- don't run it as a "resync" step.
 // Emits a migration that upserts every place's full payload (now carrying sceneTypes /
 // easeOfVisit / bestLight) into oculi_demo_catalog_items. Run: npx tsx scripts/gen-taxonomy-migration.mts
 import { writeFileSync } from "node:fs";

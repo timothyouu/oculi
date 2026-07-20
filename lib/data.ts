@@ -1,5 +1,17 @@
 import type { Area, Photo, Place, User } from "./types";
 
+// One-time seed only (docs/demo-to-product-implementation.md item 10, step 3).
+// The database (`oculi_demo_catalog_items` in Supabase project
+// `xlzknvhiuhtcqmqrypqh`) is the source of truth for live place/photo/user/area
+// content -- `lib/remote-state.ts` hydrates the app from the DB and only falls
+// back to this module's exports when a fetch errors or (suspiciously) returns
+// zero rows (see `resolveCatalogKind` in `lib/catalog-hydration.ts`). Edits to
+// live content go to the database (dashboard/SQL for now, see item 10 step 4),
+// not here. This file remains useful for: (a) bootstrapping a brand-new
+// environment's migrations via `scripts/gen-taxonomy-migration.mts`, and
+// (b) the seed-content author placeholders below (`currentUserId`,
+// `lib/storage.ts` starter uploads) that predate real auth and are not
+// identity-bearing at runtime.
 export const currentUserId = "user-guest";
 
 export const users: User[] = [
