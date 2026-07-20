@@ -1,6 +1,14 @@
 import { expect, type Page, test } from "@playwright/test";
 
-const CURRENT_USER_ID = "user-guest";
+// Uploads are attributed to the real viewer identity, never the fictional
+// "user-guest" seed persona (docs/demo-to-product-implementation.md item 3).
+// In this spec's environment the Supabase auth endpoints are NOT mocked and
+// point at a dead host (see playwright.config.ts), so `ensureAuthSession`
+// resolves null and the app falls back to the persisted `visitor-<uuid>`
+// identity from localStorage (`oculi:visitor-id`) -- that id is what every
+// upload-related assertion below checks against.
+const SEED_PERSONA_ID = "user-guest";
+const VISITOR_ID_STORAGE_KEY = "oculi:visitor-id";
 const PHOTO_BUCKET = "oculi-photos";
 
 type DemoState = {
@@ -170,11 +178,20 @@ test("publishes an uploaded photo to Supabase state and renders it after reload"
   await expect(dialog).toBeHidden();
   await expect(page.getByAltText(caption).first()).toBeVisible();
 
+  // The real viewer identity in this no-auth mock environment: the
+  // persisted `visitor-<uuid>` fallback, never the fictional seed persona.
+  const visitorId = await page.evaluate(
+    (key) => window.localStorage.getItem(key),
+    VISITOR_ID_STORAGE_KEY,
+  );
+  expect(visitorId).toMatch(/^visitor-/);
+  expect(visitorId).not.toBe(SEED_PERSONA_ID);
+
   await expect
     .poll(() => supabase.getState().uploadedPhotos.find((photo) => photo.caption === caption))
     .toMatchObject({
       placeId: "golden-gate-overlook",
-      userId: CURRENT_USER_ID,
+      userId: visitorId,
       metadataText: "70mm, f/5.6",
       shotAtTimeOfDay: "Blue hour",
       tags: ["bridge", "smoke-test", "blue hour"],
@@ -182,11 +199,14 @@ test("publishes an uploaded photo to Supabase state and renders it after reload"
     });
 
   const persistedPhoto = supabase.getState().uploadedPhotos.find((photo) => photo.caption === caption);
-  expect(persistedPhoto?.imageUrl).toContain(`/storage/v1/object/public/${PHOTO_BUCKET}/${CURRENT_USER_ID}/upload-`);
+  expect(persistedPhoto?.userId).not.toBe(SEED_PERSONA_ID);
+  expect(persistedPhoto?.imageUrl).toContain(`/storage/v1/object/public/${PHOTO_BUCKET}/${visitorId}/upload-`);
   expect(supabase.uploads).toHaveLength(1);
   expect(supabase.upserts.some((upsert) => upsert.state.uploadedPhotos.some((photo) => photo.caption === caption))).toBe(true);
 
-  await page.goto(`/profile/${CURRENT_USER_ID}`);
+  // The uploader's own profile lives at their real id and shows their
+  // upload; the display profile still defaults to the John Doe template.
+  await page.goto(`/profile/${visitorId}`);
   await expect(page.getByRole("heading", { name: "John Doe" })).toBeVisible();
   await expect(page.getByAltText(caption)).toBeVisible();
 });

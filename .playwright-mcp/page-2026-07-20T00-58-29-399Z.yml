@@ -1,0 +1,98 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - banner [ref=f1e3]:
+      - generic [ref=f1e4]:
+        - button "Go to Oculi discover feed" [ref=f1e5] [cursor=pointer]:
+          - generic [ref=f1e7]: oculi
+        - navigation "Primary navigation" [ref=f1e8]:
+          - button "Discover" [ref=f1e9] [cursor=pointer]
+          - button "Map" [ref=f1e11] [cursor=pointer]
+          - button "Saved" [ref=f1e12] [cursor=pointer]
+          - button "Add Photo" [active] [ref=f1e13] [cursor=pointer]
+        - generic [ref=f1e14]:
+          - button "Notifications" [ref=f1e15] [cursor=pointer]
+          - button "Open John Doe's profile" [ref=f1e20] [cursor=pointer]
+          - button "Open settings" [ref=f1e21] [cursor=pointer]
+    - main [ref=f1e25]:
+      - region "Discover content" [ref=f1e26]:
+        - generic [ref=f1e27]:
+          - region "Search places and profiles" [ref=f1e28]:
+            - generic [ref=f1e31]:
+              - generic "Choose what search looks through" [ref=f1e32]:
+                - button "Places" [pressed] [ref=f1e33] [cursor=pointer]
+                - button "Profiles" [ref=f1e37] [cursor=pointer]
+              - generic [ref=f1e41]:
+                - generic [ref=f1e45]: Search places
+                - textbox "Search places" [ref=f1e46]:
+                  - /placeholder: Search places by name, mood, light, or location
+          - region "Swipe discovery" [ref=f1e53]:
+            - generic [ref=f1e55]:
+              - generic [ref=f1e56]:
+                - paragraph [ref=f1e57]: Quick start
+                - heading "Discover photo spots" [level=2] [ref=f1e58]
+                - generic [ref=f1e59]:
+                  - generic [ref=f1e60]: Swipe right to save
+                  - generic [ref=f1e64]: Swipe left to pass
+                  - generic [ref=f1e69]: Tap for details
+              - button "Got it" [ref=f1e73] [cursor=pointer]
+            - article [ref=f1e75]:
+              - generic [ref=f1e76]:
+                - button "Open Brooklyn Bridge Pedestrian Walkway" [ref=f1e77] [cursor=pointer]:
+                  - img "Empty boards, soft East River haze, and cables doing all the leading-line work." [ref=f1e78]
+                - generic [ref=f1e79]: New post
+                - generic [ref=f1e81]:
+                  - button "from Noah Singh @noahcitylight" [ref=f1e82] [cursor=pointer]
+                  - button "Brooklyn Bridge Pedestrian Walkway" [ref=f1e84] [cursor=pointer]
+            - generic [ref=f1e94]:
+              - button "Go back one card" [ref=f1e95] [cursor=pointer]
+              - button "Pass on Brooklyn Bridge Pedestrian Walkway" [ref=f1e99] [cursor=pointer]
+              - button "Save Brooklyn Bridge Pedestrian Walkway and show next" [ref=f1e103] [cursor=pointer]
+              - button "View details for Brooklyn Bridge Pedestrian Walkway" [ref=f1e106] [cursor=pointer]
+            - paragraph [ref=f1e109]: 117 photos left in your queue
+    - dialog [ref=f1e111]:
+      - generic [ref=f1e112]:
+        - generic [ref=f1e113]:
+          - generic [ref=f1e114]:
+            - heading "Add Photo" [level=2] [ref=f1e115]
+            - paragraph [ref=f1e116]: Share a photo post
+          - button "Close upload modal" [ref=f1e117] [cursor=pointer]
+        - generic [ref=f1e121]:
+          - generic [ref=f1e122]:
+            - generic [ref=f1e123]: Photo preview
+            - generic [ref=f1e124] [cursor=pointer]: Choose an image to preview
+            - button "Photo preview Choose an image to preview" [ref=f1e130]
+          - generic [ref=f1e131]:
+            - generic [ref=f1e132]: Where was this taken?
+            - generic [ref=f1e133]:
+              - combobox "Start typing a place name..." [ref=f1e134]
+              - button "Suggest places near my current location" [ref=f1e135] [cursor=pointer]
+            - paragraph [ref=f1e139]: Type a place name, or tap the locate icon for nearby suggestions.
+          - generic [ref=f1e140]:
+            - generic [ref=f1e141]: Caption
+            - textbox "Caption" [ref=f1e142]:
+              - /placeholder: Fog lifted for six minutes
+          - generic [ref=f1e143]:
+            - generic [ref=f1e144]:
+              - generic [ref=f1e145]: Best light
+              - generic [ref=f1e146]:
+                - combobox "Best light ⌄" [ref=f1e147]:
+                  - option "Golden hour" [selected]
+                  - option "Sunrise"
+                  - option "Sunset"
+                  - option "Blue hour"
+                  - option "Fog"
+                  - option "Night"
+                  - option "Daylight"
+                - generic: ⌄
+            - generic [ref=f1e148]:
+              - generic [ref=f1e149]: Camera detail
+              - textbox "Camera detail" [ref=f1e150]:
+                - /placeholder: 70mm, f/5.6
+          - generic [ref=f1e151]:
+            - generic [ref=f1e152]: Tags
+            - textbox "Tags" [ref=f1e153]:
+              - /placeholder: Fog, Bridge, Golden hour
+          - generic [ref=f1e154]:
+            - button "Cancel" [ref=f1e155] [cursor=pointer]
+            - button "Publish photo" [disabled] [ref=f1e156]
+  - alert [ref=f1e110]

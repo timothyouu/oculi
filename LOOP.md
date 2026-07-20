@@ -292,3 +292,37 @@ measures — never implements); Sonnet 5 subagents execute scoped goals.
   and post-reload reconcile still migrates nothing else. All verification
   residue (relation/state rows, both anon auth users) deleted; dev server
   stopped. Committing as wave 1; next: item 3 (retire user-guest).
+- 2026-07-19 (wave 2): Item 3 (retire user-guest) DONE after one rescoped
+  follow-up. Sonnet subagent audited all ~15 currentUserId call sites
+  (classification table in its report): identity-bearing sites now resolve
+  the real auth uid — new lib/current-user.ts (buildCurrentUser/
+  buildVisibleUsers, 6 tests) puts the viewer's real id on `currentUser`,
+  a new resolveOwnerId() awaits ensureAuthSession before every remote write
+  (no placeholder fallback), uploadPhotoFile takes a required ownerId and
+  writes Storage under `<uid>/…`, remote-state/remote-route-plans lost their
+  user-guest default params (ownerId now required), getDemoVisitorId's SSR/
+  storage-error fallbacks return ephemeral visitor ids, and saved-panel
+  defers route-plan saves until authUser resolves. user-guest survives only
+  as the seed persona/starter-content author; the John Doe display fields
+  remain the anonymous visitor's default editable profile. Follow-up (my
+  dispatch omitted e2e from DONE WHEN): two specs encoded the old behavior —
+  photo-upload.spec.ts now asserts the upload's userId is the real visitor
+  id (not user-guest) incl. the Storage-path and /profile/<id> assertions,
+  and saved-route-planner.spec.ts gained a **/auth/v1/** mock session so the
+  new no-placeholder guard can proceed, with the insert assertion
+  strengthened to the fake session's user_id. That work also exposed and
+  fixed a real app gap: app/profile/[userId]/page.tsx called notFound() on
+  first render of your own profile URL before identity bootstrap resolved —
+  now renders an aria-busy shell until hasLoadedRemoteState, then 404s only
+  if the id is definitively unknown. Orchestrator evidence: tsc 0, vitest
+  117/117, next build 0, and live on localhost:3000 against the remote with
+  a throwaway anon identity: upload landed in public.photos with owner_id =
+  session uid, Storage object at <uid>/upload-….png (owner = uid; deleted
+  afterwards by that owner via the Storage API, re-proving owner-scoped
+  RLS), UI attribution "by John Doe" as the viewer's own, profile at
+  /profile/<real-uid> with Edit profile + real 0-follower count; zero
+  user-guest rows written anywhere. e2e flakiness during verification was
+  root-caused to a stale .next shared between next build and next dev (the
+  known incident class) — after clearing it, 5 consecutive 11/11 runs. All
+  verification residue cleaned. Next: items 10+4 arc per the opus plan
+  (4 sequenced goals), then 7, 8, 6.

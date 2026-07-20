@@ -1,0 +1,91 @@
+- generic [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - banner [ref=f2e3]:
+      - generic [ref=f2e4]:
+        - button "Go to Oculi discover feed" [ref=f2e5] [cursor=pointer]:
+          - generic [ref=f2e7]: oculi
+        - navigation "Primary navigation" [ref=f2e8]:
+          - button "Discover" [ref=f2e9] [cursor=pointer]
+          - button "Map" [ref=f2e11] [cursor=pointer]
+          - button "Saved" [ref=f2e12] [cursor=pointer]
+          - button "Add Photo" [ref=f2e13] [cursor=pointer]
+        - generic [ref=f2e14]:
+          - button "Notifications" [ref=f2e15] [cursor=pointer]
+          - button "Open John Doe's profile" [ref=f2e20] [cursor=pointer]
+          - button "Open settings" [ref=f2e21] [cursor=pointer]
+    - main [ref=f2e25]:
+      - region "Discover content" [ref=f2e26]:
+        - article [ref=f2e27]:
+          - generic [ref=f2e28]:
+            - generic [ref=f2e29]:
+              - button "Back" [ref=f2e30] [cursor=pointer]
+              - img "Twin Peaks hero photo" [ref=f2e34]
+            - complementary [ref=f2e35]:
+              - generic [ref=f2e36]: Curated
+              - generic [ref=f2e38]:
+                - heading "Twin Peaks" [level=1] [ref=f2e39]
+                - paragraph [ref=f2e40]: San Francisco, California
+                - paragraph [ref=f2e44]: Public hilltop viewpoints
+              - generic [ref=f2e45]:
+                - button "Bookmarked" [active] [ref=f2e146] [cursor=pointer]
+                - button "Copy link to Twin Peaks" [ref=f2e49] [cursor=pointer]
+                - button "Add Twin Peaks to your shoot-day route" [ref=f2e53] [cursor=pointer]
+              - generic [ref=f2e58]:
+                - generic [ref=f2e59]: 643 saves
+                - generic [ref=f2e62]: Moderate
+              - generic [ref=f2e67]:
+                - heading "Shoot notes" [level=2] [ref=f2e68]
+                - generic [ref=f2e69]:
+                  - paragraph [ref=f2e70]: Layered city views with skyline depth and fast-changing weather.
+                  - generic [ref=f2e71]:
+                    - generic [ref=f2e72]:
+                      - term [ref=f2e73]: Best light
+                      - definition [ref=f2e74]: Sunrise · Night
+                    - generic [ref=f2e75]:
+                      - term [ref=f2e76]: Scene
+                      - definition [ref=f2e77]: Landscape · Cityscape
+                    - generic [ref=f2e78]:
+                      - term [ref=f2e79]: Ease of visit
+                      - definition [ref=f2e80]: Moderate
+                    - generic [ref=f2e81]:
+                      - term [ref=f2e82]: Good for
+                      - definition [ref=f2e83]: skyline · night · wide-angle
+              - generic [ref=f2e84]:
+                - region "Live Mapbox map" [ref=f2e85]:
+                  - generic [ref=f2e86]:
+                    - generic:
+                      - region "Map" [ref=f2e127]
+                      - img "Select Twin Peaks, 2 photos" [ref=f2e147] [cursor=pointer]:
+                        - generic [ref=f2e148]: "2"
+                    - generic:
+                      - generic [ref=f2e130]:
+                        - button "Zoom in" [ref=f2e131] [cursor=pointer]
+                        - button "Zoom out" [ref=f2e133] [cursor=pointer]
+                        - button "Reset bearing to north" [ref=f2e135]
+                      - generic:
+                        - button "Toggle attribution" [ref=f2e138] [cursor=pointer]
+                        - link "Mapbox homepage" [ref=f2e141] [cursor=pointer]:
+                          - /url: https://www.mapbox.com/
+                - button "Open in Map" [ref=f2e87] [cursor=pointer]
+          - region "Photos from Twin Peaks" [ref=f2e90]:
+            - generic [ref=f2e91]:
+              - heading "Photos here" [level=2] [ref=f2e92]
+              - button "Add photo" [ref=f2e93] [cursor=pointer]
+            - generic [ref=f2e94]:
+              - article [ref=f2e95]:
+                - generic [ref=f2e96]:
+                  - button "Open Twin Peaks detail" [ref=f2e97] [cursor=pointer]:
+                    - img "The city lights came on before the wind got too brutal." [ref=f2e98]
+                  - generic [ref=f2e99]:
+                    - button "by Eli Brooks @elibrooks" [ref=f2e100] [cursor=pointer]
+                    - button "Twin Peaks" [ref=f2e102] [cursor=pointer]
+                - button "Like photo" [ref=f2e108] [cursor=pointer]: "203"
+              - article [ref=f2e111]:
+                - generic [ref=f2e112]:
+                  - button "Open Twin Peaks detail" [ref=f2e113] [cursor=pointer]:
+                    - img "Windy, but the skyline depth is unmatched when the haze is light." [ref=f2e114]
+                  - generic [ref=f2e115]:
+                    - button "by Sam Wilder @samwide" [ref=f2e116] [cursor=pointer]
+                    - button "Twin Peaks" [ref=f2e118] [cursor=pointer]
+                - button "Like photo" [ref=f2e124] [cursor=pointer]: "174"
+  - alert [ref=f2e142]

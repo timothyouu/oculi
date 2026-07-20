@@ -1,0 +1,52 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - banner [ref=f1e3]:
+      - generic [ref=f1e4]:
+        - button "Go to Oculi discover feed" [ref=f1e5] [cursor=pointer]:
+          - generic [ref=f1e7]: oculi
+        - navigation "Primary navigation" [ref=f1e8]:
+          - button "Discover" [ref=f1e9] [cursor=pointer]
+          - button "Map" [ref=f1e11] [cursor=pointer]
+          - button "Saved" [ref=f1e12] [cursor=pointer]
+          - button "Add Photo" [ref=f1e13] [cursor=pointer]
+        - generic [ref=f1e14]:
+          - button "Notifications" [ref=f1e15] [cursor=pointer]
+          - button "Open John Doe's profile" [ref=f1e20] [cursor=pointer]
+          - button "Open settings" [ref=f1e21] [cursor=pointer]
+    - main [ref=f1e25]:
+      - region "Discover content" [ref=f1e26]:
+        - generic [ref=f1e27]:
+          - region "Search places and profiles" [ref=f1e28]:
+            - generic [ref=f1e31]:
+              - generic "Choose what search looks through" [ref=f1e32]:
+                - button "Places" [pressed] [ref=f1e33] [cursor=pointer]
+                - button "Profiles" [ref=f1e37] [cursor=pointer]
+              - generic [ref=f1e41]:
+                - generic [ref=f1e45]: Search places
+                - textbox "Search places" [ref=f1e46]:
+                  - /placeholder: Search places by name, mood, light, or location
+          - region "Swipe discovery" [ref=f1e53]:
+            - generic [ref=f1e55]:
+              - generic [ref=f1e56]:
+                - paragraph [ref=f1e57]: Quick start
+                - heading "Discover photo spots" [level=2] [ref=f1e58]
+                - generic [ref=f1e59]:
+                  - generic [ref=f1e60]: Swipe right to save
+                  - generic [ref=f1e64]: Swipe left to pass
+                  - generic [ref=f1e69]: Tap for details
+              - button "Got it" [ref=f1e73] [cursor=pointer]
+            - article [ref=f1e75]:
+              - generic [ref=f1e76]:
+                - button "Open Twin Peaks" [ref=f1e175] [cursor=pointer]:
+                  - img "Item 3 verification upload" [ref=f1e176]
+                - generic [ref=f1e79]: New post
+                - generic [ref=f1e81]:
+                  - button "from John Doe @john.doe" [ref=f1e177] [cursor=pointer]
+                  - button "Twin Peaks" [ref=f1e178] [cursor=pointer]
+            - generic [ref=f1e94]:
+              - button "Go back one card" [ref=f1e95] [cursor=pointer]
+              - button "Pass on Twin Peaks" [ref=f1e179] [cursor=pointer]
+              - button "Save Twin Peaks and show next" [ref=f1e180] [cursor=pointer]
+              - button "View details for Twin Peaks" [ref=f1e181] [cursor=pointer]
+            - paragraph [ref=f1e109]: 118 photos left in your queue
+  - alert [ref=f1e110]

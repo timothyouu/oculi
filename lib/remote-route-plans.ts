@@ -1,4 +1,3 @@
-import { currentUserId } from "./data";
 import { getSupabaseBrowserClient } from "./supabase";
 import type { ShootRouteKind } from "./saved-route-planner";
 
@@ -13,7 +12,12 @@ export type RoutePlanStopDraft = {
 };
 
 export type RoutePlanDraft = {
-  userId?: string;
+  // Required and must be the caller's real, resolved auth uid -- route_plans
+  // is RLS-scoped to `auth.uid()` with no legacy fallback policy (see
+  // 20260710000100_rls_lockdown_add_owner_policies.sql), so there is no safe
+  // default to fall back to here. Callers must resolve a real identity (or
+  // decline to save) before calling this -- see components/saved-panel.tsx.
+  userId: string;
   kind: ShootRouteKind | "custom";
   name: string;
   stops: RoutePlanStopDraft[];
@@ -49,7 +53,7 @@ function normalizeStop(stop: RoutePlanStopDraft) {
   };
 }
 
-export async function fetchRemoteRoutePlans(userId = currentUserId): Promise<RemoteRoutePlan[]> {
+export async function fetchRemoteRoutePlans(userId: string): Promise<RemoteRoutePlan[]> {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return [];
 
@@ -89,7 +93,7 @@ export async function saveRemoteRoutePlan(input: RoutePlanDraft): Promise<string
   const { data: plan, error: planError } = await supabase
     .from(ROUTE_PLANS_TABLE)
     .insert({
-      user_id: input.userId ?? currentUserId,
+      user_id: input.userId,
       kind: input.kind,
       name: input.name,
     })

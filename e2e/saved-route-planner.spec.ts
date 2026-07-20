@@ -51,7 +51,86 @@ function createInitialState(): DemoState {
 
 const SEEDED_SAVED_PLACE_IDS = ["golden-gate-overlook", "baker-beach", "battery-spencer", "twin-peaks"];
 
+// Saving a route plan now requires a resolved real auth identity: route_plans
+// rows are RLS-scoped to auth.uid() and components/saved-panel.tsx refuses to
+// save while `authUser` is still null (docs/demo-to-product-implementation.md
+// item 3 -- no more fictional user-guest fallback). This spec's environment
+// points at a dead Supabase host (playwright.config.ts), so the auth
+// endpoints must be mocked for `ensureAuthSession` (lib/auth-session.ts) to
+// resolve: it calls `supabase.auth.getSession()` (local-storage only, no
+// network on a fresh profile) and then `supabase.auth.signInAnonymously()`,
+// which POSTs to `/auth/v1/signup` and expects a session JSON back.
+const FAKE_AUTH_USER_ID = "9b1de552-0000-4000-8000-3f4b6e2a7c11";
+
+function base64Url(value: object): string {
+  return Buffer.from(JSON.stringify(value)).toString("base64url");
+}
+
+function buildFakeAnonymousSession() {
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const expiresAt = nowSeconds + 3600;
+  const user = {
+    id: FAKE_AUTH_USER_ID,
+    aud: "authenticated",
+    role: "authenticated",
+    email: "",
+    phone: "",
+    app_metadata: {},
+    user_metadata: {},
+    // No identities = anonymous session (see lib/auth-session.ts
+    // sessionToAuthUser).
+    identities: [],
+    is_anonymous: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+  // A syntactically valid (unsigned-checkable) JWT so any client-side decode
+  // of the access token finds a real header/payload.
+  const accessToken = [
+    base64Url({ alg: "HS256", typ: "JWT" }),
+    base64Url({ sub: FAKE_AUTH_USER_ID, role: "authenticated", is_anonymous: true, exp: expiresAt }),
+    "playwright-fake-signature",
+  ].join(".");
+
+  return {
+    access_token: accessToken,
+    token_type: "bearer",
+    expires_in: 3600,
+    expires_at: expiresAt,
+    refresh_token: "playwright-fake-refresh-token",
+    user,
+  };
+}
+
+async function mockSupabaseAuth(page: Page) {
+  await page.route("**/auth/v1/**", async (route) => {
+    const request = route.request();
+    const url = request.url();
+    const session = buildFakeAnonymousSession();
+
+    // Anonymous sign-in (`signInAnonymously`) posts to /auth/v1/signup and
+    // token refreshes post to /auth/v1/token -- both expect a session JSON.
+    if (request.method() === "POST" && (url.includes("/auth/v1/signup") || url.includes("/auth/v1/token"))) {
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(session) });
+      return;
+    }
+
+    if (url.includes("/auth/v1/user")) {
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(session.user) });
+      return;
+    }
+
+    if (url.includes("/auth/v1/logout")) {
+      await route.fulfill({ status: 204 });
+      return;
+    }
+
+    await route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
+  });
+}
+
 async function mockSavedPlannerSupabase(page: Page) {
+  await mockSupabaseAuth(page);
   let persistedState = createInitialState();
   let savedPlaceIds = [...SEEDED_SAVED_PLACE_IDS];
   const routePlanInserts: unknown[] = [];
@@ -240,6 +319,9 @@ test("edits, drag-reorders, and saves a generated route plan from the Saved page
   expect(supabase.routePlanInserts).toHaveLength(1);
   expect(supabase.routeStopInserts).toHaveLength(1);
   expect(supabase.routePlanInserts[0]).toMatchObject({
+    // The plan row must carry the real (mocked) auth session's user id,
+    // never the fictional "user-guest" seed persona.
+    user_id: FAKE_AUTH_USER_ID,
     kind: "morning",
     name: expect.stringContaining("Morning route"),
   });

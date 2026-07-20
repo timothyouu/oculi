@@ -233,11 +233,19 @@ export function SavedPanel({
       return;
     }
 
+    // Route plans are RLS-scoped to the authenticated auth.uid(), not the
+    // fictional demo profile id. `authUser` is briefly null while the
+    // anonymous-first auth bootstrap is still resolving -- defer rather than
+    // falling back to any placeholder identity, since a route plan saved
+    // under the wrong owner id could never be read back by its real owner.
+    if (!authUser) {
+      setRouteStatus("Still setting up your session -- try saving again in a moment.");
+      return;
+    }
+
     try {
       const routePlanId = await saveRemoteRoutePlan({
-        // Route plans are RLS-scoped to the authenticated auth.uid(), not the
-        // fictional demo profile id, so this must be the real session owner.
-        userId: authUser?.id,
+        userId: authUser.id,
         kind: activeRoute.id,
         name: `${activeRoute.title} - ${new Date().toLocaleDateString()}`,
         stops: activeRoute.stops.map((stop, index) => ({

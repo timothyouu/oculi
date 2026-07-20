@@ -316,20 +316,30 @@ export function saveMapDetailLevel(level: number) {
   }
 }
 
+function makeVisitorId(): string {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? `visitor-${crypto.randomUUID()}`
+    : `visitor-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+// Falls back to a fresh, ephemeral (non-persisted) visitor id rather than
+// the fictional `currentUserId` seed persona when there's no `window` (SSR)
+// or localStorage itself is unavailable/throws (docs/demo-to-product-implementation.md
+// item 3) -- so a state row can never be written to Supabase keyed by
+// `user-guest` even in that edge case. It won't survive a reload without
+// working storage, but that's the best any id-persistence scheme can do
+// without storage; it's still a real, distinct identity, never the seed one.
 export function getDemoVisitorId(): string {
-  if (typeof window === "undefined") return currentUserId;
+  if (typeof window === "undefined") return makeVisitorId();
 
   try {
     const stored = window.localStorage.getItem(DEMO_VISITOR_ID_STORAGE_KEY);
     if (stored) return stored;
 
-    const id =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? `visitor-${crypto.randomUUID()}`
-        : `visitor-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    const id = makeVisitorId();
     window.localStorage.setItem(DEMO_VISITOR_ID_STORAGE_KEY, id);
     return id;
   } catch {
-    return currentUserId;
+    return makeVisitorId();
   }
 }

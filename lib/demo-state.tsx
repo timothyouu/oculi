@@ -9,6 +9,7 @@ import {
   type AuthUser,
   type GoogleUpgradeResult,
 } from "./auth-session";
+import { buildCurrentUser, buildVisibleUsers } from "./current-user";
 import { currentUserId } from "./data";
 import { createRetryScheduler, type PersistenceStatus, type RetryScheduler } from "./persistence-status";
 import { applyBootstrapState, type RelationKey } from "./bootstrap-merge";
@@ -392,9 +393,36 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
     const areas = catalog.areas;
     const places = catalog.places;
     const seedPhotos = catalog.photos;
+
+    // `viewerId` is the real identity for this visitor -- the authenticated
+    // Supabase user (`stateOwnerId`, which resolves to `session.user.id` for
+    // both anonymous and Google-linked sessions, see the bootstrap effect
+    // above), not the fictional `currentUserId` seed persona from
+    // lib/data.ts (docs/demo-to-product-implementation.md item 3: retiring
+    // `user-guest` as "you"). `seedCurrentUser` is only consulted for its
+    // *display* fields (name "John Doe", avatar, bio, etc.) -- the anonymous
+    // visitor's default, editable display profile -- never for identity.
+    // Before the auth bootstrap effect resolves, `stateOwnerId` is still its
+    // initial placeholder value (the fictional `currentUserId`), so this
+    // still renders sensibly during that brief loading window; no remote
+    // write ever uses `viewerId` directly (see `resolveOwnerId` below, which
+    // waits on `hasLoadedRemoteState`/`ensureAuthSession` instead).
+    const viewerId = stateOwnerId;
     const seedCurrentUser = users.find((user) => user.id === currentUserId) ?? users[0];
-    const currentUser = { ...seedCurrentUser, ...state.profile };
-    const visibleUsers = users.map((user) => (user.id === currentUserId ? currentUser : user));
+    const currentUser = buildCurrentUser(seedCurrentUser, viewerId, state.profile);
+    const visibleUsers = buildVisibleUsers(users, viewerId, currentUser);
+
+    // Resolves the real owner id for a remote write, waiting on the
+    // in-flight auth bootstrap rather than ever falling back to the
+    // fictional `currentUserId` seed persona. `ensureAuthSession` is
+    // single-flight (lib/auth-session.ts), so calling it again here after
+    // bootstrap has already run is a cheap no-op that returns the same
+    // session.
+    const resolveOwnerId = async (): Promise<string> => {
+      if (hasLoadedRemoteState) return stateOwnerId;
+      const session = await ensureAuthSession();
+      return session?.user.id ?? stateOwnerId;
+    };
 
     return {
       state,
@@ -404,7 +432,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
       topPlaces: sortTopPlaces(places),
       photos: mergePhotos(state.uploadedPhotos, seedPhotos),
       currentUser,
-      currentUserId,
+      currentUserId: viewerId,
       savedPlaceIds: state.savedPlaceIds,
       followedUserIds: state.followedUserIds,
       likedPhotoIds: state.likedPhotoIds,
@@ -442,7 +470,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         });
         // Upserts one (user, photo) row -- `viewed_at` bumps on repeat views
         // instead of an ever-growing array (docs/demo-to-product-audit.md item 6).
-        if (isRemoteStateEnabled()) markPhotoViewedRemote(stateOwnerId, photo.id);
+        if (isRemoteStateEnabled()) resolveOwnerId().then((ownerId) => markPhotoViewedRemote(ownerId, photo.id));
       },
       recordPlaceView: (placeId, discoveryActiveIndex) =>
         update((prev) => recordPlaceViewInState(prev, placeId, discoveryActiveIndex)),
@@ -451,20 +479,20 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         const nextSaved = !state.savedPlaceIds.includes(placeId);
         update((prev) => ({ ...prev, savedPlaceIds: toggleId(prev.savedPlaceIds, placeId) }));
         // Single row insert/delete, not a whole-state upsert.
-        if (isRemoteStateEnabled()) setSavedPlaceRemote(stateOwnerId, placeId, nextSaved);
+        if (isRemoteStateEnabled()) resolveOwnerId().then((ownerId) => setSavedPlaceRemote(ownerId, placeId, nextSaved));
       },
       toggleFollowUser: (userId) => {
-        if (userId === currentUserId) return;
+        if (userId === viewerId) return;
         userTouchedRelationsRef.current.add("followedUserIds");
         const nextFollowed = !state.followedUserIds.includes(userId);
         update((prev) => ({ ...prev, followedUserIds: toggleId(prev.followedUserIds, userId) }));
-        if (isRemoteStateEnabled()) setFollowedUserRemote(stateOwnerId, userId, nextFollowed);
+        if (isRemoteStateEnabled()) resolveOwnerId().then((ownerId) => setFollowedUserRemote(ownerId, userId, nextFollowed));
       },
       togglePhotoLike: (photoId) => {
         userTouchedRelationsRef.current.add("likedPhotoIds");
         const nextLiked = !state.likedPhotoIds.includes(photoId);
         update((prev) => ({ ...prev, likedPhotoIds: toggleId(prev.likedPhotoIds, photoId) }));
-        if (isRemoteStateEnabled()) setLikedPhotoRemote(stateOwnerId, photoId, nextLiked);
+        if (isRemoteStateEnabled()) resolveOwnerId().then((ownerId) => setLikedPhotoRemote(ownerId, photoId, nextLiked));
       },
       updateProfile: (profile) =>
         update((prev) => ({
@@ -484,7 +512,14 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         const photo: Photo = {
           ...photoInput,
           id,
-          userId: currentUserId,
+          // Real uploads are attributed to the real viewer, never the
+          // fictional `user-guest` seed persona (docs/demo-to-product-implementation.md
+          // item 3). `public.photos`'s own `owner_id` column (set from
+          // `auth.uid()` by the DB default, see saveRemoteCatalogPhoto) is
+          // the actual source of truth once this photo is hydrated back from
+          // Supabase -- this local field just keeps the freshly-added photo
+          // displaying correctly before that round trip completes.
+          userId: viewerId,
           likeCount: 0,
           createdAt: new Date().toISOString(),
           locationLabel: input.locationLabel || place?.fuzzyLocationLabel || "Selected Oculi place",
@@ -493,26 +528,31 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         const next = { ...state, uploadedPhotos: [photo, ...state.uploadedPhotos] };
         setState(next);
         persistStateNow(next);
-        if (isDurableImageUrl(photo.imageUrl)) {
-          saveRemoteCatalogPhoto(photo);
-        }
-        if (file) {
-          uploadPhotoFile(file, id).then((remoteUrl) => {
-            if (!remoteUrl) return;
-            const remotePhoto = { ...photo, imageUrl: remoteUrl };
-            setState((prev) => {
-              const nextState = {
-                ...prev,
-                uploadedPhotos: prev.uploadedPhotos.map((item) =>
-                  item.id === id ? { ...item, imageUrl: remoteUrl } : item,
-                ),
-              };
-              persistStateNow(nextState);
-              return nextState;
+        // Wait for a resolved real owner id (never the placeholder) before
+        // any remote write, including the Storage upload path -- see
+        // `resolveOwnerId` above.
+        resolveOwnerId().then((ownerId) => {
+          if (isDurableImageUrl(photo.imageUrl)) {
+            saveRemoteCatalogPhoto(photo);
+          }
+          if (file) {
+            uploadPhotoFile(file, id, ownerId).then((remoteUrl) => {
+              if (!remoteUrl) return;
+              const remotePhoto = { ...photo, imageUrl: remoteUrl };
+              setState((prev) => {
+                const nextState = {
+                  ...prev,
+                  uploadedPhotos: prev.uploadedPhotos.map((item) =>
+                    item.id === id ? { ...item, imageUrl: remoteUrl } : item,
+                  ),
+                };
+                persistStateNow(nextState);
+                return nextState;
+              });
+              saveRemoteCatalogPhoto(remotePhoto);
             });
-            saveRemoteCatalogPhoto(remotePhoto);
-          });
-        }
+          }
+        });
         return photo;
       },
       resetDemoState: () => {
