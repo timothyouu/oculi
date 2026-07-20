@@ -557,7 +557,8 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
         const place = places.find((item) => item.id === input.placeId);
         const id = makeId("upload");
         const { file, ...photoInput } = input;
-        const uploadedFile = file ? await uploadPhotoFile(file, id) : null;
+        const ownerId = await resolveOwnerId();
+        const uploadedFile = file ? await uploadPhotoFile(file, id, ownerId) : null;
         if (!uploadedFile) {
           throw new Error("The photo could not be uploaded. Check your connection and try again.");
         }

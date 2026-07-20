@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Bookmark, ChevronLeft, ChevronRight, Heart, Images, Send, X } from "lucide-react";
 import type { Photo, Place, User } from "@/lib/types";
 import { accessibilityForPlace } from "@/lib/place-accessibility";
-import { attributionForImageUrl } from "@/lib/image-attribution";
+import { attributionForPhoto, attributionLabel } from "@/lib/image-attribution";
 import { sceneLabelsFor } from "@/lib/place-taxonomy";
 import { ResilientImage } from "./resilient-image";
 import { SharePlaceButton } from "./share-place-button";
@@ -174,7 +174,7 @@ export function SelectedPlaceCard({
 
   if (view === "post" && activePhoto) {
     const hasMultiple = visiblePhotos.length > 1;
-    const activeAttribution = attributionForImageUrl(activePhoto.imageUrl);
+    const activeAttribution = attributionForPhoto(activePhoto.imageUrl, activePhoto.attribution);
     const goToPhoto = (index: number) => {
       setSelectedPhotoIndex((index + visiblePhotos.length) % visiblePhotos.length);
     };
@@ -293,14 +293,18 @@ export function SelectedPlaceCard({
 
             {activeAttribution ? (
               <p className="text-xs text-[var(--ink)]/50">
-                <a
-                  href={activeAttribution.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-dotted underline-offset-2 hover:text-[var(--ink)]/80"
-                >
-                  {activeAttribution.label}
-                </a>
+                {activeAttribution.sourceUrl ? (
+                  <a
+                    href={activeAttribution.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline decoration-dotted underline-offset-2 hover:text-[var(--ink)]/80"
+                  >
+                    {attributionLabel(activeAttribution)}
+                  </a>
+                ) : (
+                  attributionLabel(activeAttribution)
+                )}
               </p>
             ) : null}
           </div>
