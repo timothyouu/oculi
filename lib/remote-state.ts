@@ -4,7 +4,7 @@ import {
   parsePlacePayload,
   parseUserPayload,
 } from "./catalog-validation";
-import { areas, currentUserId, photos, places, users } from "./data";
+import { areas, photos, places, users } from "./data";
 import { createInitialDemoState, normalizeDemoState } from "./storage";
 import { getSupabaseBrowserClient } from "./supabase";
 import type { Area, DemoState, Photo, Place, User } from "./types";
@@ -148,7 +148,7 @@ function durableStateForRemote(state: DemoState): DemoState {
   };
 }
 
-export async function loadRemoteDemoState(stateOwnerId = currentUserId): Promise<DemoState> {
+export async function loadRemoteDemoState(stateOwnerId: string): Promise<DemoState> {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return createInitialDemoState();
 
@@ -424,7 +424,7 @@ export async function loadRemoteDemoCatalog(): Promise<DemoCatalog> {
   };
 }
 
-export async function saveRemoteDemoState(state: DemoState, stateOwnerId = currentUserId) {
+export async function saveRemoteDemoState(state: DemoState, stateOwnerId: string) {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return;
 
@@ -474,7 +474,7 @@ export async function saveRemoteCatalogPhoto(photo: Photo) {
   }
 }
 
-export async function resetRemoteDemoState(stateOwnerId = currentUserId) {
+export async function resetRemoteDemoState(stateOwnerId: string) {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return;
 
@@ -489,7 +489,18 @@ export async function resetRemoteDemoState(stateOwnerId = currentUserId) {
   ]).catch((error) => console.warn("Unable to reset Oculi user relations in Supabase.", error));
 }
 
-export async function uploadPhotoFile(file: File, photoId: string) {
+/**
+ * Uploads a photo file to the real owner's Storage path
+ * (docs/demo-to-product-implementation.md item 3: retiring `user-guest` as
+ * "you"). `ownerId` must be the caller's real, resolved auth uid (or the
+ * pre-auth visitor id fallback) -- never the fictional `currentUserId` seed
+ * persona -- so the object's path matches the owner-scoped read/update RLS
+ * policies on `storage.objects` (20260710000300_storage_lockdown_oculi_photos_writes.sql),
+ * which key off the object's real `owner_id` (set automatically by Storage
+ * from the uploader's session), not this path prefix. The path is still
+ * namespaced by owner for readability/organization.
+ */
+export async function uploadPhotoFile(file: File, photoId: string, ownerId: string) {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return null;
 
